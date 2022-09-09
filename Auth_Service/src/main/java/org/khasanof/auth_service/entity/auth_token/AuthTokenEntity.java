@@ -1,4 +1,4 @@
-package org.khasanof.auth_service.entity.authBlock;
+package org.khasanof.auth_service.entity.auth_token;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,7 +11,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Document(collection = "auth_block")
-public class AuthBlockEntity extends Auditable {
-    private String userId;
+@Document(collection = "auth_token")
+public class AuthTokenEntity extends Auditable {
+    private String token;
 }

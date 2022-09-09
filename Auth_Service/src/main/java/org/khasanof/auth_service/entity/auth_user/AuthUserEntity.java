@@ -1,4 +1,4 @@
-package org.khasanof.auth_service.entity.authUser;
+package org.khasanof.auth_service.entity.auth_user;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
