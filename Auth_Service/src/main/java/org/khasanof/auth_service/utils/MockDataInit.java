@@ -18,15 +18,15 @@ public class MockDataInit implements ApplicationContextAware {
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        AuthRoleRepository roleRepository = applicationContext.getBean(AuthRoleRepository.class);
-        BlockedForRepository blockedForRepository = applicationContext.getBean(BlockedForRepository.class);
-        AuthBlockRepository authBlockRepository = applicationContext.getBean(AuthBlockRepository.class);
-
-        BlockedForEntity blockedForEntity = blockedForRepository.save(new BlockedForEntity("LOGIN", "Login Block", 20));
-
-        authBlockRepository.save(new AuthBlockEntity("sfdsfds", Instant.now(), blockedForEntity));
-
-        roleRepository.save(new AuthRoleEntity("fdsfs", "ADMIN"));
+//        AuthRoleRepository roleRepository = applicationContext.getBean(AuthRoleRepository.class);
+//        BlockedForRepository blockedForRepository = applicationContext.getBean(BlockedForRepository.class);
+//        AuthBlockRepository authBlockRepository = applicationContext.getBean(AuthBlockRepository.class);
+//
+//        BlockedForEntity blockedForEntity = blockedForRepository.save(new BlockedForEntity("LOGIN", "Login Block", 20));
+//
+//        authBlockRepository.save(new AuthBlockEntity("sfdsfds", Instant.now(), blockedForEntity));
+//
+//        roleRepository.save(new AuthRoleEntity("fdsfs", "ADMIN"));
     }
 
 }
