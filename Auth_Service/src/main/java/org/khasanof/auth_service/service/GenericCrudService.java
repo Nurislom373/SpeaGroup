@@ -9,13 +9,13 @@ import org.springframework.http.ResponseEntity;
 import java.io.Serializable;
 import java.util.List;
 
-public interface GenericCrudService <
+public interface GenericCrudService<
         CD extends BaseDTO,
         D extends BaseDTO,
         UD extends GenericDTO,
         C extends BaseCriteria,
         K extends Serializable
-                                    > extends BaseService{
+        > extends BaseService {
 
     ResponseEntity<Data<K>> create(CD createDto);
 
@@ -24,5 +24,6 @@ public interface GenericCrudService <
     ResponseEntity<Data<Void>> delete(K id);
 
     ResponseEntity<Data<List<D>>> getAll(C criteria);
-    ResponseEntity<Data<D>> get (K id);
+
+    ResponseEntity<Data<D>> get(K id);
 }

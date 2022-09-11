@@ -1,9 +1,5 @@
 package org.khasanof.auth_service.controller.auth;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.khasanof.auth_service.controller.AbstractController;
 import org.khasanof.auth_service.dto.auth.AuthDto;
 import org.khasanof.auth_service.dto.auth.PasswordChangesDto;
