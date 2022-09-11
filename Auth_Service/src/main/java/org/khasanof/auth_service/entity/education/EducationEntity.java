@@ -21,8 +21,8 @@ public class EducationEntity extends Auditable {
     private Date startYear;
     @Field(name = "end_year")
     private Date endYear;
-    @Field(name = "primary_year")
+    @Field(name = "primary_major")
     private String primaryMajor;
-    @Field(name = "secondary_year")
+    @Field(name = "secondary_major")
     private String secondaryMajor;
 }

@@ -1,4 +1,4 @@
-package org.khasanof.auth_service.controller;
+package org.khasanof.auth_service.controller.auth;
 
 import org.khasanof.auth_service.entity.auth_block.AuthBlockEntity;
 import org.khasanof.auth_service.repository.auth_block.AuthBlockRepository;

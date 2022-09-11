@@ -4,5 +4,6 @@
     <file url="file://$MAVEN_REPOSITORY$/org/springframework/boot/spring-boot-starter-parent/2.7.3/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/Auth_Service/Auth_Service/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/Auth_Service/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Auth_Service/src/main/resources" charset="UTF-8" />
   </component>
 </project>

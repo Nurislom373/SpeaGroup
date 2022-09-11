@@ -1,0 +1,24 @@
+api:
+  info:
+    title: SpeaGroup
+    description: Apis required for SpeaGroup application
+    version: 1.0
+    terms-of-service: https://SpeaGroup.uz
+    contact-name: SpeaGroup.uz
+    contact-email: SpeaGroup@gmail.com
+    contact-url: https://SpeaGroup.uz
+    license-name: Apache 2.0
+    license-url: https://www.apache.org/licenses/LICENSE-2.0.html
+
+service:
+  prop:
+    protocol: http
+    ip: localhost
+    port: 8080
+    url: SpeaGroup.uz
+
+springdoc:
+  swagger-u i:
+    path: swagger-ui
+  api-docs:
+    path: /api-docs
