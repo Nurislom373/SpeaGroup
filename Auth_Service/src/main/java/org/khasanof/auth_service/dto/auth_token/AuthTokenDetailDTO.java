@@ -13,7 +13,7 @@ import java.time.Instant;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AuthTokenDetailDTO extends GenericDTO {
-    private String userId;
+    private String authId;
     private String token;
     private Instant duration;
 }

@@ -13,4 +13,8 @@
         <maven.compiler.target>17</maven.compiler.target>
     </properties>
 
+    <modules>
+        <module>Auth_Service</module>
+    </modules>
+
 </project>

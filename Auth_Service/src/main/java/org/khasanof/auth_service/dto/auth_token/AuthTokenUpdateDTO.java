@@ -9,7 +9,6 @@ import org.khasanof.auth_service.dto.GenericDTO;
 @NoArgsConstructor
 @Builder
 public class AuthTokenUpdateDTO extends GenericDTO {
-    private String userId;
     private String token;
     private Integer minTime;
 }

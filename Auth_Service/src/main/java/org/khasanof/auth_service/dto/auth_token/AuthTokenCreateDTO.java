@@ -9,7 +9,7 @@ import org.khasanof.auth_service.dto.BaseDTO;
 @NoArgsConstructor
 @Builder
 public class AuthTokenCreateDTO implements BaseDTO {
-    private String userId;
+    private String authId;
     private String token;
     private Integer minTime;
 }
