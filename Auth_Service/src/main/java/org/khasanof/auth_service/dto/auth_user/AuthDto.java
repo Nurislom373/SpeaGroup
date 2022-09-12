@@ -1,4 +1,4 @@
-package org.khasanof.auth_service.dto.auth;
+package org.khasanof.auth_service.dto.auth_user;
 
 import lombok.*;
 

@@ -2,16 +2,16 @@ package org.khasanof.auth_service.service.auth;
 
 import org.khasanof.auth_service.criteria.GenericCriteria;
 
-import org.khasanof.auth_service.dto.auth.AuthUserCreateDTO;
-import org.khasanof.auth_service.dto.auth.AuthUserDTO;
-import org.khasanof.auth_service.dto.auth.AuthUserUpdateDTO;
+import org.khasanof.auth_service.dto.auth_user.AuthUserCreateDTO;
+import org.khasanof.auth_service.dto.auth_user.AuthUserDTO;
+import org.khasanof.auth_service.dto.auth_user.AuthUserUpdateDTO;
 import org.khasanof.auth_service.entity.auth_user.AuthUserEntity;
-import org.khasanof.auth_service.mapper.auth.AuthUserMapper;
+import org.khasanof.auth_service.mapper.auth_user.AuthUserMapper;
 import org.khasanof.auth_service.repository.auth_user.AuthUserRepository;
 import org.khasanof.auth_service.response.ApplicationError;
 import org.khasanof.auth_service.response.Data;
 import org.khasanof.auth_service.service.AbstractService;
-import org.khasanof.auth_service.validator.auth.AuthUserValidator;
+import org.khasanof.auth_service.validator.auth_user.AuthUserValidator;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -39,7 +39,7 @@ public class AuthUserServiceImpl extends AbstractService<
     @Override
     public ResponseEntity<Data<String>> create(AuthUserCreateDTO createDto) {
         validator.validCreateDTO(createDto);
-        AuthUserEntity authUserEntity = mapper.fromCreateDto(createDto);
+        AuthUserEntity authUserEntity = mapper.toCreateDTO(createDto);
         AuthUserEntity saveAuthUser = repository.insert(authUserEntity);
         return new ResponseEntity<>(new Data<>(saveAuthUser.getId()), HttpStatus.CREATED);
     }
@@ -56,7 +56,7 @@ public class AuthUserServiceImpl extends AbstractService<
                             .build()), HttpStatus.NOT_FOUND);
         }
 
-        AuthUserEntity authUserUpdateEntity = mapper.fromUpdateDto(updateDto);
+        AuthUserEntity authUserUpdateEntity = mapper.toUpdateDTO(updateDto);
 
         if (updateDto.getFirstName().isBlank()) {
             authUserUpdateEntity.setFirstName(authUser.getFirstName());
@@ -110,7 +110,7 @@ public class AuthUserServiceImpl extends AbstractService<
                             .build()), HttpStatus.NOT_FOUND);
         }
         List<AuthUserEntity> collect = all.stream().collect(Collectors.toList());
-        List<AuthUserDTO> authUserDTOS = mapper.toDto(collect);
+        List<AuthUserDTO> authUserDTOS = mapper.fromGetListDTO(collect);
         return new ResponseEntity<>(new Data<>(authUserDTOS), HttpStatus.OK);
     }
 
@@ -119,7 +119,7 @@ public class AuthUserServiceImpl extends AbstractService<
         AuthUserEntity authUser = repository.findById(id).orElseThrow(() -> {
             throw new NotFoundException("User was not found by id %s".formatted(id));
         });
-        AuthUserDTO authUserDTO = mapper.toDto(authUser);
+        AuthUserDTO authUserDTO = mapper.fromGetDTO(authUser);
         return new ResponseEntity<>(new Data<>(authUserDTO), HttpStatus.FOUND);
     }
 

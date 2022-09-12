@@ -6,7 +6,7 @@ import org.khasanof.auth_service.exception.exceptions.InvalidValidationException
 
 import java.io.Serializable;
 
-public abstract class AbstractValidator<CD extends BaseDTO, UD extends GenericDTO, K extends Serializable> implements Validator{
+public abstract class AbstractValidator<CD extends BaseDTO, UD extends GenericDTO, K extends Serializable> implements BaseValidator {
 
     public abstract void validCreateDTO(CD cd) throws InvalidValidationException;
 
