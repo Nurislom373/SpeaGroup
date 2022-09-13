@@ -7,7 +7,6 @@ import org.khasanof.auth_service.dto.GenericDTO;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
 public class AuthUserDetailDTO extends GenericDTO {
     // TODO ichida full variablelari bo'ladi!
     private String firstName;

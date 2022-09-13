@@ -8,7 +8,6 @@ import org.khasanof.auth_service.entity.auth_user.AuthUserEntity;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 public class AuthRoleDetailDTO extends GenericDTO {
     private AuthUserEntity user;
     private String role;

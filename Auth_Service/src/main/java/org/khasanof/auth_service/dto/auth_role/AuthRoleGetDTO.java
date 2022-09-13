@@ -7,7 +7,6 @@ import org.khasanof.auth_service.dto.GenericDTO;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 public class AuthRoleGetDTO extends GenericDTO {
     private String authId;
     private String role;

@@ -7,7 +7,6 @@ import org.khasanof.auth_service.dto.BaseDTO;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 public class AuthTokenCreateDTO implements BaseDTO {
     private String authId;
     private String token;

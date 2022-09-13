@@ -8,10 +8,14 @@ import org.khasanof.auth_service.dto.auth_user.AuthUserUpdateDTO;
 import org.khasanof.auth_service.entity.auth_user.AuthUserEntity;
 import org.khasanof.auth_service.mapper.GenericMapper;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.springframework.stereotype.Component;
 
 
 @Component
 @Mapper(componentModel = "spring")
 public interface AuthUserMapper extends GenericMapper<AuthUserCreateDTO, AuthUserUpdateDTO, AuthUserGetDTO, AuthUserDetailDTO, AuthUserEntity> {
+//    @Override
+//    @Mapping(target = "id", source = "entity.id")
+//    AuthUserGetDTO fromGetDTO(AuthUserEntity entity);
 }

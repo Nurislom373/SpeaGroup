@@ -7,7 +7,6 @@ import org.khasanof.auth_service.dto.GenericDTO;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 public class AuthUserGetDTO extends GenericDTO {
     private String firstName;
     private String lastName;

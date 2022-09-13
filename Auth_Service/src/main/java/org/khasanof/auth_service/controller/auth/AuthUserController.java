@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -51,7 +52,7 @@ public class AuthUserController extends AbstractController<AuthUserService> {
     }
 
     @RequestMapping(value = "list", method = RequestMethod.GET)
-    public ResponseEntity<Data<List<AuthUserGetDTO>>> list(@RequestBody AuthUserCriteria criteria) {
+    public ResponseEntity<Data<List<AuthUserGetDTO>>> list(@Valid AuthUserCriteria criteria) {
         return new ResponseEntity<>(new Data<>(service.list(criteria)), HttpStatus.OK);
     }
 

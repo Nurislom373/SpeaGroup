@@ -1,6 +1,7 @@
 package org.khasanof.auth_service.criteria;
 
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springdoc.api.annotations.ParameterObject;
@@ -9,9 +10,9 @@ import org.springframework.data.domain.Sort;
 import java.util.Objects;
 
 @Setter
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@ParameterObject
 public class GenericCriteria implements BaseCriteria {
     private Integer size;
     private Integer page;
