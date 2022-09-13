@@ -26,7 +26,7 @@ public class AuthTokenServiceImpl extends AbstractService<AuthTokenRepository, A
 
     private final AuthUserRepository userRepository;
 
-    public AuthTokenServiceImpl(AuthTokenRepository repository, @Qualifier("authTokenMapper") AuthTokenMapper mapper, AuthTokenValidator validator, AuthUserRepository userRepository) {
+    public AuthTokenServiceImpl(AuthTokenRepository repository, AuthTokenMapper mapper, AuthTokenValidator validator, AuthUserRepository userRepository) {
         super(repository, mapper, validator);
         this.userRepository = userRepository;
     }

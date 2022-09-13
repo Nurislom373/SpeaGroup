@@ -1,6 +1,5 @@
 package org.khasanof.auth_service.service.auth_user;
 
-import org.khasanof.auth_service.criteria.GenericCriteria;
 import org.khasanof.auth_service.criteria.auth_user.AuthUserBetweenCriteria;
 import org.khasanof.auth_service.criteria.auth_user.AuthUserCriteria;
 import org.khasanof.auth_service.criteria.auth_user.AuthUserSearchCriteria;
@@ -12,16 +11,12 @@ import org.khasanof.auth_service.entity.auth_user.AuthUserEntity;
 import org.khasanof.auth_service.mapper.auth_user.AuthUserMapper;
 import org.khasanof.auth_service.predicate.auth_user.AuthUserPredicateExecutor;
 import org.khasanof.auth_service.repository.auth_user.AuthUserRepository;
-import org.khasanof.auth_service.response.Data;
 import org.khasanof.auth_service.service.AbstractService;
 import org.khasanof.auth_service.validator.auth_user.AuthUserValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
 import org.webjars.NotFoundException;
 
 import java.util.List;
