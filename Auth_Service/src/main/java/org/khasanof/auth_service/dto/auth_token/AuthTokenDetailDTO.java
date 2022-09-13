@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.khasanof.auth_service.dto.GenericDTO;
+import org.khasanof.auth_service.entity.auth_user.AuthUserEntity;
 
 import java.time.Instant;
 
@@ -13,7 +14,7 @@ import java.time.Instant;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AuthTokenDetailDTO extends GenericDTO {
-    private String authId;
+    private AuthUserEntity user;
     private String token;
     private Instant duration;
 }

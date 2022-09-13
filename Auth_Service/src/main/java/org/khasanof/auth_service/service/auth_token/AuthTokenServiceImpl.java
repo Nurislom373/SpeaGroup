@@ -12,6 +12,7 @@ import org.khasanof.auth_service.repository.auth_user.AuthUserRepository;
 import org.khasanof.auth_service.service.AbstractService;
 import org.khasanof.auth_service.validator.auth_token.AuthTokenValidator;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
@@ -25,7 +26,7 @@ public class AuthTokenServiceImpl extends AbstractService<AuthTokenRepository, A
 
     private final AuthUserRepository userRepository;
 
-    public AuthTokenServiceImpl(AuthTokenRepository repository, AuthTokenMapper mapper, AuthTokenValidator validator, AuthUserRepository userRepository) {
+    public AuthTokenServiceImpl(AuthTokenRepository repository, @Qualifier("authTokenMapper") AuthTokenMapper mapper, AuthTokenValidator validator, AuthUserRepository userRepository) {
         super(repository, mapper, validator);
         this.userRepository = userRepository;
     }
@@ -71,7 +72,7 @@ public class AuthTokenServiceImpl extends AbstractService<AuthTokenRepository, A
         validator.validKey(id);
         AuthTokenEntity token = repository.findById(id).orElseThrow(() -> new NotFoundException("token not found"));
         AuthTokenDetailDTO authTokenDetailDTO = mapper.fromDetailDTO(token);
-        authTokenDetailDTO.setAuthId(token.getUserId().getId());
+        authTokenDetailDTO.setUser(token.getUserId());
         return authTokenDetailDTO;
     }
 
