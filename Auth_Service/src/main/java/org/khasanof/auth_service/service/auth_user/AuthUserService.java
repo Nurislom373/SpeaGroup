@@ -7,12 +7,22 @@ import org.khasanof.auth_service.dto.auth_user.AuthUserCreateDTO;
 import org.khasanof.auth_service.dto.auth_user.AuthUserDetailDTO;
 import org.khasanof.auth_service.dto.auth_user.AuthUserGetDTO;
 import org.khasanof.auth_service.dto.auth_user.AuthUserUpdateDTO;
+import org.khasanof.auth_service.service.BaseService;
 import org.khasanof.auth_service.service.GenericCUDService;
 import org.khasanof.auth_service.service.GenericGDLService;
 import org.khasanof.auth_service.service.GenericUtilService;
 
+import java.util.List;
+
 public interface AuthUserService extends
         GenericCUDService<AuthUserCreateDTO, AuthUserUpdateDTO, String>,
         GenericGDLService<AuthUserGetDTO, AuthUserDetailDTO, String, AuthUserCriteria>,
-        GenericUtilService<AuthUserGetDTO, AuthUserSearchCriteria, AuthUserBetweenCriteria> {
+        GenericUtilService<AuthUserGetDTO, AuthUserSearchCriteria, AuthUserBetweenCriteria>, BaseService {
+
+    List<AuthUserGetDTO> getAllBlocked(AuthUserCriteria criteria);
+
+    void block(String id);
+
+    void unblock(String id);
+
 }

@@ -1,7 +1,6 @@
 package org.khasanof.auth_service.service.auth_user;
 
 import org.khasanof.auth_service.criteria.GenericCriteria;
-
 import org.khasanof.auth_service.criteria.auth_user.AuthUserBetweenCriteria;
 import org.khasanof.auth_service.criteria.auth_user.AuthUserCriteria;
 import org.khasanof.auth_service.criteria.auth_user.AuthUserSearchCriteria;
@@ -11,29 +10,31 @@ import org.khasanof.auth_service.dto.auth_user.AuthUserGetDTO;
 import org.khasanof.auth_service.dto.auth_user.AuthUserUpdateDTO;
 import org.khasanof.auth_service.entity.auth_user.AuthUserEntity;
 import org.khasanof.auth_service.mapper.auth_user.AuthUserMapper;
+import org.khasanof.auth_service.predicate.auth_user.AuthUserPredicateExecutor;
 import org.khasanof.auth_service.repository.auth_user.AuthUserRepository;
-import org.khasanof.auth_service.response.ApplicationError;
 import org.khasanof.auth_service.response.Data;
 import org.khasanof.auth_service.service.AbstractService;
 import org.khasanof.auth_service.validator.auth_user.AuthUserValidator;
-import org.springframework.data.domain.Page;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 import org.webjars.NotFoundException;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class AuthUserServiceImpl extends AbstractService<
         AuthUserRepository,
         AuthUserMapper,
         AuthUserValidator> implements AuthUserService {
+
+    @Autowired
+    private MongoTemplate mongoTemplate;
 
 
     public AuthUserServiceImpl(AuthUserRepository repository, AuthUserMapper mapper, AuthUserValidator validator) {
@@ -114,24 +115,23 @@ public class AuthUserServiceImpl extends AbstractService<
                 ).stream().toList());
     }
 
-    public ResponseEntity<Data<List<AuthUserGetDTO>>> getAllBlocked(GenericCriteria criteria) {
+    @Override
+    public List<AuthUserGetDTO> getAllBlocked(AuthUserCriteria criteria) {
         return null;
     }
 
-    public ResponseEntity<Data<Void>> block(String id) {
+    @Override
+    public void block(String id) {
         AuthUserEntity authUser = repository.findById(id).orElseThrow(() -> {
             throw new NotFoundException("User was not found by id %s".formatted(id));
         });
-
-        return new ResponseEntity<>(new Data<>(true), HttpStatus.OK);
     }
 
-    public ResponseEntity<Data<Void>> unblock(String id) {
+    @Override
+    public void unblock(String id) {
         AuthUserEntity authUser = repository.findById(id).orElseThrow(() -> {
             throw new NotFoundException("User was not found by id %s".formatted(id));
         });
-
-        return new ResponseEntity<>(new Data<>(true), HttpStatus.OK);
     }
 
     @Override
@@ -141,11 +141,17 @@ public class AuthUserServiceImpl extends AbstractService<
 
     @Override
     public List<AuthUserGetDTO> listWithSc(AuthUserSearchCriteria searchCriteria) {
-        return null;
+        return mapper.fromGetListDTO(
+                mongoTemplate.find(
+                        new AuthUserPredicateExecutor.SearchPredicate(searchCriteria).searchQuery(),
+                        AuthUserEntity.class));
     }
 
     @Override
-    public List<AuthUserBetweenCriteria> listWithBc(AuthUserBetweenCriteria BetweenCriteria) {
-        return null;
+    public List<AuthUserGetDTO> listWithBc(AuthUserBetweenCriteria betweenCriteria) {
+        return mapper.fromGetListDTO(
+                mongoTemplate.find(
+                        new AuthUserPredicateExecutor.BetweenPredicate(betweenCriteria).betweenQuery(),
+                        AuthUserEntity.class));
     }
 }

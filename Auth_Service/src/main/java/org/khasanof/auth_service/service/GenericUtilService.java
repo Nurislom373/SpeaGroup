@@ -11,5 +11,5 @@ public interface GenericUtilService<GD extends GenericDTO, SC extends GenericCri
 
     List<GD> listWithSc(SC searchCriteria);
 
-    List<BC> listWithBc(BC BetweenCriteria);
+    List<GD> listWithBc(BC BetweenCriteria);
 }
