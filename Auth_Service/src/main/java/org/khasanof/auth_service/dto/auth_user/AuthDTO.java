@@ -7,7 +7,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class AuthDto {
+public class AuthDTO {
     private String phoneNumber;
     private String password;
 }

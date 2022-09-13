@@ -7,7 +7,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class SessionDto {
+public class SessionDTO {
     private Long accessTokenExpiry;
     private Long refreshTokenExpiry;
     private Long issuedAt;

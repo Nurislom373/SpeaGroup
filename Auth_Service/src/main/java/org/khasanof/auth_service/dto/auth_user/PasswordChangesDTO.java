@@ -9,7 +9,7 @@ import javax.validation.constraints.NotBlank;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class PasswordChangesDto {
+public class PasswordChangesDTO {
     @NotBlank(message = "id can not be blank or null")
     private String id;
     @NotBlank(message = "old password can not be blank or null")

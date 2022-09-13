@@ -10,7 +10,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Builder
 public class SearchCriteria extends GenericCriteria {
-    private String key;
-    private String operation;
-    private String value;
+    protected String key;
+    protected String operation;
+    protected String value;
 }

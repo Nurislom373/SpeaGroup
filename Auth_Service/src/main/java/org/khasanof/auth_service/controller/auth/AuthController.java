@@ -1,11 +1,11 @@
 package org.khasanof.auth_service.controller.auth;
 
 import org.khasanof.auth_service.controller.AbstractController;
-import org.khasanof.auth_service.dto.auth_user.AuthDto;
-import org.khasanof.auth_service.dto.auth_user.PasswordChangesDto;
-import org.khasanof.auth_service.dto.auth_user.SessionDto;
+import org.khasanof.auth_service.dto.auth_user.AuthDTO;
+import org.khasanof.auth_service.dto.auth_user.PasswordChangesDTO;
+import org.khasanof.auth_service.dto.auth_user.SessionDTO;
 import org.khasanof.auth_service.response.Data;
-import org.khasanof.auth_service.service.auth.AuthService;
+import org.khasanof.auth_service.service.auth_user.AuthService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,13 +19,13 @@ public class AuthController extends AbstractController<AuthService> {
     }
 
     @RequestMapping(value = PATH + "/auth/token", method = RequestMethod.POST)
-    public ResponseEntity<Data<SessionDto>> getToken(@RequestBody AuthDto dto) {
+    public ResponseEntity<Data<SessionDTO>> getToken(@RequestBody AuthDTO dto) {
         return service.getToken(dto);
     }
 
 
     @RequestMapping(value = PATH + "/employee/change_password",method = RequestMethod.PATCH)
-    public ResponseEntity<Data<Void>> changePassword(@RequestBody PasswordChangesDto dto) {
+    public ResponseEntity<Data<Void>> changePassword(@RequestBody PasswordChangesDTO dto) {
         return service.changePassword(dto);
     }
 }

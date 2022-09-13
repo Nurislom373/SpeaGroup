@@ -10,7 +10,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Builder
 public class BetweenCriteria extends GenericCriteria {
-    private String key;
-    private Integer from;
-    private Integer to;
+    protected String key;
+    protected Integer from;
+    protected Integer to;
 }

@@ -1,9 +1,13 @@
-package org.khasanof.auth_service.service.auth;
+package org.khasanof.auth_service.service.auth_user;
 
 import org.khasanof.auth_service.criteria.GenericCriteria;
 
+import org.khasanof.auth_service.criteria.auth_user.AuthUserBetweenCriteria;
+import org.khasanof.auth_service.criteria.auth_user.AuthUserCriteria;
+import org.khasanof.auth_service.criteria.auth_user.AuthUserSearchCriteria;
 import org.khasanof.auth_service.dto.auth_user.AuthUserCreateDTO;
-import org.khasanof.auth_service.dto.auth_user.AuthUserDTO;
+import org.khasanof.auth_service.dto.auth_user.AuthUserDetailDTO;
+import org.khasanof.auth_service.dto.auth_user.AuthUserGetDTO;
 import org.khasanof.auth_service.dto.auth_user.AuthUserUpdateDTO;
 import org.khasanof.auth_service.entity.auth_user.AuthUserEntity;
 import org.khasanof.auth_service.mapper.auth_user.AuthUserMapper;
@@ -37,24 +41,16 @@ public class AuthUserServiceImpl extends AbstractService<
     }
 
     @Override
-    public ResponseEntity<Data<String>> create(AuthUserCreateDTO createDto) {
+    public void create(AuthUserCreateDTO createDto) {
         validator.validCreateDTO(createDto);
         AuthUserEntity authUserEntity = mapper.toCreateDTO(createDto);
-        AuthUserEntity saveAuthUser = repository.insert(authUserEntity);
-        return new ResponseEntity<>(new Data<>(saveAuthUser.getId()), HttpStatus.CREATED);
+        repository.insert(authUserEntity);
     }
 
     @Override
-    public ResponseEntity<Data<AuthUserDTO>> update(AuthUserUpdateDTO updateDto) {
+    public void update(AuthUserUpdateDTO updateDto) {
         validator.validUpdateDTO(updateDto);
-        AuthUserEntity authUser = repository.findById(updateDto.getId()).get();
-        if (Objects.isNull(authUser)) {
-            return new ResponseEntity<>(new Data<>(
-                    ApplicationError.builder()
-                            .status(HttpStatus.NOT_FOUND)
-                            .message("User was not found by id %s".formatted(updateDto.getId()))
-                            .build()), HttpStatus.NOT_FOUND);
-        }
+        AuthUserEntity authUser = repository.findById(updateDto.getId()).orElseThrow(() -> new NotFoundException("User not found"));
 
         AuthUserEntity authUserUpdateEntity = mapper.toUpdateDTO(updateDto);
 
@@ -79,51 +75,46 @@ public class AuthUserServiceImpl extends AbstractService<
         if (updateDto.getImagePath().isBlank()) {
             authUserUpdateEntity.setImagePath(authUser.getImagePath());
         }
-
-
-        return new ResponseEntity<>(new Data<>(true), HttpStatus.OK);
     }
 
     @Override
-    public ResponseEntity<Data<Void>> delete(String id) {
+    public void delete(String id) {
         Optional<AuthUserEntity> authUser = repository.findById(id);
         if (authUser.isEmpty()) {
-            return new ResponseEntity<>(new Data<>(
-                    ApplicationError.builder()
-                            .status(HttpStatus.NOT_FOUND)
-                            .message("User was not found by id %s".formatted(id))
-                            .build()), HttpStatus.NOT_FOUND);
+            throw new NotFoundException("User not found");
         }
         repository.delete(authUser.get());
-        return new ResponseEntity<>(new Data<>(true), HttpStatus.OK);
     }
 
     @Override
-    public ResponseEntity<Data<List<AuthUserDTO>>> getAll(GenericCriteria criteria) {
-        Pageable pageable = PageRequest.of(criteria.getPage(), criteria.getSize());
-        Page<AuthUserEntity> all = repository.findAll(pageable);
-        if (all.isEmpty()) {
-            return new ResponseEntity<>(new Data<>(
-                    ApplicationError.builder()
-                            .status(HttpStatus.NOT_FOUND)
-                            .message("There are not any user yet")
-                            .build()), HttpStatus.NOT_FOUND);
-        }
-        List<AuthUserEntity> collect = all.stream().collect(Collectors.toList());
-        List<AuthUserDTO> authUserDTOS = mapper.fromGetListDTO(collect);
-        return new ResponseEntity<>(new Data<>(authUserDTOS), HttpStatus.OK);
-    }
-
-    @Override
-    public ResponseEntity<Data<AuthUserDTO>> get(String id) {
+    public AuthUserGetDTO get(String id) {
+        validator.validKey(id);
         AuthUserEntity authUser = repository.findById(id).orElseThrow(() -> {
             throw new NotFoundException("User was not found by id %s".formatted(id));
         });
-        AuthUserDTO authUserDTO = mapper.fromGetDTO(authUser);
-        return new ResponseEntity<>(new Data<>(authUserDTO), HttpStatus.FOUND);
+        return mapper.fromGetDTO(authUser);
     }
 
-    public ResponseEntity<Data<List<AuthUserDTO>>> getAllBlocked(GenericCriteria criteria) {
+    @Override
+    public AuthUserDetailDTO detail(String id) {
+        validator.validKey(id);
+        return mapper.fromDetailDTO(repository.findById(id).orElseThrow(() -> new NotFoundException("User not found")));
+    }
+
+    @Override
+    public List<AuthUserGetDTO> list(AuthUserCriteria criteria) {
+        return mapper.fromGetListDTO(
+                repository.findAll(
+                        PageRequest.of(
+                                criteria.getPage(),
+                                criteria.getSize(),
+                                criteria.getSort(),
+                                criteria.getFieldsEnum().getValue()
+                        )
+                ).stream().toList());
+    }
+
+    public ResponseEntity<Data<List<AuthUserGetDTO>>> getAllBlocked(GenericCriteria criteria) {
         return null;
     }
 
@@ -141,5 +132,20 @@ public class AuthUserServiceImpl extends AbstractService<
         });
 
         return new ResponseEntity<>(new Data<>(true), HttpStatus.OK);
+    }
+
+    @Override
+    public long count() {
+        return 0;
+    }
+
+    @Override
+    public List<AuthUserGetDTO> listWithSc(AuthUserSearchCriteria searchCriteria) {
+        return null;
+    }
+
+    @Override
+    public List<AuthUserBetweenCriteria> listWithBc(AuthUserBetweenCriteria BetweenCriteria) {
+        return null;
     }
 }

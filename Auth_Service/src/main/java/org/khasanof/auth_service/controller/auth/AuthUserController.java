@@ -4,10 +4,10 @@ import io.swagger.v3.oas.annotations.Parameter;
 import org.khasanof.auth_service.controller.AbstractController;
 import org.khasanof.auth_service.criteria.GenericCriteria;
 import org.khasanof.auth_service.dto.auth_user.AuthUserCreateDTO;
-import org.khasanof.auth_service.dto.auth_user.AuthUserDTO;
+import org.khasanof.auth_service.dto.auth_user.AuthUserGetDTO;
 import org.khasanof.auth_service.dto.auth_user.AuthUserUpdateDTO;
 import org.khasanof.auth_service.response.Data;
-import org.khasanof.auth_service.service.auth.AuthUserServiceImpl;
+import org.khasanof.auth_service.service.auth_user.AuthUserServiceImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,7 +27,7 @@ public class AuthUserController extends AbstractController<AuthUserServiceImpl> 
 
 
     @RequestMapping(value = PATH + "/authUser/update", method = RequestMethod.PUT)
-    public ResponseEntity<Data<AuthUserDTO>> update(@RequestBody AuthUserUpdateDTO dto) {
+    public ResponseEntity<Data<AuthUserGetDTO>> update(@RequestBody AuthUserUpdateDTO dto) {
         return service.update(dto);
     }
 
@@ -39,18 +39,18 @@ public class AuthUserController extends AbstractController<AuthUserServiceImpl> 
 
 
     @RequestMapping(value = PATH + "/authUser/get/{id}", method = RequestMethod.GET)
-    public ResponseEntity<Data<AuthUserDTO>> get(@Parameter(description = "id of authUser to be gotten",required = true)@PathVariable String id) {
+    public ResponseEntity<Data<AuthUserGetDTO>> get(@Parameter(description = "id of authUser to be gotten",required = true)@PathVariable String id) {
         return service.get(id);
     }
 
     @RequestMapping(value = PATH + "/authUser/getAll", method = RequestMethod.GET)
-    public ResponseEntity<Data<List<AuthUserDTO>>> getAll(@RequestBody GenericCriteria criteria) {
+    public ResponseEntity<Data<List<AuthUserGetDTO>>> getAll(@RequestBody GenericCriteria criteria) {
         return service.getAll(criteria);
     }
 
 
     @RequestMapping(value = PATH + "/authUser/blocked", method = RequestMethod.GET)
-    public ResponseEntity<Data<List<AuthUserDTO>>> getAllBlocked(@RequestBody GenericCriteria criteria) {
+    public ResponseEntity<Data<List<AuthUserGetDTO>>> getAllBlocked(@RequestBody GenericCriteria criteria) {
         return service.getAllBlocked(criteria);
     }
 
