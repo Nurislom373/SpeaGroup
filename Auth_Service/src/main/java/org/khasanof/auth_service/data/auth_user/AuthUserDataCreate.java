@@ -24,18 +24,22 @@ public class AuthUserDataCreate implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-//        ObjectMapper objectMapper = new ObjectMapper();
-//        TypeReference<List<AuthUserEntity>> reference = new TypeReference<>() {
-//        };
-//
-//        InputStream inputStream = getClass().getResourceAsStream("/data/auth_user/AUTH_USER_MOCK_DATA.json");
-//        List<AuthUserEntity> list = objectMapper.readValue(inputStream, reference);
-//        list.forEach((user) -> {
-//            user.setStatus(AuthUserStatusEnum.ACTIVE.getValue());
-//            userRepository.save(user);
-//        });
-//
-//        log.info(">>>>>>> " + list.size() + " Users Saved!");
+        /*
+        ObjectMapper objectMapper = new ObjectMapper();
+        TypeReference<List<AuthUserEntity>> reference = new TypeReference<>() {
+        };
+
+        InputStream inputStream = getClass().getResourceAsStream("/data/auth_user/AUTH_USER_MOCK_DATA.json");
+        List<AuthUserEntity> list = objectMapper.readValue(inputStream, reference);
+        list.forEach((user) -> {
+            user.setStatus(AuthUserStatusEnum.ACTIVE.getValue());
+            userRepository.save(user);
+        });
+
+        log.info(">>>>>>> " + list.size() + " Users Saved!");
+        */
+
+        // need to run once!
     }
 
 }

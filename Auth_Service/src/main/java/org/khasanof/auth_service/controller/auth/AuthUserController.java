@@ -53,27 +53,27 @@ public class AuthUserController extends AbstractController<AuthUserService> {
 
     @RequestMapping(value = "list", method = RequestMethod.GET)
     public ResponseEntity<Data<List<AuthUserGetDTO>>> list(@Valid AuthUserCriteria criteria) {
-        return new ResponseEntity<>(new Data<>(service.list(criteria)), HttpStatus.OK);
+        return new ResponseEntity<>(new Data<>(service.list(criteria), service.count()), HttpStatus.OK);
     }
 
     @RequestMapping(value = "list/search/", method = RequestMethod.GET)
     public ResponseEntity<Data<List<AuthUserGetDTO>>> list(@RequestParam String key,
                                                            @RequestParam String operation,
                                                            @RequestParam String value) {
-        return new ResponseEntity<>(new Data<>(service.listWithSc(new AuthUserSearchCriteria(key, operation, value))), HttpStatus.OK);
+        return new ResponseEntity<>(new Data<>(service.listWithSc(new AuthUserSearchCriteria(key, operation, value)), service.count()), HttpStatus.OK);
     }
 
     @RequestMapping(value = "list/between/", method = RequestMethod.GET)
     public ResponseEntity<Data<List<AuthUserGetDTO>>> list(@RequestParam String key,
                                                            @RequestParam Integer from,
                                                            @RequestParam Integer to) {
-        return new ResponseEntity<>(new Data<>(service.listWithBc(new AuthUserBetweenCriteria(key, from, to))), HttpStatus.OK);
+        return new ResponseEntity<>(new Data<>(service.listWithBc(new AuthUserBetweenCriteria(key, from, to)), service.count()), HttpStatus.OK);
     }
 
 
     @RequestMapping(value = "blocked", method = RequestMethod.GET)
     public ResponseEntity<Data<List<AuthUserGetDTO>>> getAllBlocked(@RequestBody AuthUserCriteria criteria) {
-        return new ResponseEntity<>(new Data<>(service.getAllBlocked(criteria)), HttpStatus.OK);
+        return new ResponseEntity<>(new Data<>(service.getAllBlocked(criteria), service.count()), HttpStatus.OK);
     }
 
 

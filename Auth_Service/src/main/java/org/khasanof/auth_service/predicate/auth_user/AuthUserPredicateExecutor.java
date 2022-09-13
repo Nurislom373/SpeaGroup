@@ -1,23 +1,21 @@
 package org.khasanof.auth_service.predicate.auth_user;
 
 import org.khasanof.auth_service.criteria.BetweenCriteria;
-import org.khasanof.auth_service.criteria.SearchCriteria;
+import org.khasanof.auth_service.criteria.auth_user.AuthUserSearchCriteria;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.util.Assert;
 
 public class AuthUserPredicateExecutor {
 
     public static class SearchPredicate {
 
-        private final SearchCriteria criteria;
+        private final AuthUserSearchCriteria criteria;
 
-        public SearchPredicate(SearchCriteria criteria) {
+        public SearchPredicate(AuthUserSearchCriteria criteria) {
             this.criteria = criteria;
         }
 
         public Query searchQuery() {
-            Assert.isNull(criteria, "criteria must be not null");
             Query query = new Query();
             return switch (criteria.getOperation()) {
                 case ":" -> query.addCriteria(Criteria.where(criteria.getKey()).is(criteria.getValue()));
@@ -40,7 +38,6 @@ public class AuthUserPredicateExecutor {
         }
 
         public Query betweenQuery() {
-            Assert.isNull(criteria, "criteria must be not null");
             return new Query().addCriteria(Criteria.where(criteria.getKey()).lte(criteria.getFrom()).gte(criteria.getTo()));
         }
     }
