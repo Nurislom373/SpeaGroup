@@ -130,6 +130,11 @@ public class AuthUserServiceImpl extends AbstractService<
     }
 
     @Override
+    public boolean exist(String id) {
+        return repository.existsById(id);
+    }
+
+    @Override
     public long count() {
         return 0;
     }

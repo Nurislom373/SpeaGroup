@@ -25,4 +25,6 @@ public interface AuthUserService extends
 
     void unblock(String id);
 
+    boolean exist(String id);
+
 }
