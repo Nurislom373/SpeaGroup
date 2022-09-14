@@ -55,6 +55,7 @@ public class AuthInfoServiceImpl extends AbstractService<AuthInfoRepository, Aut
         if (list.isEmpty()) throw new NotFoundException("Category not found");
         AuthInfoEntity authInfoEntity = mapper.toCreateDTO(dto);
         authInfoEntity.setUserId(userEntity);
+        authInfoEntity.setBornYear(strParseToDate(dto.getBornYearStr()));
         authInfoEntity.setInterests(list);
         repository.save(authInfoEntity);
     }
@@ -89,7 +90,15 @@ public class AuthInfoServiceImpl extends AbstractService<AuthInfoRepository, Aut
 
     @Override
     public AuthInfoGetDTO get(String id) {
-        return null;
+        validator.validKey(id);
+        AuthInfoEntity entity = repository.findById(id).orElseThrow(() -> {
+            throw new NotFoundException("Info not found");
+        });
+        AuthInfoGetDTO getDTO = mapper.fromGetDTO(entity);
+        entity.getInterests().forEach((obj) -> {
+            getDTO.getInterestsId().add(obj.getId());
+        });
+        return getDTO;
     }
 
     @Override

@@ -19,7 +19,7 @@ public class AuthInfoUpdateDTO extends GenericDTO {
     private LocationEntity location;
     private List<EducationEntity> educations;
     private List<EmploymentEntity> employments;
-    private String bornYear;
+    private String bornYearStr;
     private String phoneNumber;
     private List<String> interestsId;
 }
