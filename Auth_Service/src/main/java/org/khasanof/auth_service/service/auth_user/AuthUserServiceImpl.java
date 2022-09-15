@@ -136,7 +136,7 @@ public class AuthUserServiceImpl extends AbstractService<
 
     @Override
     public long count() {
-        return 0;
+        return repository.count();
     }
 
     @Override

@@ -1,19 +1,18 @@
 package org.khasanof.auth_service.service.auth_info;
 
+import org.khasanof.auth_service.criteria.auth_info.AuthInfoBetweenCriteria;
 import org.khasanof.auth_service.criteria.auth_info.AuthInfoCriteria;
 import org.khasanof.auth_service.criteria.auth_info.AuthInfoSearchCriteria;
-import org.khasanof.auth_service.criteria.education.EducationCriteria;
 import org.khasanof.auth_service.dto.auth_info.AuthInfoCreateDTO;
 import org.khasanof.auth_service.dto.auth_info.AuthInfoDetailDTO;
 import org.khasanof.auth_service.dto.auth_info.AuthInfoGetDTO;
 import org.khasanof.auth_service.dto.auth_info.AuthInfoUpdateDTO;
-import org.khasanof.auth_service.dto.education.EducationCreateDTO;
-import org.khasanof.auth_service.dto.education.EducationUpdateDTO;
 import org.khasanof.auth_service.dto.location.LocationCreateDTO;
 import org.khasanof.auth_service.dto.location.LocationUpdateDTO;
 import org.khasanof.auth_service.entity.auth_info.AuthInfoEntity;
 import org.khasanof.auth_service.entity.auth_user.AuthUserEntity;
 import org.khasanof.auth_service.entity.category.CategoryEntity;
+import org.khasanof.auth_service.entity.location.LocationEntity;
 import org.khasanof.auth_service.mapper.auth_info.AuthInfoMapper;
 import org.khasanof.auth_service.repository.auth_info.AuthInfoRepository;
 import org.khasanof.auth_service.repository.auth_user.AuthUserRepository;
@@ -21,7 +20,6 @@ import org.khasanof.auth_service.repository.category.CategoryRepository;
 import org.khasanof.auth_service.service.AbstractService;
 import org.khasanof.auth_service.validator.auth_info.AuthInfoValidator;
 import org.springframework.beans.BeanUtils;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
@@ -125,7 +123,12 @@ public class AuthInfoServiceImpl extends AbstractService<AuthInfoRepository, Aut
                         criteria.getFieldsEnum().getValue()
                 )).stream().toList();
         List<AuthInfoGetDTO> list = mapper.fromGetListDTO(all);
-        return null;
+        for (int i = 0; i < all.size(); i++) {
+            List<String> strings = repository.findAllById(all.get(i).getId());
+            System.out.println("strings = " + strings);
+            list.get(i).setInterestsId(strings);
+        }
+        return list;
     }
 
     @Override
@@ -139,23 +142,45 @@ public class AuthInfoServiceImpl extends AbstractService<AuthInfoRepository, Aut
     }
 
     @Override
-    public List<AuthInfoGetDTO> listWithBc(AuthInfoSearchCriteria BetweenCriteria) {
+    public List<AuthInfoGetDTO> listWithBc(AuthInfoBetweenCriteria betweenCriteria) {
         return null;
     }
 
     @Override
     public void addLocation(LocationCreateDTO dto) {
-
+        validator.validLocationCreateDTO(dto);
+        AuthInfoEntity info = repository.findById(dto.getInfoId())
+                .orElseThrow(() -> {
+                    throw new NotFoundException("Info not found");
+                });
+        LocationEntity location = new LocationEntity();
+        BeanUtils.copyProperties(dto, location);
+        info.setLocation(location);
+        repository.save(info);
     }
 
     @Override
     public void updateLocation(LocationUpdateDTO dto) {
-
+        validator.validLocationUpdateDTO(dto);
+        AuthInfoEntity info = repository.findById(dto.getInfoId())
+                .orElseThrow(() -> {
+                    throw new NotFoundException("Info not found");
+                });
+        LocationEntity location = new LocationEntity();
+        BeanUtils.copyProperties(dto, location);
+        info.setLocation(location);
+        repository.save(info);
     }
 
     @Override
-    public void deleteLocation(String infoId, String id) {
-
+    public void deleteLocation(String infoId) {
+        validator.validKey(infoId);
+        AuthInfoEntity info = repository.findById(infoId)
+                .orElseThrow(() -> {
+                    throw new NotFoundException("Info not found");
+                });
+        info.setLocation(null);
+        repository.save(info);
     }
 
     private Date strParseToDate(String date) {

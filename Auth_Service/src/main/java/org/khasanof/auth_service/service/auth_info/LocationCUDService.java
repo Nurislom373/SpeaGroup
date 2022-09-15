@@ -8,5 +8,5 @@ public interface LocationCUDService {
 
     void updateLocation(LocationUpdateDTO dto);
 
-    void deleteLocation(String infoId, String id);
+    void deleteLocation(String infoId);
 }

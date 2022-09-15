@@ -1,5 +1,6 @@
 package org.khasanof.auth_service.repository.auth_info;
 
+import org.khasanof.auth_service.dto.auth_info.AuthInfoGetDTO;
 import org.khasanof.auth_service.entity.auth_info.AuthInfoEntity;
 import org.khasanof.auth_service.repository.BaseRepository;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -13,7 +14,7 @@ import java.util.Optional;
 public interface AuthInfoRepository extends MongoRepository<AuthInfoEntity, String>, BaseRepository {
     Optional<AuthInfoEntity> findByUserIdEquals(String userId);
 
-    @Query("db.auth_info.find({}, {_id:0})")
-    List<String> findAllById();
+    @Query("db.auth_info.find({_id: ?1}, {_id:0})")
+    List<String> findAllById(String id);
 
 }

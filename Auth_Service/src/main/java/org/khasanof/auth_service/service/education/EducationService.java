@@ -3,10 +3,11 @@ package org.khasanof.auth_service.service.education;
 import org.khasanof.auth_service.dto.education.EducationCreateDTO;
 import org.khasanof.auth_service.dto.education.EducationGetDTO;
 import org.khasanof.auth_service.dto.education.EducationUpdateDTO;
+import org.khasanof.auth_service.service.BaseService;
 
 import java.util.List;
 
-public interface EducationService {
+public interface EducationService extends BaseService {
 
     void add(EducationCreateDTO dto);
 
