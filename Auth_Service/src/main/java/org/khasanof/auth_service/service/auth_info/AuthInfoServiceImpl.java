@@ -9,6 +9,8 @@ import org.khasanof.auth_service.dto.auth_info.AuthInfoGetDTO;
 import org.khasanof.auth_service.dto.auth_info.AuthInfoUpdateDTO;
 import org.khasanof.auth_service.dto.education.EducationCreateDTO;
 import org.khasanof.auth_service.dto.education.EducationUpdateDTO;
+import org.khasanof.auth_service.dto.location.LocationCreateDTO;
+import org.khasanof.auth_service.dto.location.LocationUpdateDTO;
 import org.khasanof.auth_service.entity.auth_info.AuthInfoEntity;
 import org.khasanof.auth_service.entity.auth_user.AuthUserEntity;
 import org.khasanof.auth_service.entity.category.CategoryEntity;
@@ -19,6 +21,8 @@ import org.khasanof.auth_service.repository.category.CategoryRepository;
 import org.khasanof.auth_service.service.AbstractService;
 import org.khasanof.auth_service.validator.auth_info.AuthInfoValidator;
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
 
@@ -103,11 +107,24 @@ public class AuthInfoServiceImpl extends AbstractService<AuthInfoRepository, Aut
 
     @Override
     public AuthInfoDetailDTO detail(String id) {
-        return null;
+        validator.validKey(id);
+        return mapper.fromDetailDTO(
+                repository.findById(id)
+                        .orElseThrow(() -> {
+                            throw new NotFoundException("Info not found");
+                        }));
     }
 
     @Override
     public List<AuthInfoGetDTO> list(AuthInfoCriteria criteria) {
+        List<AuthInfoEntity> all = repository.findAll(
+                PageRequest.of(
+                        criteria.getPage(),
+                        criteria.getSize(),
+                        criteria.getDirection(),
+                        criteria.getFieldsEnum().getValue()
+                )).stream().toList();
+        List<AuthInfoGetDTO> list = mapper.fromGetListDTO(all);
         return null;
     }
 
@@ -124,6 +141,21 @@ public class AuthInfoServiceImpl extends AbstractService<AuthInfoRepository, Aut
     @Override
     public List<AuthInfoGetDTO> listWithBc(AuthInfoSearchCriteria BetweenCriteria) {
         return null;
+    }
+
+    @Override
+    public void addLocation(LocationCreateDTO dto) {
+
+    }
+
+    @Override
+    public void updateLocation(LocationUpdateDTO dto) {
+
+    }
+
+    @Override
+    public void deleteLocation(String infoId, String id) {
+
     }
 
     private Date strParseToDate(String date) {

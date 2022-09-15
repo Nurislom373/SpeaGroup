@@ -20,11 +20,8 @@ import java.util.Date;
 public class EmploymentEntity extends Auditable {
     private String company;
     private String position;
-    @Field(name = "start_year")
     private Date startYear;
-    @Field(name = "end_year")
     private Date endYear;
     private String type;
-    @DocumentReference
     private LocationEntity location;
 }

@@ -1,0 +1,202 @@
+[
+  {
+    "name": "Roofing (Asphalt)",
+    "code": "Drilled Shafts"
+  },
+  {
+    "name": "Epoxy Flooring",
+    "code": "Construction Clean and Final Clean"
+  },
+  {
+    "name": "Granite Surfaces",
+    "code": "Framing (Steel)"
+  },
+  {
+    "name": "Construction Clean and Final Clean",
+    "code": "Electrical"
+  },
+  {
+    "name": "Structural and Misc Steel (Fabrication)",
+    "code": "Temp Fencing, Decorative Fencing and Gates"
+  },
+  {
+    "name": "Roofing (Metal)",
+    "code": "Waterproofing & Caulking"
+  },
+  {
+    "name": "Site Furnishings",
+    "code": "Soft Flooring and Base"
+  },
+  {
+    "name": "Structural & Misc Steel Erection",
+    "code": "Elevator"
+  },
+  {
+    "name": "Exterior Signage",
+    "code": "Asphalt Paving"
+  },
+  {
+    "name": "Sitework & Site Utilities",
+    "code": "Ornamental Railings"
+  },
+  {
+    "name": "Casework",
+    "code": "Masonry & Precast"
+  },
+  {
+    "name": "Granite Surfaces",
+    "code": "Retaining Wall and Brick Pavers"
+  },
+  {
+    "name": "RF Shielding",
+    "code": "Soft Flooring and Base"
+  },
+  {
+    "name": "EIFS",
+    "code": "Structural and Misc Steel (Fabrication)"
+  },
+  {
+    "name": "Ornamental Railings",
+    "code": "Roofing (Asphalt)"
+  },
+  {
+    "name": "Epoxy Flooring",
+    "code": "Drywall & Acoustical (MOB)"
+  },
+  {
+    "name": "Hard Tile & Stone",
+    "code": "Termite Control"
+  },
+  {
+    "name": "Doors, Frames & Hardware",
+    "code": "Landscaping & Irrigation"
+  },
+  {
+    "name": "Framing (Wood)",
+    "code": "Granite Surfaces"
+  },
+  {
+    "name": "Fire Sprinkler System",
+    "code": "Doors, Frames & Hardware"
+  },
+  {
+    "name": "Soft Flooring and Base",
+    "code": "RF Shielding"
+  },
+  {
+    "name": "Asphalt Paving",
+    "code": "Temp Fencing, Decorative Fencing and Gates"
+  },
+  {
+    "name": "Framing (Wood)",
+    "code": "Site Furnishings"
+  },
+  {
+    "name": "Drywall & Acoustical (FED)",
+    "code": "HVAC"
+  },
+  {
+    "name": "EIFS",
+    "code": "Overhead Doors"
+  },
+  {
+    "name": "Curb & Gutter",
+    "code": "Exterior Signage"
+  },
+  {
+    "name": "HVAC",
+    "code": "Termite Control"
+  },
+  {
+    "name": "Casework",
+    "code": "Structural and Misc Steel (Fabrication)"
+  },
+  {
+    "name": "Drilled Shafts",
+    "code": "Construction Clean and Final Clean"
+  },
+  {
+    "name": "Exterior Signage",
+    "code": "Granite Surfaces"
+  },
+  {
+    "name": "RF Shielding",
+    "code": "Fire Protection"
+  },
+  {
+    "name": "Framing (Wood)",
+    "code": "Construction Clean and Final Clean"
+  },
+  {
+    "name": "Fire Sprinkler System",
+    "code": "Electrical"
+  },
+  {
+    "name": "Roofing (Metal)",
+    "code": "HVAC"
+  },
+  {
+    "name": "Curb & Gutter",
+    "code": "Electrical"
+  },
+  {
+    "name": "HVAC",
+    "code": "Painting & Vinyl Wall Covering"
+  },
+  {
+    "name": "Plumbing & Medical Gas",
+    "code": "Hard Tile & Stone"
+  },
+  {
+    "name": "Roofing (Asphalt)",
+    "code": "Asphalt Paving"
+  },
+  {
+    "name": "Fire Sprinkler System",
+    "code": "Elevator"
+  },
+  {
+    "name": "Waterproofing & Caulking",
+    "code": "Site Furnishings"
+  },
+  {
+    "name": "Electrical and Fire Alarm",
+    "code": "Asphalt Paving"
+  },
+  {
+    "name": "Sitework & Site Utilities",
+    "code": "Granite Surfaces"
+  },
+  {
+    "name": "Fire Sprinkler System",
+    "code": "Roofing (Metal)"
+  },
+  {
+    "name": "Framing (Wood)",
+    "code": "Structural & Misc Steel Erection"
+  },
+  {
+    "name": "Asphalt Paving",
+    "code": "Roofing (Metal)"
+  },
+  {
+    "name": "Doors, Frames & Hardware",
+    "code": "Doors, Frames & Hardware"
+  },
+  {
+    "name": "Granite Surfaces",
+    "code": "Fire Sprinkler System"
+  },
+  {
+    "name": "Retaining Wall and Brick Pavers",
+    "code": "Hard Tile & Stone"
+  },
+  {
+    "name": "Fire Protection",
+    "code": "Elevator"
+  },
+  {
+    "name": "Structural and Misc Steel (Fabrication)",
+    "code": "Glass & Glazing"
+  }
+]
