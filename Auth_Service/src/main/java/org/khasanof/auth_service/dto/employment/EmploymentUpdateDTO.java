@@ -12,6 +12,7 @@ import org.khasanof.auth_service.entity.location.LocationEntity;
 @AllArgsConstructor
 @NoArgsConstructor
 public class EmploymentUpdateDTO extends GenericDTO {
+    private String infoId;
     private String company;
     private String position;
     private String startYearStr;

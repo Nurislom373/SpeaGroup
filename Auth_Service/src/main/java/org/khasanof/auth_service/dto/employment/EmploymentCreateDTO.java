@@ -12,6 +12,7 @@ import org.khasanof.auth_service.entity.location.LocationEntity;
 @AllArgsConstructor
 @NoArgsConstructor
 public class EmploymentCreateDTO implements BaseDTO {
+    private String infoId;
     private String company;
     private String position;
     private String startYearStr;
