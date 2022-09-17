@@ -23,14 +23,16 @@ public class CategoryCreateData implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        ObjectMapper objectMapper = new ObjectMapper();
+        /*ObjectMapper objectMapper = new ObjectMapper();
         TypeReference<List<CategoryEntity>> reference = new TypeReference<>() {
         };
 
-        InputStream inputStream = getClass().getResourceAsStream("/data/auth_user/AUTH_USER_MOCK_DATA.json");
+        InputStream inputStream = getClass().getResourceAsStream("/data/category/CATEGORY_MOCK_DATA.json");
         List<CategoryEntity> list = objectMapper.readValue(inputStream, reference);
         repository.saveAll(list);
 
-        log.info(">>>>>>> " + list.size() + " Categories Saved!");
+        log.info(">>>>>>> " + list.size() + " Categories Saved!");*/
+
+        // need to run once!
     }
 }
