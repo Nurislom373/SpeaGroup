@@ -7,6 +7,7 @@ import org.khasanof.auth_service.dto.auth_info.AuthInfoCreateDTO;
 import org.khasanof.auth_service.dto.auth_info.AuthInfoDetailDTO;
 import org.khasanof.auth_service.dto.auth_info.AuthInfoGetDTO;
 import org.khasanof.auth_service.dto.auth_info.AuthInfoUpdateDTO;
+import org.khasanof.auth_service.dto.category.CategoryGetDTO;
 import org.khasanof.auth_service.dto.location.LocationCreateDTO;
 import org.khasanof.auth_service.dto.location.LocationUpdateDTO;
 import org.khasanof.auth_service.entity.auth_info.AuthInfoEntity;
@@ -14,6 +15,7 @@ import org.khasanof.auth_service.entity.auth_user.AuthUserEntity;
 import org.khasanof.auth_service.entity.category.CategoryEntity;
 import org.khasanof.auth_service.entity.location.LocationEntity;
 import org.khasanof.auth_service.mapper.auth_info.AuthInfoMapper;
+import org.khasanof.auth_service.mapper.category.CategoryMapper;
 import org.khasanof.auth_service.repository.auth_info.AuthInfoRepository;
 import org.khasanof.auth_service.repository.auth_user.AuthUserRepository;
 import org.khasanof.auth_service.repository.category.CategoryRepository;
@@ -37,11 +39,13 @@ public class AuthInfoServiceImpl extends AbstractService<AuthInfoRepository, Aut
 
     private final AuthUserRepository userRepository;
     private final CategoryRepository categoryRepository;
+    private final CategoryMapper categoryMapper;
 
-    public AuthInfoServiceImpl(AuthInfoRepository repository, AuthInfoMapper mapper, AuthInfoValidator validator, AuthUserRepository userRepository, CategoryRepository categoryRepository) {
+    public AuthInfoServiceImpl(AuthInfoRepository repository, AuthInfoMapper mapper, AuthInfoValidator validator, AuthUserRepository userRepository, CategoryRepository categoryRepository, CategoryMapper categoryMapper) {
         super(repository, mapper, validator);
         this.userRepository = userRepository;
         this.categoryRepository = categoryRepository;
+        this.categoryMapper = categoryMapper;
     }
 
     @Override
@@ -190,5 +194,107 @@ public class AuthInfoServiceImpl extends AbstractService<AuthInfoRepository, Aut
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public void addCategory(String infoId, String categoryId) {
+        validator.validKey(infoId);
+        validator.validKey(categoryId);
+        AuthInfoEntity entity = repository.findById(infoId)
+                .orElseThrow(() -> {
+                    throw new NotFoundException("Info not found");
+                });
+        CategoryEntity category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> {
+                    throw new NotFoundException("Category not found");
+                });
+        entity.getInterests().add(category);
+        repository.save(entity);
+    }
+
+    @Override
+    public void addAllCategory(String infoId, List<String> categoryIds) {
+        validator.validKey(infoId);
+        validator.validKeys(categoryIds);
+        AuthInfoEntity entity = repository.findById(infoId)
+                .orElseThrow(() -> {
+                    throw new NotFoundException("Info not found");
+                });
+        categoryIds.forEach((id) -> {
+            CategoryEntity category = categoryRepository.findById(id)
+                    .orElseThrow(() -> {
+                        throw new NotFoundException("Category not found");
+                    });
+            entity.getInterests().add(category);
+        });
+        repository.save(entity);
+    }
+
+    @Override
+    public void deleteCategory(String infoId, String categoryId) {
+        validator.validKey(infoId);
+        validator.validKey(categoryId);
+        AuthInfoEntity entity = repository.findById(infoId)
+                .orElseThrow(() -> {
+                    throw new NotFoundException("Info not found");
+                });
+        boolean removeIf = entity.getInterests()
+                .removeIf(obj -> obj.getId()
+                        .equals(categoryId));
+        if (!removeIf)
+            throw new RuntimeException("Category not found");
+        repository.save(entity);
+    }
+
+    @Override
+    public void deleteAllCategory(String infoId, List<String> categoryIds) {
+        validator.validKey(infoId);
+        validator.validKeys(categoryIds);
+        AuthInfoEntity entity = repository.findById(infoId)
+                .orElseThrow(() -> {
+                    throw new NotFoundException("Info not found");
+                });
+        categoryIds.forEach((id) -> {
+            entity.getInterests()
+                    .removeIf(obj -> obj.getId()
+                            .equals(id));
+        });
+        repository.save(entity);
+    }
+
+    @Override
+    public CategoryGetDTO getCategory(String infoId, String categoryId) {
+        validator.validKey(infoId);
+        validator.validKey(categoryId);
+        return categoryMapper.fromGetDTO(
+                repository.findById(infoId).orElseThrow(() -> {
+                            throw new NotFoundException("Info not found");
+                        }).getInterests().stream().filter(
+                                obj -> obj.getId()
+                                        .equals(categoryId))
+                        .findAny().orElseThrow(() -> {
+                            throw new NotFoundException("Category not found");
+                        }));
+    }
+
+    @Override
+    public List<CategoryGetDTO> listCategory(String infoId) {
+        validator.validKey(infoId);
+        return categoryMapper.fromGetListDTO(
+                repository.findById(infoId)
+                        .orElseThrow(() -> {
+                            throw new NotFoundException("Info not found");
+                        }).getInterests()
+        );
+    }
+
+    @Override
+    public int count(String infoId) {
+        validator.validKey(infoId);
+        return repository.findById(infoId)
+                .orElseThrow(() -> {
+                    throw new NotFoundException("Info not found");
+                }).getInterests()
+                .size();
     }
 }

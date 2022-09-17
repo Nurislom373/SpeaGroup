@@ -8,6 +8,7 @@ import org.khasanof.auth_service.exception.exceptions.InvalidValidationException
 import org.khasanof.auth_service.validator.AbstractValidator;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Objects;
 
 @Component
@@ -31,6 +32,13 @@ public class AuthInfoValidator extends AbstractValidator<AuthInfoCreateDTO, Auth
         if (Objects.isNull(s)) {
             throw new InvalidValidationException("ID is null");
         }
+    }
+
+    public void validKeys(List<String> ids) {
+        ids.forEach((obj) -> {
+            if (Objects.isNull(obj))
+                throw new InvalidValidationException("ID is null");
+        });
     }
 
     public void validLocationCreateDTO(LocationCreateDTO dto) throws InvalidValidationException {

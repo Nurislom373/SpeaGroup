@@ -16,6 +16,7 @@ public interface AuthInfoService extends
         GenericCUDService<AuthInfoCreateDTO, AuthInfoUpdateDTO, String>,
         GenericGDLService<AuthInfoGetDTO, AuthInfoDetailDTO, String, AuthInfoCriteria>,
         GenericUtilService<AuthInfoGetDTO, AuthInfoSearchCriteria, AuthInfoBetweenCriteria>,
+        CategoryADGLCService,
         LocationCUDService,
         BaseService {
 }
