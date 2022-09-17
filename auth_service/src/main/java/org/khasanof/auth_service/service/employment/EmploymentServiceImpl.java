@@ -91,17 +91,35 @@ public class EmploymentServiceImpl extends AbstractService<AuthInfoRepository, E
 
     @Override
     public EmploymentGetDTO getEmployment(String infoId, String id) {
-        return null;
+        validator.validKey(infoId);
+        validator.validKey(id);
+        return mapper.fromGetDTO(
+                repository.findById(infoId)
+                        .orElseThrow(() -> {
+                            throw new NotFoundException("Info not found");
+                        }).getEmployments().stream().filter(
+                                (obj) -> obj.getId().equals(id)
+                        ).findAny().orElseThrow(() -> {
+                            throw new NotFoundException("Employment not found");
+                        }));
     }
 
     @Override
     public List<EmploymentGetDTO> listEmployments(String infoId) {
-        return null;
+        return mapper.fromGetListDTO(
+                repository.findById(infoId)
+                        .orElseThrow(() -> {
+                            throw new NotFoundException("Info not found");
+                        }).getEmployments());
     }
 
     @Override
     public long countEmployment(String infoId) {
-        return 0;
+        validator.validKey(infoId);
+        return repository.findById(infoId)
+                .orElseThrow(() -> {
+                    throw new NotFoundException("Info not found");
+                }).getEmployments().size();
     }
 
     private Date strParseToDate(String date) {
