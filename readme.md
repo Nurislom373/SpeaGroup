@@ -5,3 +5,5 @@
 [![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=Nurislom373_SpeaGroup&metric=ncloc)](https://sonarcloud.io/project/overview?id=Nurislom373_SpeaGroup)
 
 SpeaGroup has a user-friendly, simple and beautiful interface.
+
+![Web](etc/img/img.png)

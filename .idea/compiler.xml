@@ -9,18 +9,18 @@
         <outputRelativeToContentRoot value="true" />
         <module name="Auth-Service" />
         <module name="SpeaGroup" />
-        <module name="Auth_Service" />
+        <module name="auth_service" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="Auth_Service" target="17" />
+      <module name="auth_service" target="17" />
       <module name="SpeaGroup" target="17" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="Auth-Service" options="-parameters" />
-      <module name="Auth_Service" options="-parameters" />
+      <module name="auth_service" options="-parameters" />
     </option>
   </component>
 </project>
