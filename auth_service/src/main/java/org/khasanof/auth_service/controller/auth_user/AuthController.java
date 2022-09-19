@@ -1,4 +1,4 @@
-package org.khasanof.auth_service.controller.auth;
+package org.khasanof.auth_service.controller.auth_user;
 
 import org.khasanof.auth_service.controller.AbstractController;
 import org.khasanof.auth_service.dto.auth_user.AuthDTO;

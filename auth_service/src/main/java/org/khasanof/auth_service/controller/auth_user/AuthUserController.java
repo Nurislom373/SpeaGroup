@@ -1,4 +1,4 @@
-package org.khasanof.auth_service.controller.auth;
+package org.khasanof.auth_service.controller.auth_user;
 
 import io.swagger.v3.oas.annotations.Parameter;
 import org.khasanof.auth_service.controller.AbstractController;

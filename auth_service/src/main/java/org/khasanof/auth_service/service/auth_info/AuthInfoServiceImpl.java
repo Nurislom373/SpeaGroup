@@ -16,6 +16,7 @@ import org.khasanof.auth_service.entity.category.CategoryEntity;
 import org.khasanof.auth_service.entity.location.LocationEntity;
 import org.khasanof.auth_service.mapper.auth_info.AuthInfoMapper;
 import org.khasanof.auth_service.mapper.category.CategoryMapper;
+import org.khasanof.auth_service.predicate.auth_info.AuthInfoPredicateExecutor;
 import org.khasanof.auth_service.repository.auth_info.AuthInfoRepository;
 import org.khasanof.auth_service.repository.auth_user.AuthUserRepository;
 import org.khasanof.auth_service.repository.category.CategoryRepository;
@@ -23,6 +24,7 @@ import org.khasanof.auth_service.service.AbstractService;
 import org.khasanof.auth_service.validator.auth_info.AuthInfoValidator;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
 
@@ -41,11 +43,14 @@ public class AuthInfoServiceImpl extends AbstractService<AuthInfoRepository, Aut
     private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
 
-    public AuthInfoServiceImpl(AuthInfoRepository repository, AuthInfoMapper mapper, AuthInfoValidator validator, AuthUserRepository userRepository, CategoryRepository categoryRepository, CategoryMapper categoryMapper) {
+    private final MongoTemplate mongoTemplate;
+
+    public AuthInfoServiceImpl(AuthInfoRepository repository, AuthInfoMapper mapper, AuthInfoValidator validator, AuthUserRepository userRepository, CategoryRepository categoryRepository, CategoryMapper categoryMapper, MongoTemplate mongoTemplate) {
         super(repository, mapper, validator);
         this.userRepository = userRepository;
         this.categoryRepository = categoryRepository;
         this.categoryMapper = categoryMapper;
+        this.mongoTemplate = mongoTemplate;
     }
 
     @Override
@@ -142,12 +147,18 @@ public class AuthInfoServiceImpl extends AbstractService<AuthInfoRepository, Aut
 
     @Override
     public List<AuthInfoGetDTO> listWithSc(AuthInfoSearchCriteria searchCriteria) {
-        return null;
+        return mapper.fromGetListDTO(
+                mongoTemplate.find(
+                        new AuthInfoPredicateExecutor.SearchPredicate(searchCriteria).searchQuery(),
+                        AuthInfoEntity.class));
     }
 
     @Override
     public List<AuthInfoGetDTO> listWithBc(AuthInfoBetweenCriteria betweenCriteria) {
-        return null;
+        return mapper.fromGetListDTO(
+                mongoTemplate.find(
+                        new AuthInfoPredicateExecutor.BetweenPredicate(betweenCriteria).betweenQuery(),
+                        AuthInfoEntity.class));
     }
 
     @Override
