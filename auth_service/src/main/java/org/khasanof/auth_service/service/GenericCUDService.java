@@ -8,7 +8,7 @@ import java.rmi.AlreadyBoundException;
 
 public interface GenericCUDService<CD extends BaseDTO, UD extends GenericDTO, K extends Serializable> {
 
-    void create(CD dto) throws AlreadyBoundException;
+    void create(CD dto);
 
     void update(UD dto);
 
