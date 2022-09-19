@@ -1,7 +1,5 @@
 package org.khasanof.auth_service.service.blocked_for;
 
-import com.fasterxml.jackson.databind.util.BeanUtil;
-import org.apache.el.stream.Stream;
 import org.khasanof.auth_service.criteria.blocked_for.BlockedForCriteria;
 import org.khasanof.auth_service.dto.blocked_for.BlockedForCreateDTO;
 import org.khasanof.auth_service.dto.blocked_for.BlockedForGetDTO;
@@ -17,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
 
 import java.util.List;
-import java.util.stream.StreamSupport;
 
 @Service
 public class BlockedForServiceImpl
