@@ -7,4 +7,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface BlockedForRepository extends MongoRepository<BlockedForEntity, String>, BaseRepository {
+
+    boolean existsByCode(String code);
+
 }
