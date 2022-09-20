@@ -6,7 +6,6 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 
 public class AuthInfoPredicateExecutor {
-
     public static class SearchPredicate {
 
         private final AuthInfoSearchCriteria criteria;
@@ -41,5 +40,4 @@ public class AuthInfoPredicateExecutor {
             return new Query().addCriteria(Criteria.where(criteria.getKey()).lte(criteria.getFrom()).gte(criteria.getTo()));
         }
     }
-
 }
