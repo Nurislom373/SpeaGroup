@@ -19,5 +19,4 @@ public class AuthUserCreateDTO implements BaseDTO {
     private String password;
     private String language;
     private String imagePath;
-
 }
