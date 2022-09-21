@@ -2,6 +2,7 @@ package org.khasanof.auth_service.controller.auth_controller;
 
 import org.khasanof.auth_service.controller.AbstractController;
 import org.khasanof.auth_service.dto.auth.AuthRequestDTO;
+import org.khasanof.auth_service.dto.auth_user.AuthUserCreateDTO;
 import org.khasanof.auth_service.response.Data;
 import org.khasanof.auth_service.service.auth.AuthenticationService;
 import org.khasanof.auth_service.utils.BaseUtils;
@@ -24,4 +25,6 @@ public class AuthenticationController extends AbstractController<AuthenticationS
     public ResponseEntity<Data<String>> login(@RequestBody AuthRequestDTO dto) {
         return new ResponseEntity<>(new Data<>(service.login(dto)), HttpStatus.OK);
     }
+
+
 }

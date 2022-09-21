@@ -1,9 +1,13 @@
 package org.khasanof.auth_service.utils;
 
+import com.fasterxml.jackson.core.io.JsonStringEncoder;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.Setter;
+import org.jasypt.contrib.org.apache.commons.codec_1_3.Encoder;
+import org.jasypt.encryption.pbe.PooledPBEByteEncryptor;
+import org.jasypt.encryption.pbe.PooledPBEStringEncryptor;
 
 import java.io.IOException;
 import java.io.InputStream;
