@@ -8,6 +8,7 @@ import org.khasanof.auth_service.dto.auth_user.AuthUserDetailDTO;
 import org.khasanof.auth_service.dto.auth_user.AuthUserGetDTO;
 import org.khasanof.auth_service.dto.auth_user.AuthUserUpdateDTO;
 import org.khasanof.auth_service.entity.auth_user.AuthUserEntity;
+import org.khasanof.auth_service.enums.auth_user.AuthUserStatusEnum;
 import org.khasanof.auth_service.mapper.auth_user.AuthUserMapper;
 import org.khasanof.auth_service.predicate.auth_user.AuthUserPredicateExecutor;
 import org.khasanof.auth_service.repository.auth_user.AuthUserRepository;
@@ -41,7 +42,8 @@ public class AuthUserServiceImpl extends AbstractService<
     public void create(AuthUserCreateDTO createDto) {
         validator.validCreateDTO(createDto);
         AuthUserEntity authUserEntity = mapper.toCreateDTO(createDto);
-        authUserEntity.setPassword(BaseUtils.encode(createDto.getPassword()));
+        authUserEntity.setStatus(AuthUserStatusEnum.NO_ACTIVE.getValue());
+        authUserEntity.setPassword(BaseUtils.ENCODER.encode(createDto.getPassword()));
         repository.insert(authUserEntity);
     }
 
