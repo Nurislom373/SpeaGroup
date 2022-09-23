@@ -1,9 +1,6 @@
 package org.khasanof.auth_service.entity.auth_block;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.khasanof.auth_service.entity.Auditable;
 import org.khasanof.auth_service.entity.auth_user.AuthUserEntity;
 import org.khasanof.auth_service.entity.blocked_for.BlockedForEntity;
@@ -19,6 +16,7 @@ import java.time.Instant;
 @AllArgsConstructor
 @NoArgsConstructor
 @Document(collection = "auth_block")
+@Builder
 public class AuthBlockEntity extends Auditable {
     @DocumentReference
     @Field(name = "user_id")

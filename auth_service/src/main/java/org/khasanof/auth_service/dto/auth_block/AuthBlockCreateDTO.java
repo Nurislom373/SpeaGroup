@@ -7,12 +7,17 @@ import lombok.Setter;
 import org.khasanof.auth_service.dto.BaseDTO;
 import org.khasanof.auth_service.entity.blocked_for.BlockedForEntity;
 
+import javax.validation.constraints.NotNull;
+
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class AuthBlockCreateDTO implements BaseDTO {
+    @NotNull
     private String authId;
+    @NotNull
     private Integer durationTime;
-    private BlockedForEntity blockedFor;
+    @NotNull
+    private String blockedForId;
 }
