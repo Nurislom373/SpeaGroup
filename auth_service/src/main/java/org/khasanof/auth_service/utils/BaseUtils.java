@@ -9,6 +9,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.Instant;
 import java.util.List;
 
 @Getter
@@ -32,5 +33,9 @@ public class BaseUtils {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static Instant currentTimeAddMinute(Integer minute) {
+        return Instant.ofEpochMilli(System.currentTimeMillis() + (minute * 60 * 1000));
     }
 }

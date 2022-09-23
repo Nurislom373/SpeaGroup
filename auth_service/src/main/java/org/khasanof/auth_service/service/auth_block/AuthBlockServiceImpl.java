@@ -13,6 +13,7 @@ import org.khasanof.auth_service.repository.auth_block.AuthBlockRepository;
 import org.khasanof.auth_service.repository.auth_user.AuthUserRepository;
 import org.khasanof.auth_service.repository.blocked_for.BlockedForRepository;
 import org.khasanof.auth_service.service.AbstractService;
+import org.khasanof.auth_service.utils.BaseUtils;
 import org.khasanof.auth_service.validator.auth_block.AuthBlockValidator;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -52,7 +53,7 @@ public class AuthBlockServiceImpl extends AbstractService<AuthBlockRepository, A
                     AuthBlockEntity.builder()
                             .blockedFor(blockedForEntity)
                             .userId(userEntity)
-                            .duration(currentTimeAddMinute(dto.getDurationTime()))
+                            .duration(BaseUtils.currentTimeAddMinute(dto.getDurationTime()))
                             .build()
             );
         } else {
@@ -63,7 +64,7 @@ public class AuthBlockServiceImpl extends AbstractService<AuthBlockRepository, A
                                 throw new NotFoundException("Blocked For not found");
                             })
             );
-            blockEntity.setDuration(currentTimeAddMinute(dto.getDurationTime()));
+            blockEntity.setDuration(BaseUtils.currentTimeAddMinute(dto.getDurationTime()));
             blockEntity.setUpdatedAt(Instant.now());
             blockEntity.setUpdatedBy("-1");
             repository.save(blockEntity);
@@ -76,7 +77,7 @@ public class AuthBlockServiceImpl extends AbstractService<AuthBlockRepository, A
         AuthBlockEntity blockEntity = repository.findById(dto.getId()).orElseThrow(() -> {
             throw new NotFoundException("Auth Block not found");
         });
-        blockEntity.setDuration(currentTimeAddMinute(dto.getDurationTime()));
+        blockEntity.setDuration(BaseUtils.currentTimeAddMinute(dto.getDurationTime()));
         blockEntity.setBlockedFor(
                 blockedForRepository.findById(dto.getBlockedForId()).orElseThrow(() -> {
                     throw new NotFoundException("Blocked For not found");
@@ -129,7 +130,5 @@ public class AuthBlockServiceImpl extends AbstractService<AuthBlockRepository, A
         return list;
     }
 
-    private Instant currentTimeAddMinute(Integer minute) {
-        return Instant.ofEpochMilli(System.currentTimeMillis() + (minute * 60 * 1000));
-    }
+
 }

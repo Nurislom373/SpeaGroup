@@ -3,13 +3,16 @@ package org.khasanof.auth_service.service.auth;
 import com.auth0.jwt.JWT;
 import org.khasanof.auth_service.dto.auth.AuthRequestDTO;
 import org.khasanof.auth_service.dto.auth_block.AuthBlockCreateDTO;
-import org.khasanof.auth_service.dto.auth_block.AuthBlockUpdateDTO;
 import org.khasanof.auth_service.dto.token.TokenDTO;
+import org.khasanof.auth_service.entity.auth_token.AuthTokenEntity;
 import org.khasanof.auth_service.entity.auth_user.AuthUserEntity;
 import org.khasanof.auth_service.exception.exceptions.PasswordDoesNotMatchException;
 import org.khasanof.auth_service.repository.auth_block.AuthBlockRepository;
+import org.khasanof.auth_service.repository.auth_token.AuthTokenRedisRepository;
+import org.khasanof.auth_service.repository.auth_token.AuthTokenRepository;
 import org.khasanof.auth_service.repository.auth_user.AuthUserRepository;
 import org.khasanof.auth_service.service.auth_block.AuthBlockService;
+import org.khasanof.auth_service.service.auth_token.AuthTokenService;
 import org.khasanof.auth_service.utils.BaseUtils;
 import org.khasanof.auth_service.utils.jwt.JWTUtils;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -25,16 +28,16 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Service
 public class AuthenticationServiceImpl implements AuthenticationService {
 
-    private final AuthUserRepository userRepository;
-    private final AuthBlockRepository blockRepository;
     private final AuthBlockService authBlockService;
     private final MongoTemplate mongoTemplate;
+    private final AuthTokenRedisRepository tokenRedisRepository;
+    private final AuthTokenRepository authTokenRepository;
 
-    public AuthenticationServiceImpl(AuthUserRepository userRepository, AuthBlockRepository blockRepository, AuthBlockService authBlockService, MongoTemplate mongoTemplate) {
-        this.userRepository = userRepository;
-        this.blockRepository = blockRepository;
+    public AuthenticationServiceImpl(AuthBlockService authBlockService, MongoTemplate mongoTemplate, AuthTokenRedisRepository tokenRedisRepository, AuthTokenRepository authTokenRepository) {
         this.authBlockService = authBlockService;
         this.mongoTemplate = mongoTemplate;
+        this.tokenRedisRepository = tokenRedisRepository;
+        this.authTokenRepository = authTokenRepository;
     }
 
     @Override
@@ -71,6 +74,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .withExpiresAt(expiryForRefreshToken)
                 .sign(JWTUtils.getAlgorithm());
 
+        AuthTokenEntity tokenEntity = authTokenRepository.save(
+                new AuthTokenEntity(userEntity, accessToken, BaseUtils.currentTimeAddMinute(50)
+                ));
+        tokenRedisRepository.save(tokenEntity);
 
         return TokenDTO.builder()
                 .accessToken(accessToken)
