@@ -15,7 +15,6 @@ import org.khasanof.auth_service.repository.auth_user.AuthUserRepository;
 import org.khasanof.auth_service.service.AbstractService;
 import org.khasanof.auth_service.utils.BaseUtils;
 import org.khasanof.auth_service.validator.auth_user.AuthUserValidator;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
@@ -30,12 +29,11 @@ public class AuthUserServiceImpl extends AbstractService<
         AuthUserMapper,
         AuthUserValidator> implements AuthUserService {
 
-    @Autowired
-    private MongoTemplate mongoTemplate;
+    private final MongoTemplate mongoTemplate;
 
-
-    public AuthUserServiceImpl(AuthUserRepository repository, AuthUserMapper mapper, AuthUserValidator validator) {
+    public AuthUserServiceImpl(AuthUserRepository repository, AuthUserMapper mapper, AuthUserValidator validator, MongoTemplate mongoTemplate) {
         super(repository, mapper, validator);
+        this.mongoTemplate = mongoTemplate;
     }
 
     @Override

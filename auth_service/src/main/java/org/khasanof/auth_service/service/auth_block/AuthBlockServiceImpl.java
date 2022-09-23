@@ -21,6 +21,7 @@ import org.webjars.NotFoundException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class AuthBlockServiceImpl extends AbstractService<AuthBlockRepository, AuthBlockMapper, AuthBlockValidator> implements AuthBlockService {
@@ -37,21 +38,36 @@ public class AuthBlockServiceImpl extends AbstractService<AuthBlockRepository, A
     @Override
     public void create(AuthBlockCreateDTO dto) {
         validator.validCreateDTO(dto);
-        AuthUserEntity userEntity = userRepository.findById(dto.getAuthId())
-                .orElseThrow(() -> {
-                    throw new NotFoundException("User not found");
-                });
-        BlockedForEntity blockedForEntity = blockedForRepository.findById(dto.getBlockedForId())
-                .orElseThrow(() -> {
-                    throw new NotFoundException("Blocked For not found");
-                });
-        repository.insert(
-                AuthBlockEntity.builder()
-                        .blockedFor(blockedForEntity)
-                        .userId(userEntity)
-                        .duration(currentTimeAddMinute(dto.getDurationTime()))
-                        .build()
-        );
+        AuthBlockEntity authBlock = repository.findByUserId(dto.getAuthId());
+        if (Objects.isNull(authBlock)) {
+            AuthUserEntity userEntity = userRepository.findById(dto.getAuthId())
+                    .orElseThrow(() -> {
+                        throw new NotFoundException("User not found");
+                    });
+            BlockedForEntity blockedForEntity = blockedForRepository.findById(dto.getBlockedForId())
+                    .orElseThrow(() -> {
+                        throw new NotFoundException("Blocked For not found");
+                    });
+            repository.insert(
+                    AuthBlockEntity.builder()
+                            .blockedFor(blockedForEntity)
+                            .userId(userEntity)
+                            .duration(currentTimeAddMinute(dto.getDurationTime()))
+                            .build()
+            );
+        } else {
+            AuthBlockEntity blockEntity = repository.findByUserId(dto.getAuthId());
+            blockEntity.setBlockedFor(
+                    blockedForRepository.findById(dto.getBlockedForId())
+                            .orElseThrow(() -> {
+                                throw new NotFoundException("Blocked For not found");
+                            })
+            );
+            blockEntity.setDuration(currentTimeAddMinute(dto.getDurationTime()));
+            blockEntity.setUpdatedAt(Instant.now());
+            blockEntity.setUpdatedBy("-1");
+            repository.save(blockEntity);
+        }
     }
 
     @Override

@@ -6,7 +6,11 @@ import org.khasanof.auth_service.repository.BaseRepository;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface AuthBlockRepository extends MongoRepository<AuthBlockEntity, String>, BaseRepository {
+
+    AuthBlockEntity findByUserId(String userId);
 
 }
