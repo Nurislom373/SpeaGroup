@@ -12,6 +12,7 @@ import org.khasanof.auth_service.mapper.auth_user.AuthUserMapper;
 import org.khasanof.auth_service.predicate.auth_user.AuthUserPredicateExecutor;
 import org.khasanof.auth_service.repository.auth_user.AuthUserRepository;
 import org.khasanof.auth_service.service.AbstractService;
+import org.khasanof.auth_service.utils.BaseUtils;
 import org.khasanof.auth_service.validator.auth_user.AuthUserValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -40,6 +41,7 @@ public class AuthUserServiceImpl extends AbstractService<
     public void create(AuthUserCreateDTO createDto) {
         validator.validCreateDTO(createDto);
         AuthUserEntity authUserEntity = mapper.toCreateDTO(createDto);
+        authUserEntity.setPassword(BaseUtils.encode(createDto.getPassword()));
         repository.insert(authUserEntity);
     }
 

@@ -13,6 +13,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AuthFollowerGetDTO extends GenericDTO {
-    private String userId;
+    private String authId;
     private List<String> followersId;
 }

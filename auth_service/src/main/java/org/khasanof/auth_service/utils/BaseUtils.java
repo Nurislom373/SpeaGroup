@@ -1,18 +1,14 @@
 package org.khasanof.auth_service.utils;
 
-import com.fasterxml.jackson.core.io.JsonStringEncoder;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.Setter;
-import org.jasypt.contrib.org.apache.commons.codec_1_3.Encoder;
-import org.jasypt.encryption.pbe.PooledPBEByteEncryptor;
-import org.jasypt.encryption.pbe.PooledPBEStringEncryptor;
+import org.apache.commons.codec.binary.Base64;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
-import java.util.Objects;
 
 @Getter
 @Setter
@@ -33,5 +29,18 @@ public class BaseUtils {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static String encode(String pwd) {
+        return new String(Base64.encodeBase64(pwd.getBytes()));
+    }
+
+    public static String decode(String pwd) {
+        return new String(Base64.decodeBase64(pwd.getBytes()));
+    }
+
+    public static boolean match(String pwd, String hashPwd) {
+        String decodedString = new String(Base64.decodeBase64(hashPwd.getBytes()));
+        return pwd.equals(decodedString);
     }
 }

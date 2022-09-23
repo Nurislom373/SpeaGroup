@@ -25,11 +25,11 @@ public class AuthRoleDataCreate implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        List<AuthUserEntity> all = userRepository.findAll();
-        all.forEach((entity) -> {
-            roleRepository.save(new AuthRoleEntity(entity, random(randomNum(1, 2))));
-        });
-        log.info(">>>>>>> " + all.size() + " Auth Roles Saved!");
+//        List<AuthUserEntity> all = userRepository.findAll();
+//        all.forEach((entity) -> {
+//            roleRepository.save(new AuthRoleEntity(entity, random(randomNum(1, 2))));
+//        });
+//        log.info(">>>>>>> " + all.size() + " Auth Roles Saved!");
 
         // need to run once!
     }
