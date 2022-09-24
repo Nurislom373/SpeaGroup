@@ -15,6 +15,7 @@
 
     <modules>
         <module>auth_service</module>
+        <module>upload_service</module>
     </modules>
 
 </project>
