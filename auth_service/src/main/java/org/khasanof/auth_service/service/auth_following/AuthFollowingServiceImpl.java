@@ -11,6 +11,7 @@ import org.khasanof.auth_service.repository.auth_following.AuthFollowingReposito
 import org.khasanof.auth_service.repository.auth_user.AuthUserRepository;
 import org.khasanof.auth_service.service.AbstractService;
 import org.khasanof.auth_service.validator.auth_following.AuthFollowingValidator;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
 
@@ -51,23 +52,46 @@ public class AuthFollowingServiceImpl extends AbstractService<AuthFollowingRepos
     public void delete(String id) {
         validator.validKey(id);
         if (!repository.existsById(id))
-            throw new NotFoundException("User not found");
+            throw new NotFoundException("Auth Following not found");
         else
             repository.deleteById(id);
     }
 
     @Override
     public AuthFollowingGetDTO get(String id) {
-        return null;
+        validator.validKey(id);
+        AuthFollowingEntity followingEntity = repository.findById(id)
+                .orElseThrow(() -> {
+                    throw new NotFoundException("Auth Following not found");
+                });
+        List<String> followingIds = followingEntity.getFollowers()
+                .parallelStream()
+                .map(this::getId).toList();
+        return new AuthFollowingGetDTO(followingEntity.getUserId().getId(), followingIds);
     }
 
     @Override
     public AuthFollowingDetailDTO detail(String id) {
-        return null;
+        validator.validKey(id);
+        return mapper.fromDetailDTO(repository.findById(id).orElseThrow(() -> {
+            throw new NotFoundException("Auth Following not found");
+        }));
     }
 
     @Override
     public List<AuthFollowingGetDTO> list(AuthFollowingCriteria criteria) {
-        return null;
+        return repository.findAll(
+                PageRequest.of(criteria.getPage(), criteria.getSize())
+        ).stream().parallel().map(this::getDTO).toList();
+    }
+
+    private String getId(AuthUserEntity entity) {
+        return entity.getId();
+    }
+
+    private AuthFollowingGetDTO getDTO(AuthFollowingEntity entity) {
+        List<String> ids = entity.getFollowers()
+                .parallelStream().map(this::getId).toList();
+        return new AuthFollowingGetDTO(entity.getUserId().getId(), ids);
     }
 }

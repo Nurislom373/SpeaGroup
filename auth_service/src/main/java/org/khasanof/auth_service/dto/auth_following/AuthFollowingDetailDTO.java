@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.khasanof.auth_service.dto.GenericDTO;
-import org.khasanof.auth_service.entity.auth_following.AuthFollowingEntity;
+import org.khasanof.auth_service.entity.auth_user.AuthUserEntity;
 
 import java.util.List;
 
@@ -14,7 +14,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AuthFollowingDetailDTO extends GenericDTO {
-    private AuthFollowingEntity authId;
-    private List<AuthFollowingEntity
-            > followingsId;
+    private AuthUserEntity userId;
+    private List<AuthUserEntity> followers;
 }
