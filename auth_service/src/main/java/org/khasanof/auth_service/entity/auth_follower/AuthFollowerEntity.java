@@ -1,9 +1,6 @@
 package org.khasanof.auth_service.entity.auth_follower;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.khasanof.auth_service.entity.Auditable;
 import org.khasanof.auth_service.entity.auth_user.AuthUserEntity;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -17,6 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Document(collection = "auth_follower")
+@Builder
 public class AuthFollowerEntity extends Auditable {
     @DocumentReference
     @Field(name = "user_id")
