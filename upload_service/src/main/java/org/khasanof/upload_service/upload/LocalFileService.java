@@ -10,7 +10,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
 @Service
-public class WriteLocalFileService {
+public class LocalFileService {
 
     private final String PATH = "C:\\Nurislom\\Java\\SpeaGroup\\SpeaGroup\\upload_service\\src\\main\\resources\\static\\img\\";
 

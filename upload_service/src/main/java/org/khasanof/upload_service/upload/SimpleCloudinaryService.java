@@ -7,10 +7,10 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.khasanof.upload_service.upload.dto.CloudinaryDetailDTO;
 import org.khasanof.upload_service.upload.dto.CloudinaryGetDTO;
 import org.khasanof.upload_service.upload.entity.CloudinaryEntity;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.web.multipart.MultipartFile;
+import org.webjars.NotFoundException;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,15 +18,18 @@ import java.util.Arrays;
 import java.util.List;
 
 @Service
-public class SimpleUploadService implements UploadService {
+public class SimpleCloudinaryService implements CloudinaryService {
 
     private final CloudinaryRepository cloudinaryRepository;
-    private final WriteLocalFileService localFileService;
+    private final LocalFileService localFileService;
     private final Cloudinary cloudinary;
 
-    public SimpleUploadService(CloudinaryRepository couldinaryRepository, WriteLocalFileService localFileService) {
+    private final CloudinaryMapper cloudinaryMapper;
+
+    public SimpleCloudinaryService(CloudinaryRepository couldinaryRepository, LocalFileService localFileService, CloudinaryMapper cloudinaryMapper) {
         this.cloudinaryRepository = couldinaryRepository;
         this.localFileService = localFileService;
+        this.cloudinaryMapper = cloudinaryMapper;
         this.cloudinary = new Cloudinary(ObjectUtils.asMap(
                 "cloud_name", "dtkrdcbhi",
                 "api_key", "723978565627878",
@@ -51,10 +54,7 @@ public class SimpleUploadService implements UploadService {
             }
 
             CloudinaryEntity entity = objectMapper.readValue(objectNode.toString().getBytes(), CloudinaryEntity.class);
-            CloudinaryEntity cloudinaryEntity = cloudinaryRepository.save(entity);
-            CloudinaryGetDTO getDTO = new CloudinaryGetDTO();
-            BeanUtils.copyProperties(cloudinaryEntity, getDTO);
-            return getDTO;
+            return cloudinaryMapper.getDTO(cloudinaryRepository.save(entity));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -69,21 +69,33 @@ public class SimpleUploadService implements UploadService {
 
     @Override
     public CloudinaryGetDTO get(String id) {
-        return null;
+        Assert.notNull(id, "id must be not null required!");
+        return cloudinaryMapper.getDTO(
+                cloudinaryRepository.findById(id)
+                        .orElseThrow(() -> {
+                            throw new NotFoundException("File not found");
+                        }));
     }
 
     @Override
     public CloudinaryDetailDTO detail(String id) {
-        return null;
+        Assert.notNull(id, "id must be not null required!");
+        return cloudinaryMapper.detailDTO(
+                cloudinaryRepository.findById(id)
+                        .orElseThrow(() -> {
+                            throw new NotFoundException("File not found");
+                        }));
     }
 
     @Override
     public List<CloudinaryGetDTO> getMultiGet(List<String> ids) {
-        return null;
+        return ids.stream()
+                .map(this::get)
+                .toList();
     }
 
     @Override
-    public List<CloudinaryGetDTO> list(UploadCriteria criteria) {
+    public List<CloudinaryGetDTO> list(CloudinaryCriteria criteria) {
         return null;
     }
 

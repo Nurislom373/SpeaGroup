@@ -6,7 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
-public interface UploadService {
+public interface CloudinaryService {
 
     CloudinaryGetDTO upload(MultipartFile file);
 
@@ -18,6 +18,6 @@ public interface UploadService {
 
     List<CloudinaryGetDTO> getMultiGet(List<String> ids);
 
-    List<CloudinaryGetDTO> list(UploadCriteria criteria);
+    List<CloudinaryGetDTO> list(CloudinaryCriteria criteria);
 
 }

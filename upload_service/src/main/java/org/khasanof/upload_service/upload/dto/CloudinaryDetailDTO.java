@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.Instant;
-import java.util.List;
 
 @Getter
 @Setter
@@ -23,7 +22,7 @@ public class CloudinaryDetailDTO extends GenericDTO {
     private String version;
     private String url;
     private String public_id;
-    private List<String> tags;
+    private String tags;
     private String folder;
     private String original_filename;
     private String api_key;

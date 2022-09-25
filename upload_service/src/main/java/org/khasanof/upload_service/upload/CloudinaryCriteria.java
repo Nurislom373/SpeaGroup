@@ -12,12 +12,12 @@ import java.util.Objects;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UploadCriteria {
+public class CloudinaryCriteria {
     private Integer size;
     private Integer page;
     private Sort.Direction direction;
 
-    private UploadFieldsEnum fieldsEnum;
+    private CloudinaryFieldsEnum fieldsEnum;
 
     public Integer getPage() {
         if (Objects.isNull(page))

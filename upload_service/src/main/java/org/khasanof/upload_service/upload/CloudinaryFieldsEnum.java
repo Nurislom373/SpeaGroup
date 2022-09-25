@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum UploadFieldsEnum {
+public enum CloudinaryFieldsEnum {
     SIZE("size"),
     WIDTH("width"),
     HEIGHT("height"),
