@@ -1,21 +1,18 @@
-package org.khasanof.upload_service.upload.entity;
+package org.khasanof.upload_service.upload.dto;
 
-import lombok.*;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.FieldType;
-import org.springframework.data.mongodb.core.mapping.MongoId;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.List;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Document(collection = "uploads")
-@Builder
-public class CouldinaryEntity extends Auditable {
+public class CloudinaryDetailDTO extends GenericDTO {
     private String signature;
     private String format;
     private String resource_type;
@@ -36,4 +33,8 @@ public class CouldinaryEntity extends Auditable {
     private String etag;
     private Boolean placeholder;
     private String height;
+    private Instant createdAt;
+    private String createdBy;
+    private Instant updatedAt;
+    private String updatedBy;
 }

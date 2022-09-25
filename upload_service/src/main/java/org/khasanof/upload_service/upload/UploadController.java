@@ -1,5 +1,8 @@
 package org.khasanof.upload_service.upload;
 
+import org.khasanof.upload_service.response.Data;
+import org.khasanof.upload_service.upload.dto.CloudinaryGetDTO;
+import org.khasanof.upload_service.upload.entity.CloudinaryEntity;
 import org.khasanof.upload_service.utils.BaseUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -21,9 +24,8 @@ public class UploadController {
     }
 
     @RequestMapping(value = "add", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<String> add(@RequestParam("file") MultipartFile file) {
-        service.upload(file);
-        return new ResponseEntity<>("Success", HttpStatus.OK);
+    public ResponseEntity<Data<CloudinaryGetDTO>> add(@RequestParam("file") MultipartFile file) {
+        return new ResponseEntity<>(new Data<>(service.upload(file)), HttpStatus.OK);
     }
 
 }
