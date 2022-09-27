@@ -2,6 +2,7 @@ package org.khasanof.upload_service.upload;
 
 import org.khasanof.upload_service.upload.dto.CloudinaryDetailDTO;
 import org.khasanof.upload_service.upload.dto.CloudinaryGetDTO;
+import org.khasanof.upload_service.upload.entity.CloudinaryEntity;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -15,6 +16,10 @@ public interface CloudinaryService {
     CloudinaryGetDTO get(String id);
 
     CloudinaryDetailDTO detail(String id);
+
+    void delete(String id);
+
+    void delete(CloudinaryEntity entity);
 
     List<CloudinaryGetDTO> getMultiGet(List<String> ids);
 

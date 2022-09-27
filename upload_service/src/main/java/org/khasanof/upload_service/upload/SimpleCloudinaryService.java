@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.khasanof.upload_service.upload.dto.CloudinaryDetailDTO;
 import org.khasanof.upload_service.upload.dto.CloudinaryGetDTO;
 import org.khasanof.upload_service.upload.entity.CloudinaryEntity;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,7 +24,6 @@ public class SimpleCloudinaryService implements CloudinaryService {
     private final CloudinaryRepository cloudinaryRepository;
     private final LocalFileService localFileService;
     private final Cloudinary cloudinary;
-
     private final CloudinaryMapper cloudinaryMapper;
 
     public SimpleCloudinaryService(CloudinaryRepository couldinaryRepository, LocalFileService localFileService, CloudinaryMapper cloudinaryMapper) {
@@ -88,6 +88,24 @@ public class SimpleCloudinaryService implements CloudinaryService {
     }
 
     @Override
+    public void delete(String id) {
+        Assert.notNull(id, "id must be not null required!");
+        if (cloudinaryRepository.existsById(id))
+            cloudinaryRepository.deleteById(id);
+        else
+            throw new NotFoundException("Cloudinary not found");
+    }
+
+    @Override
+    public void delete(CloudinaryEntity entity) {
+        Assert.notNull(entity, "entity must be not null required!");
+        if (cloudinaryRepository.existsById(entity.getId()))
+            cloudinaryRepository.delete(entity);
+        else
+            throw new NotFoundException("Cloudinary not found");
+    }
+
+    @Override
     public List<CloudinaryGetDTO> getMultiGet(List<String> ids) {
         return ids.stream()
                 .map(this::get)
@@ -96,7 +114,13 @@ public class SimpleCloudinaryService implements CloudinaryService {
 
     @Override
     public List<CloudinaryGetDTO> list(CloudinaryCriteria criteria) {
-        return null;
+        return cloudinaryMapper.getListDTO(
+                cloudinaryRepository.findAll(
+                        PageRequest.of(criteria.getPage(),
+                                criteria.getSize(),
+                                criteria.getDirection(),
+                                criteria.getFieldsEnum().getValue()
+                        )).toList());
     }
 
 }

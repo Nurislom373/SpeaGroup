@@ -16,6 +16,6 @@ public interface CloudinaryMapper {
 
     CloudinaryDetailDTO detailDTO(CloudinaryEntity entity);
 
-    List<CloudinaryGetDTO> getListDTI(List<CloudinaryEntity> entities);
+    List<CloudinaryGetDTO> getListDTO(List<CloudinaryEntity> entities);
 
 }

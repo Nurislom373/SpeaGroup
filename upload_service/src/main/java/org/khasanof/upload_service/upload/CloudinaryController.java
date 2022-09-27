@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -32,6 +33,12 @@ public class CloudinaryController {
         return new ResponseEntity<>(new Data<>(service.multiUpload(files)), HttpStatus.OK);
     }
 
+    @RequestMapping(value = "delete/{id}", method = RequestMethod.DELETE)
+    public ResponseEntity<Data<String>> delete(@PathVariable String id) {
+        service.delete(id);
+        return new ResponseEntity<>(new Data<>("Successfully Deleted - Cloudinary"), HttpStatus.NO_CONTENT);
+    }
+
     @RequestMapping(value = "get/{id}", method = RequestMethod.GET)
     public ResponseEntity<Data<CloudinaryGetDTO>> get(@PathVariable String id) {
         return new ResponseEntity<>(new Data<>(service.get(id)), HttpStatus.OK);
@@ -40,6 +47,11 @@ public class CloudinaryController {
     @RequestMapping(value = "detail/{id}", method = RequestMethod.GET)
     public ResponseEntity<Data<CloudinaryDetailDTO>> detail(@PathVariable String id) {
         return new ResponseEntity<>(new Data<>(service.detail(id)), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "list", method = RequestMethod.GET)
+    public ResponseEntity<Data<List<CloudinaryGetDTO>>> list(@Valid CloudinaryCriteria criteria) {
+        return new ResponseEntity<>(new Data<>(service.list(criteria)), HttpStatus.OK);
     }
 
 }

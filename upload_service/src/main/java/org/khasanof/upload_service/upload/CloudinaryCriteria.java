@@ -13,19 +13,19 @@ import java.util.Objects;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CloudinaryCriteria {
-    private Integer size;
-    private Integer page;
+    private int size;
+    private int page;
     private Sort.Direction direction;
 
     private CloudinaryFieldsEnum fieldsEnum;
 
-    public Integer getPage() {
+    public int getPage() {
         if (Objects.isNull(page))
             page = 0;
         return page;
     }
 
-    public Integer getSize() {
+    public int getSize() {
         if (Objects.isNull(size))
             size = 10;
         return size;
