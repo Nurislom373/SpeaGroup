@@ -10,11 +10,13 @@
         <module name="upload_service" />
         <module name="SpeaGroup" />
         <module name="auth_service" />
+        <module name="api_gateway" />
         <module name="Auth-Service" />
         <module name="Auth_Service" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="api_gateway" target="17" />
       <module name="auth_service" target="17" />
       <module name="Auth_Service" target="17" />
       <module name="SpeaGroup" target="17" />
@@ -25,6 +27,7 @@
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="Auth-Service" options="-parameters" />
       <module name="Auth_Service" options="-parameters" />
+      <module name="api_gateway" options="-parameters" />
       <module name="auth_service" options="-parameters" />
       <module name="upload_service" options="-parameters" />
     </option>
