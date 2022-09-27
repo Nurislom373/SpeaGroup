@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.route.RouteLocator;
@@ -27,6 +28,7 @@ import java.util.function.Predicate;
 
 @SpringBootApplication
 @RequiredArgsConstructor
+@EnableDiscoveryClient
 public class ApiGatewayApplication {
 
 	public static void main(String[] args) {
@@ -38,9 +40,9 @@ public class ApiGatewayApplication {
 	@Bean
 	public RouteLocator routeLocator(RouteLocatorBuilder builder) {
 		return builder.routes()
-				.route(p -> p.path("/api/v1/auth/**")
+				.route(p -> p.path("/api/v1/**")
 						.filters(f -> f.filter(authenticationFilter))
-						.uri("http://localhost:8800"))
+						.uri("lb://auth-service"))
 				.build();
 	}
 
@@ -100,8 +102,8 @@ class AuthenticationFilter implements GatewayFilter {
 @Component
 class RouterValidator {
 	public static final List<String> WHITE_LIST = List.of(
-			"/api/auth/login",
-			"/api/auth/register");
+			"/api/v1/auth/login",
+			"/api/v1/auth/register");
 
 	public Predicate<ServerHttpRequest> isSecured =
 			request ->
