@@ -21,6 +21,11 @@ public class BaseUtils {
     public static final String VERSION = "/v1";
     public static final String PATH = API + VERSION;
 
+    public static final List<String> DEFAULT_CATEGORIES = List.of(
+            "6325ee332088c03f152df32f",
+            "6325ee332088c03f152df330",
+            "6325ee332088c03f152df331");
+
     public <T> List<T> jsonParseObject(String resourceUrl, T entity) {
         try {
             ObjectMapper objectMapper = new ObjectMapper();

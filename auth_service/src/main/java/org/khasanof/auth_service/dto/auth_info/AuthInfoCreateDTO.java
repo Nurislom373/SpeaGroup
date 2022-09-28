@@ -27,4 +27,9 @@ public class AuthInfoCreateDTO implements BaseDTO {
     private String bornYearStr;
     private String phoneNumber;
     private List<String> interestsId;
+
+    public AuthInfoCreateDTO(String authid, List<String> interestsId) {
+        this.authid = authid;
+        this.interestsId = interestsId;
+    }
 }

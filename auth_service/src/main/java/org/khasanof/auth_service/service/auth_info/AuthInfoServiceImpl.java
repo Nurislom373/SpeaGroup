@@ -42,7 +42,6 @@ public class AuthInfoServiceImpl extends AbstractService<AuthInfoRepository, Aut
     private final AuthUserRepository userRepository;
     private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
-
     private final MongoTemplate mongoTemplate;
 
     public AuthInfoServiceImpl(AuthInfoRepository repository, AuthInfoMapper mapper, AuthInfoValidator validator, AuthUserRepository userRepository, CategoryRepository categoryRepository, CategoryMapper categoryMapper, MongoTemplate mongoTemplate) {
@@ -66,7 +65,7 @@ public class AuthInfoServiceImpl extends AbstractService<AuthInfoRepository, Aut
         if (list.isEmpty()) throw new NotFoundException("Category not found");
         AuthInfoEntity authInfoEntity = mapper.toCreateDTO(dto);
         authInfoEntity.setUserId(userEntity);
-        authInfoEntity.setBornYear(strParseToDate(dto.getBornYearStr()));
+        authInfoEntity.setBornYear(Objects.isNull(dto.getBornYearStr()) ? null : strParseToDate(dto.getBornYearStr()));
         authInfoEntity.setInterests(list);
         repository.save(authInfoEntity);
     }

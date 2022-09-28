@@ -3,16 +3,23 @@ package org.khasanof.auth_service.service.auth_user;
 import org.khasanof.auth_service.criteria.auth_user.AuthUserBetweenCriteria;
 import org.khasanof.auth_service.criteria.auth_user.AuthUserCriteria;
 import org.khasanof.auth_service.criteria.auth_user.AuthUserSearchCriteria;
+import org.khasanof.auth_service.dto.auth_info.AuthInfoCreateDTO;
 import org.khasanof.auth_service.dto.auth_user.AuthUserCreateDTO;
 import org.khasanof.auth_service.dto.auth_user.AuthUserDetailDTO;
 import org.khasanof.auth_service.dto.auth_user.AuthUserGetDTO;
 import org.khasanof.auth_service.dto.auth_user.AuthUserUpdateDTO;
+import org.khasanof.auth_service.entity.auth_info.AuthInfoEntity;
+import org.khasanof.auth_service.entity.auth_role.AuthRoleEntity;
 import org.khasanof.auth_service.entity.auth_user.AuthUserEntity;
+import org.khasanof.auth_service.enums.auth_role.AuthRoleEnum;
 import org.khasanof.auth_service.enums.auth_user.AuthUserStatusEnum;
 import org.khasanof.auth_service.mapper.auth_user.AuthUserMapper;
 import org.khasanof.auth_service.predicate.auth_user.AuthUserPredicateExecutor;
+import org.khasanof.auth_service.repository.auth_info.AuthInfoRepository;
+import org.khasanof.auth_service.repository.auth_role.AuthRoleRepository;
 import org.khasanof.auth_service.repository.auth_user.AuthUserRepository;
 import org.khasanof.auth_service.service.AbstractService;
+import org.khasanof.auth_service.service.auth_info.AuthInfoService;
 import org.khasanof.auth_service.utils.BaseUtils;
 import org.khasanof.auth_service.validator.auth_user.AuthUserValidator;
 import org.springframework.data.domain.PageRequest;
@@ -30,10 +37,16 @@ public class AuthUserServiceImpl extends AbstractService<
         AuthUserValidator> implements AuthUserService {
 
     private final MongoTemplate mongoTemplate;
+    private final AuthRoleRepository roleRepository;
+    private final AuthInfoRepository authInfoRepository;
+    private final AuthInfoService authInfoService;
 
-    public AuthUserServiceImpl(AuthUserRepository repository, AuthUserMapper mapper, AuthUserValidator validator, MongoTemplate mongoTemplate) {
+    public AuthUserServiceImpl(AuthUserRepository repository, AuthUserMapper mapper, AuthUserValidator validator, MongoTemplate mongoTemplate, AuthRoleRepository roleRepository, AuthInfoRepository authInfoRepository, AuthInfoService authInfoService) {
         super(repository, mapper, validator);
         this.mongoTemplate = mongoTemplate;
+        this.roleRepository = roleRepository;
+        this.authInfoRepository = authInfoRepository;
+        this.authInfoService = authInfoService;
     }
 
     @Override
@@ -42,7 +55,9 @@ public class AuthUserServiceImpl extends AbstractService<
         AuthUserEntity authUserEntity = mapper.toCreateDTO(createDto);
         authUserEntity.setStatus(AuthUserStatusEnum.NO_ACTIVE.getValue());
         authUserEntity.setPassword(BaseUtils.ENCODER.encode(createDto.getPassword()));
-        repository.insert(authUserEntity);
+        AuthUserEntity entity = repository.insert(authUserEntity);
+        roleRepository.insert(new AuthRoleEntity(entity, AuthRoleEnum.USER.getValue()));
+        authInfoService.create(new AuthInfoCreateDTO(entity.getId(), BaseUtils.DEFAULT_CATEGORIES));
     }
 
     @Override
