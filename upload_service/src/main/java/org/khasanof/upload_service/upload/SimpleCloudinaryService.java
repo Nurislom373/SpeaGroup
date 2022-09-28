@@ -8,6 +8,7 @@ import org.khasanof.upload_service.upload.dto.CloudinaryDetailDTO;
 import org.khasanof.upload_service.upload.dto.CloudinaryGetDTO;
 import org.khasanof.upload_service.upload.entity.CloudinaryEntity;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,6 +20,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @Service
+@EnableScheduling
 public class SimpleCloudinaryService implements CloudinaryService {
 
     private final CloudinaryRepository cloudinaryRepository;
@@ -43,8 +45,9 @@ public class SimpleCloudinaryService implements CloudinaryService {
             ObjectMapper objectMapper = new ObjectMapper();
             ObjectNode objectNode = objectMapper.createObjectNode();
 
+            String path = localFileService.writeFile(file);
             var public_id = cloudinary.uploader().upload(
-                    new File(localFileService.writeFile(file)),
+                    new File(path),
                     ObjectUtils.asMap("public_id",
                             file.getOriginalFilename()));
 
@@ -53,7 +56,9 @@ public class SimpleCloudinaryService implements CloudinaryService {
                     objectNode.put(String.valueOf(o), String.valueOf(public_id.get(o.toString())));
             }
 
+            localFileService.addConcurrent(path);
             CloudinaryEntity entity = objectMapper.readValue(objectNode.toString().getBytes(), CloudinaryEntity.class);
+            localFileService.updateConcurrent(path, true);
             return cloudinaryMapper.getDTO(cloudinaryRepository.save(entity));
         } catch (IOException e) {
             throw new RuntimeException(e);

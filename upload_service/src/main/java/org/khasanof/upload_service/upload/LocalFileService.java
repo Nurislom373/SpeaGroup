@@ -1,16 +1,25 @@
 package org.khasanof.upload_service.upload;
 
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 @Service
+@EnableAsync
 public class LocalFileService {
+
+    private ConcurrentHashMap<String, Boolean> concurrentFiles = new ConcurrentHashMap<>();
 
     private final String PATH = "C:\\Nurislom\\Java\\SpeaGroup\\SpeaGroup\\upload_service\\src\\main\\resources\\static\\img\\";
 
@@ -26,6 +35,30 @@ public class LocalFileService {
         }
         return null;
     }
+
+    public void addConcurrent(String asset_id) {
+        concurrentFiles.put(asset_id, false);
+    }
+
+    public void updateConcurrent(String asset_id, Boolean value) {
+        concurrentFiles.put(asset_id, value);
+    }
+
+    @Async
+    @Scheduled(fixedDelay = 60000)
+    public void deleteFiles() {
+        concurrentFiles.keys().asIterator().forEachRemaining((key) -> {
+            if (concurrentFiles.get(key)) {
+                concurrentFiles.remove(key);
+                if (new File(key).delete()) {
+                    System.out.println("File is successfully deleted with - " + Thread.currentThread().getName());
+                } else {
+                    System.out.println("File doesn't exit");
+                }
+            }
+        });
+    }
+
 
 }
 
