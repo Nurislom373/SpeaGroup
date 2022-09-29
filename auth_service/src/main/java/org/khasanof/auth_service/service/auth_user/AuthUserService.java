@@ -19,12 +19,6 @@ public interface AuthUserService extends
         GenericGDLService<AuthUserGetDTO, AuthUserDetailDTO, String, AuthUserCriteria>,
         GenericUtilService<AuthUserGetDTO, AuthUserSearchCriteria, AuthUserBetweenCriteria>, BaseService {
 
-    List<AuthUserGetDTO> getAllBlocked(AuthUserCriteria criteria);
-
-    void block(String id);
-
-    void unblock(String id);
-
     boolean exist(String id);
 
 }

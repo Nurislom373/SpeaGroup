@@ -8,6 +8,4 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface AuthUserRepository extends MongoRepository<AuthUserEntity, String>, BaseRepository {
 
-    AuthUserEntity findByEmailOrUsernameEquals();
-
 }

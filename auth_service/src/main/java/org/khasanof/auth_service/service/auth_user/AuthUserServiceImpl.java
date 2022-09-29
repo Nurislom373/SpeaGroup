@@ -13,6 +13,8 @@ import org.khasanof.auth_service.entity.auth_role.AuthRoleEntity;
 import org.khasanof.auth_service.entity.auth_user.AuthUserEntity;
 import org.khasanof.auth_service.enums.auth_role.AuthRoleEnum;
 import org.khasanof.auth_service.enums.auth_user.AuthUserStatusEnum;
+import org.khasanof.auth_service.enums.language.LanguageEnums;
+import org.khasanof.auth_service.exception.exceptions.AlreadyCreatedException;
 import org.khasanof.auth_service.mapper.auth_user.AuthUserMapper;
 import org.khasanof.auth_service.predicate.auth_user.AuthUserPredicateExecutor;
 import org.khasanof.auth_service.repository.auth_info.AuthInfoRepository;
@@ -25,10 +27,13 @@ import org.khasanof.auth_service.validator.auth_user.AuthUserValidator;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -51,6 +56,27 @@ public class AuthUserServiceImpl extends AbstractService<
     @Override
     public void create(AuthUserCreateDTO createDto) {
         validator.validCreateDTO(createDto);
+        AuthUserEntity userEntity = mongoTemplate.findOne(Query.query(Criteria.where("email").is(createDto.getEmail())
+                .orOperator(Criteria.where("username").is(createDto.getUsername()))), AuthUserEntity.class);
+        if (Objects.nonNull(userEntity)) {
+            short equalsCount = 0;
+            if (createDto.getEmail().equals(userEntity.getEmail())) {
+                equalsCount += 1;
+            }
+            if (createDto.getUsername().equals(userEntity.getUsername())) {
+                equalsCount += 2;
+            }
+            if (equalsCount == 1) {
+                throw new AlreadyCreatedException("This email already used!");
+            } else if (equalsCount == 2) {
+                throw new AlreadyCreatedException("This username already used!");
+            } else if (equalsCount == 3) {
+                throw new AlreadyCreatedException("This email and username already used!");
+            }
+        }
+        if (!LanguageEnums.hasLang(createDto.getLanguage())) {
+            throw new RuntimeException("Invalid Language!");
+        }
         AuthUserEntity authUserEntity = mapper.toCreateDTO(createDto);
         authUserEntity.setStatus(AuthUserStatusEnum.NO_ACTIVE.getValue());
         authUserEntity.setPassword(BaseUtils.ENCODER.encode(createDto.getPassword()));
@@ -107,26 +133,8 @@ public class AuthUserServiceImpl extends AbstractService<
     }
 
     @Override
-    public List<AuthUserGetDTO> getAllBlocked(AuthUserCriteria criteria) {
-        return null;
-    }
-
-    @Override
-    public void block(String id) {
-        AuthUserEntity authUser = repository.findById(id).orElseThrow(() -> {
-            throw new NotFoundException("User was not found by id %s".formatted(id));
-        });
-    }
-
-    @Override
-    public void unblock(String id) {
-        AuthUserEntity authUser = repository.findById(id).orElseThrow(() -> {
-            throw new NotFoundException("User was not found by id %s".formatted(id));
-        });
-    }
-
-    @Override
     public boolean exist(String id) {
+        validator.validKey(id);
         return repository.existsById(id);
     }
 
