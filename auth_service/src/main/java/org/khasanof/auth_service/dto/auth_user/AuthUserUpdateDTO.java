@@ -16,6 +16,4 @@ public class AuthUserUpdateDTO extends GenericDTO {
     private String description;
     private String username;
     private String language;
-    private String imagePath;
-
 }

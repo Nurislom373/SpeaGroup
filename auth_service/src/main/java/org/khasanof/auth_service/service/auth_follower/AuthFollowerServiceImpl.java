@@ -91,7 +91,8 @@ public class AuthFollowerServiceImpl extends AbstractService<AuthFollowerReposit
 
     private AuthFollowerGetDTO getDTO(AuthFollowerEntity entity) {
         List<String> ids = entity.getFollowers()
-                .parallelStream().map(this::getId).toList();
+                .parallelStream()
+                .map(this::getId).toList();
         return new AuthFollowerGetDTO(entity.getUserId().getId(), ids);
     }
 }

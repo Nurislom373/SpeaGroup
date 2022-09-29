@@ -22,6 +22,7 @@ import org.khasanof.auth_service.service.AbstractService;
 import org.khasanof.auth_service.service.auth_info.AuthInfoService;
 import org.khasanof.auth_service.utils.BaseUtils;
 import org.khasanof.auth_service.validator.auth_user.AuthUserValidator;
+import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
@@ -38,14 +39,12 @@ public class AuthUserServiceImpl extends AbstractService<
 
     private final MongoTemplate mongoTemplate;
     private final AuthRoleRepository roleRepository;
-    private final AuthInfoRepository authInfoRepository;
     private final AuthInfoService authInfoService;
 
-    public AuthUserServiceImpl(AuthUserRepository repository, AuthUserMapper mapper, AuthUserValidator validator, MongoTemplate mongoTemplate, AuthRoleRepository roleRepository, AuthInfoRepository authInfoRepository, AuthInfoService authInfoService) {
+    public AuthUserServiceImpl(AuthUserRepository repository, AuthUserMapper mapper, AuthUserValidator validator, MongoTemplate mongoTemplate, AuthRoleRepository roleRepository, AuthInfoService authInfoService) {
         super(repository, mapper, validator);
         this.mongoTemplate = mongoTemplate;
         this.roleRepository = roleRepository;
-        this.authInfoRepository = authInfoRepository;
         this.authInfoService = authInfoService;
     }
 
@@ -63,31 +62,11 @@ public class AuthUserServiceImpl extends AbstractService<
     @Override
     public void update(AuthUserUpdateDTO updateDto) {
         validator.validUpdateDTO(updateDto);
-        AuthUserEntity authUser = repository.findById(updateDto.getId()).orElseThrow(() -> new NotFoundException("User not found"));
-
-        AuthUserEntity authUserUpdateEntity = mapper.toUpdateDTO(updateDto);
-
-        if (updateDto.getFirstName().isBlank()) {
-            authUserUpdateEntity.setFirstName(authUser.getFirstName());
-        }
-        if (updateDto.getLastName().isBlank()) {
-            authUserUpdateEntity.setLastName(authUser.getLastName());
-        }
-        if (updateDto.getDescription().isBlank()) {
-            authUserUpdateEntity.setDescription(authUser.getDescription());
-        }
-        if (updateDto.getEmail().isBlank()) {
-            authUserUpdateEntity.setEmail(authUser.getEmail());
-        }
-        if (updateDto.getUsername().isBlank()) {
-            authUserUpdateEntity.setUsername(authUser.getUsername());
-        }
-        if (updateDto.getLanguage().isBlank()) {
-            authUserUpdateEntity.setLanguage(authUser.getLanguage());
-        }
-        if (updateDto.getImagePath().isBlank()) {
-            authUserUpdateEntity.setImagePath(authUser.getImagePath());
-        }
+        AuthUserEntity authUser = repository
+                .findById(updateDto.getId())
+                .orElseThrow(() -> new NotFoundException("User not found"));
+        BeanUtils.copyProperties(updateDto, authUser, "id");
+        repository.save(authUser);
     }
 
     @Override

@@ -13,7 +13,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 
 @Service
 @EnableAsync
@@ -45,7 +44,7 @@ public class LocalFileService {
     }
 
     @Async
-    @Scheduled(fixedDelay = 60000)
+    @Scheduled(fixedDelay = 30000)
     public void deleteFiles() {
         concurrentFiles.keys().asIterator().forEachRemaining((key) -> {
             if (concurrentFiles.get(key)) {
