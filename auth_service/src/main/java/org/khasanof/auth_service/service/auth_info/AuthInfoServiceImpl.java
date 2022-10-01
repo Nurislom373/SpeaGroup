@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.IntStream;
 import java.util.stream.StreamSupport;
 
 @Service
@@ -62,7 +63,8 @@ public class AuthInfoServiceImpl extends AbstractService<AuthInfoRepository, Aut
                 categoryRepository.findAllById(
                         dto.getInterestsId()).spliterator(), false
         ).toList();
-        if (list.isEmpty()) throw new NotFoundException("Category not found");
+        if (list.isEmpty())
+            throw new NotFoundException("Category not found");
         AuthInfoEntity authInfoEntity = mapper.toCreateDTO(dto);
         authInfoEntity.setUserId(userEntity);
         authInfoEntity.setBornYear(Objects.isNull(dto.getBornYearStr()) ? null : strParseToDate(dto.getBornYearStr()));
@@ -132,9 +134,12 @@ public class AuthInfoServiceImpl extends AbstractService<AuthInfoRepository, Aut
                 )).stream().toList();
         List<AuthInfoGetDTO> list = mapper.fromGetListDTO(all);
         for (int i = 0; i < all.size(); i++) {
-            List<String> strings = repository.findAllById(all.get(i).getId());
-            System.out.println("strings = " + strings);
-            list.get(i).setInterestsId(strings);
+            list.get(i).setInterestsId(
+                    all.get(i).getInterests()
+                            .stream()
+                            .map(this::categoryGetId)
+                            .toList()
+            );
         }
         return list;
     }
@@ -146,18 +151,36 @@ public class AuthInfoServiceImpl extends AbstractService<AuthInfoRepository, Aut
 
     @Override
     public List<AuthInfoGetDTO> listWithSc(AuthInfoSearchCriteria searchCriteria) {
-        return mapper.fromGetListDTO(
-                mongoTemplate.find(
-                        new AuthInfoPredicateExecutor.SearchPredicate(searchCriteria).searchQuery(),
-                        AuthInfoEntity.class));
+        List<AuthInfoEntity> all = mongoTemplate.find(
+                new AuthInfoPredicateExecutor.SearchPredicate(searchCriteria).searchQuery(),
+                AuthInfoEntity.class);
+        List<AuthInfoGetDTO> list = mapper.fromGetListDTO(all);
+        IntStream.range(0, all.size()).forEach(i -> {
+            list.get(i).setInterestsId(
+                    all.get(i).getInterests()
+                            .stream()
+                            .map(this::categoryGetId)
+                            .toList()
+            );
+        });
+        return list;
     }
 
     @Override
     public List<AuthInfoGetDTO> listWithBc(AuthInfoBetweenCriteria betweenCriteria) {
-        return mapper.fromGetListDTO(
-                mongoTemplate.find(
-                        new AuthInfoPredicateExecutor.BetweenPredicate(betweenCriteria).betweenQuery(),
-                        AuthInfoEntity.class));
+        List<AuthInfoEntity> all = mongoTemplate.find(
+                new AuthInfoPredicateExecutor.BetweenPredicate(betweenCriteria).betweenQuery(),
+                AuthInfoEntity.class);
+        List<AuthInfoGetDTO> list = mapper.fromGetListDTO(all);
+        IntStream.range(0, list.size()).forEach(i -> {
+            list.get(i).setInterestsId(
+                    all.get(i).getInterests()
+                            .stream()
+                            .map(this::categoryGetId)
+                            .toList()
+            );
+        });
+        return list;
     }
 
     @Override
@@ -195,15 +218,6 @@ public class AuthInfoServiceImpl extends AbstractService<AuthInfoRepository, Aut
                 });
         info.setLocation(null);
         repository.save(info);
-    }
-
-    private Date strParseToDate(String date) {
-        try {
-            SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
-            return format.parse(date);
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     @Override
@@ -306,5 +320,18 @@ public class AuthInfoServiceImpl extends AbstractService<AuthInfoRepository, Aut
                     throw new NotFoundException("Info not found");
                 }).getInterests()
                 .size();
+    }
+
+    private Date strParseToDate(String date) {
+        try {
+            SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+            return format.parse(date);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private String categoryGetId(CategoryEntity entity) {
+        return entity.getId();
     }
 }
