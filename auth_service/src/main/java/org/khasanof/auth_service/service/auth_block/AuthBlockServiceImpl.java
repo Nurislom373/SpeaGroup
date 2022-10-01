@@ -20,9 +20,11 @@ import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.Temporal;
+import java.time.temporal.TemporalAmount;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class AuthBlockServiceImpl extends AbstractService<AuthBlockRepository, AuthBlockMapper, AuthBlockValidator> implements AuthBlockService {
@@ -77,7 +79,11 @@ public class AuthBlockServiceImpl extends AbstractService<AuthBlockRepository, A
         AuthBlockEntity blockEntity = repository.findById(dto.getId()).orElseThrow(() -> {
             throw new NotFoundException("Auth Block not found");
         });
-        blockEntity.setDuration(BaseUtils.currentTimeAddMinute(dto.getDurationTime()));
+        if (!Instant.now().isAfter(blockEntity.getDuration())) {
+            blockEntity.setDuration(BaseUtils.currentTimeAddMinute(dto.getDurationTime() + minusToNow(blockEntity.getDuration())));
+        } else {
+            blockEntity.setDuration(BaseUtils.currentTimeAddMinute(dto.getDurationTime()));
+        }
         blockEntity.setBlockedFor(
                 blockedForRepository.findById(dto.getBlockedForId()).orElseThrow(() -> {
                     throw new NotFoundException("Blocked For not found");
@@ -130,5 +136,26 @@ public class AuthBlockServiceImpl extends AbstractService<AuthBlockRepository, A
         return list;
     }
 
+    private Integer minusToNow(Instant time) {
+        String now = Instant.now().toString().substring(11, 19);
+        String blockTime = time.toString().substring(11, 19);
+        List<String> nowTimeList = getTokensWithCollection(now, ":", false);
+        List<String> blockTimeList = getTokensWithCollection(blockTime, ":", false);
+        for (int i = 0; i <= 3; i++) {
+            if (Float.parseFloat(nowTimeList.get(i)) == Float.parseFloat(blockTimeList.get(i))) {
+                continue;
+            } else if (Float.parseFloat(nowTimeList.get(i)) < Float.parseFloat(blockTimeList.get(i))) {
+                return Integer.parseInt(blockTimeList.get(i)) - Integer.parseInt(nowTimeList.get(i));
+            }
+            return 0;
+        }
+        return null;
+    }
 
+    public static List<String> getTokensWithCollection(String var, String delim, boolean returnDelim) {
+        return Collections.list(new StringTokenizer(var, delim, returnDelim))
+                .stream()
+                .map(token -> (String) token)
+                .collect(Collectors.toList());
+    }
 }

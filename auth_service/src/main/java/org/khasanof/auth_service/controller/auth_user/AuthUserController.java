@@ -71,22 +71,4 @@ public class AuthUserController extends AbstractController<AuthUserService> {
     }
 
 
-    @RequestMapping(value = "blocked", method = RequestMethod.GET)
-    public ResponseEntity<Data<List<AuthUserGetDTO>>> getAllBlocked(@RequestBody AuthUserCriteria criteria) {
-        return new ResponseEntity<>(new Data<>(service.getAllBlocked(criteria), service.count()), HttpStatus.OK);
-    }
-
-    @RequestMapping(value = "block/{id}", method = RequestMethod.PATCH)
-    public ResponseEntity<Data<String>> block(@Parameter(description = "id of authUser to be blocked", required = true) @PathVariable String id) {
-        service.block(id);
-        return new ResponseEntity<>(new Data<>("Successfully Block - User"), HttpStatus.OK);
-    }
-
-    @RequestMapping(value = "unblock/{id}", method = RequestMethod.PATCH)
-    public ResponseEntity<Data<String>> unblock(@Parameter(description = "id of authUser to be unblocked", required = true) @PathVariable String id) {
-        service.unblock(id);
-        return new ResponseEntity<>(new Data<>("Successfully Unblock - User"), HttpStatus.OK);
-    }
-
-
 }

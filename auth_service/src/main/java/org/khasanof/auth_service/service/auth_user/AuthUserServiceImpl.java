@@ -97,6 +97,7 @@ public class AuthUserServiceImpl extends AbstractService<
 
     @Override
     public void delete(String id) {
+        validator.validKey(id);
         Optional<AuthUserEntity> authUser = repository.findById(id);
         if (authUser.isEmpty()) {
             throw new NotFoundException("User not found");

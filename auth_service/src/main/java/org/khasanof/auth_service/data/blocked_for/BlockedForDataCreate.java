@@ -20,7 +20,7 @@ public class BlockedForDataCreate implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        List<BlockedForEntity> list = List.of(
+        /*List<BlockedForEntity> list = List.of(
                 new BlockedForEntity("LOGIN_TRY_COUNT", "Login try count blocked", 20),
                 new BlockedForEntity("MANY_REQUESTS", "Block for too many requests", 200),
                 new BlockedForEntity("QUERY_REGISTER", "Block query register", 100),
@@ -29,7 +29,7 @@ public class BlockedForDataCreate implements CommandLineRunner {
 
         blockedForRepository.saveAll(list);
 
-        log.info(">>>>>>> " + list.size() + " Blocked For Saved!");
+        log.info(">>>>>>> " + list.size() + " Blocked For Saved!");*/
 
         // need to run once!
     }
