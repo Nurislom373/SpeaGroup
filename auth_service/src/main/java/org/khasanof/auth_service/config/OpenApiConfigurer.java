@@ -1,4 +1,4 @@
-package org.khasanof.auth_service.config.mongoValidator;
+package org.khasanof.auth_service.config;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
