@@ -7,6 +7,7 @@ import lombok.Setter;
 import org.khasanof.post_service.entity.Auditable;
 import org.khasanof.post_service.entity.like.LikeEntity;
 import org.khasanof.post_service.entity.post.PostEntity;
+import org.khasanof.post_service.entity.save.SaveEntity;
 import org.khasanof.post_service.entity.view.ViewEntity;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DocumentReference;
@@ -25,7 +26,10 @@ public class PostRatingEntity extends Auditable {
     private PostEntity postId;
     private LinkedList<LikeEntity> likes;
     private LinkedList<ViewEntity> views;
+    private LinkedList<SaveEntity> saves;
     private Long likeCount;
     private Long viewsCount;
+    private Long savesCount;
     private String ratingType;
+    private String lastUpdateType;
 }

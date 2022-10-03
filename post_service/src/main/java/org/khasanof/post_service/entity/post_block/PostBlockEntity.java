@@ -1,4 +1,4 @@
-package org.khasanof.post_service.entity.post_blocked;
+package org.khasanof.post_service.entity.post_block;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
