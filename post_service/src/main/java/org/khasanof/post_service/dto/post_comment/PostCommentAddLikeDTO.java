@@ -1,4 +1,4 @@
-package org.khasanof.post_service.dto.comment;
+package org.khasanof.post_service.dto.post_comment;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,7 +10,7 @@ import org.khasanof.post_service.dto.GenericDTO;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CommentAddLikeDTO extends GenericDTO {
+public class PostCommentAddLikeDTO extends GenericDTO {
     private String userId;
     private String type;
 }

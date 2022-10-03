@@ -1,4 +1,4 @@
-package org.khasanof.post_service.dto.comment;
+package org.khasanof.post_service.dto.post_comment;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,7 +10,7 @@ import org.khasanof.post_service.dto.BaseDTO;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CommentCreateDTO implements BaseDTO {
+public class PostCommentCreateDTO implements BaseDTO {
     private String userId;
     private String replyId;
     private String message;
