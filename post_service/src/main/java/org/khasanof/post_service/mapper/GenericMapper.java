@@ -1,8 +1,8 @@
 package org.khasanof.post_service.mapper;
 
-import org.khasanof.auth_service.dto.BaseDTO;
-import org.khasanof.auth_service.dto.GenericDTO;
-import org.khasanof.auth_service.entity.BaseEntity;
+import org.khasanof.post_service.dto.BaseDTO;
+import org.khasanof.post_service.dto.GenericDTO;
+import org.khasanof.post_service.entity.BaseEntity;
 
 import java.util.List;
 
