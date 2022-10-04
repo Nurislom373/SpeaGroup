@@ -8,4 +8,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 
 public interface CategoryRepository extends MongoRepository<CategoryEntity, String>, BaseRepository {
+
+    boolean existsByCode(String code);
+
 }
