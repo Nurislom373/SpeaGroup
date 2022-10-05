@@ -12,4 +12,6 @@ import org.khasanof.post_service.service.GenericGDLService;
 public interface CategoryService extends GenericCUDService<CategoryCreateDTO, CategoryUpdateDTO, String>,
         GenericGDLService<CategoryGetDTO, CategoryDetailDTO, String, CategoryCriteria>,
         BaseService {
+
+    long count();
 }

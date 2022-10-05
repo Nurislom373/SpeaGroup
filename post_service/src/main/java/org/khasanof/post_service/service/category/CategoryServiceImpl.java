@@ -11,6 +11,7 @@ import org.khasanof.post_service.repository.category.CategoryRepository;
 import org.khasanof.post_service.service.AbstractService;
 import org.khasanof.post_service.validator.category.CategoryValidator;
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
 
@@ -26,20 +27,22 @@ public class CategoryServiceImpl extends AbstractService<CategoryRepository, Cat
     @Override
     public void create(CategoryCreateDTO dto) {
         validator.validCreateDTO(dto);
-        if (repository.existsByCode(dto.getCode())) {
-            throw new RuntimeException("Code is already created");
-        }
+        if (repository.existsByCode(dto.getCode()))
+            throw new RuntimeException("Already Created Code!");
         repository.save(mapper.toCreateDTO(dto));
     }
 
     @Override
     public void update(CategoryUpdateDTO dto) {
         validator.validUpdateDTO(dto);
-        CategoryEntity entity = repository.findById(dto.getId()).orElseThrow(() -> {
-            throw new NotFoundException("Category not found");
-        });
-        BeanUtils.copyProperties(dto, entity, "id");
-        repository.save(entity);
+        if (repository.existsByCode(dto.getCode()))
+            throw new RuntimeException("Already Created Code!");
+        CategoryEntity category = repository.findById(dto.getId())
+                .orElseThrow(() -> {
+                    throw new NotFoundException("Category not found");
+                });
+        BeanUtils.copyProperties(dto, category);
+        repository.save(category);
     }
 
     @Override
@@ -54,16 +57,38 @@ public class CategoryServiceImpl extends AbstractService<CategoryRepository, Cat
 
     @Override
     public CategoryGetDTO get(String id) {
-        return null;
+        validator.validKey(id);
+        return mapper.fromGetDTO(
+                repository.findById(id).orElseThrow(() -> {
+                    throw new NotFoundException("Category not found");
+                }));
     }
 
     @Override
     public CategoryDetailDTO detail(String id) {
-        return null;
+        validator.validKey(id);
+        return mapper.fromDetailDTO(
+                repository.findById(id).orElseThrow(() -> {
+                    throw new NotFoundException("Category not found");
+                }));
     }
 
     @Override
     public List<CategoryGetDTO> list(CategoryCriteria criteria) {
-        return null;
+        return mapper.fromGetListDTO(
+                repository.findAll(
+                        PageRequest.of(
+                                criteria.getPage(),
+                                criteria.getSize(),
+                                criteria.getDirection(),
+                                criteria.getFieldsEnum().getValue()
+                        )
+                ).toList()
+        );
+    }
+
+    @Override
+    public long count() {
+        return repository.count();
     }
 }
