@@ -11,6 +11,7 @@ import org.khasanof.post_service.dto.BaseDTO;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PostCommentCreateDTO implements BaseDTO {
+    private String commentPostId;
     private String userId;
     private String replyId;
     private String message;

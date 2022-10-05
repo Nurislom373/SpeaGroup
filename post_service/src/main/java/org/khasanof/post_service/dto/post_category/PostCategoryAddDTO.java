@@ -9,6 +9,6 @@ import org.khasanof.post_service.dto.BaseDTO;
 @NoArgsConstructor
 @ToString
 public class PostCategoryAddDTO implements BaseDTO {
-    private String postId;
+    private String categoryPostId;
     private String categoryId;
 }

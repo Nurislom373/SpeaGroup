@@ -9,7 +9,7 @@ import org.khasanof.post_service.dto.GenericDTO;
 @NoArgsConstructor
 @ToString
 public class PostCommentGetDTO extends GenericDTO {
-    private String postId;
+    private String commentPostId;
     private Integer commentsCount;
     private String lastUpdateType;
 }

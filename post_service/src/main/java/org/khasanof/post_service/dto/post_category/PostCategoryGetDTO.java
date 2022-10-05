@@ -13,6 +13,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PostCategoryGetDTO extends GenericDTO {
-    private String postId;
+    private String categoryPostId;
     private List<String> categoryId;
 }

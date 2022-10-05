@@ -11,6 +11,6 @@ import java.util.List;
 @NoArgsConstructor
 @ToString
 public class PostCategoryAddAllDTO implements BaseDTO {
-    private String postId;
+    private String categoryPostId;
     private List<String> categoryIds;
 }

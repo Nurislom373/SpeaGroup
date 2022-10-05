@@ -17,7 +17,7 @@ public enum PostVisibilityEnum {
     public static boolean hasVisibility(String var) {
         return Arrays.stream(values())
                 .anyMatch(
-                        obj -> obj.value.equals(var)
+                        obj -> obj.value.equalsIgnoreCase(var)
                 );
     }
 }
