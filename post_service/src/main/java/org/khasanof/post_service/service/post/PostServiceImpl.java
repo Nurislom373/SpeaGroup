@@ -111,6 +111,12 @@ public class PostServiceImpl extends AbstractService<PostRepository, PostMapper,
                 .toList();
     }
 
+    @Override
+    public boolean existById(String postId) {
+        validator.validKey(postId);
+        return repository.existsById(postId);
+    }
+
     private PostGetDTO entityParseDTO(PostEntity entity) {
         PostGetDTO dto = mapper.fromGetDTO(entity);
         dto.setPostUserId(entity.getUserId().getId());

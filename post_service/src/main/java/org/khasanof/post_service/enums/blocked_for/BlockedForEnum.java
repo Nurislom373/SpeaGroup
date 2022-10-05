@@ -16,7 +16,7 @@ public enum BlockedForEnum {
     public static boolean hasBlockedFor(String var) {
         return Arrays.stream(values())
                 .anyMatch(
-                        obj -> obj.value.equals(var)
+                        obj -> obj.value.equalsIgnoreCase(var)
                 );
     }
 }
