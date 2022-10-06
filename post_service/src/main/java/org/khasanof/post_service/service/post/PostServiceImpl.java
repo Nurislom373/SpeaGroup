@@ -39,7 +39,7 @@ public class PostServiceImpl extends AbstractService<PostRepository, PostMapper,
     @Override
     public void create(PostCreateDTO dto) {
         validator.validCreateDTO(dto);
-        if (PostVisibilityEnum.hasVisibility(dto.getVisibility()))
+        if (!PostVisibilityEnum.hasVisibility(dto.getVisibility()))
             throw new RuntimeException("Visibility Invalid!");
         PostEntity postEntity = mapper.toCreateDTO(dto);
         AuthUserEntity userEntity = new AuthUserEntity();
@@ -55,7 +55,7 @@ public class PostServiceImpl extends AbstractService<PostRepository, PostMapper,
                 .orElseThrow(() -> {
                     throw new NotFoundException("Post not found");
                 });
-        if (PostVisibilityEnum.hasVisibility(dto.getVisibility()))
+        if (!PostVisibilityEnum.hasVisibility(dto.getVisibility()))
             throw new RuntimeException("Visibility Invalid!");
         BeanUtils.copyProperties(dto, post, "id");
         repository.save(post);

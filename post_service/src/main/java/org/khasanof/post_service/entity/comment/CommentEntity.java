@@ -2,7 +2,10 @@ package org.khasanof.post_service.entity.comment;
 
 import lombok.*;
 import org.khasanof.post_service.entity.like.LikeEntity;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Field;
+import org.springframework.data.mongodb.core.mapping.FieldType;
+import org.springframework.data.mongodb.core.mapping.MongoId;
 
 import java.time.Instant;
 import java.util.LinkedList;
@@ -28,4 +31,11 @@ public class CommentEntity {
     private LinkedList<LikeEntity> likes;
     private Long likesCount;
     private Instant updateTime;
+
+    public CommentEntity(String id, String userId, String replyId, String message) {
+        this.id = id;
+        this.userId = userId;
+        this.replyId = replyId;
+        this.message = message;
+    }
 }

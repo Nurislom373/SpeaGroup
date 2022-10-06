@@ -20,7 +20,6 @@ public class PostCommentEntity extends Auditable {
     @DocumentReference
     @Field(name = "post_id")
     private PostEntity postId;
-    @DocumentReference
     private LinkedList<CommentEntity> comments;
     private String lastUpdateType;
 }
