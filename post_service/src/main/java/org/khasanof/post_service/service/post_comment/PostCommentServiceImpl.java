@@ -16,6 +16,7 @@ import org.khasanof.post_service.service.AbstractService;
 import org.khasanof.post_service.utils.BaseUtils;
 import org.khasanof.post_service.validator.post_comment.PostCommentValidator;
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
 
@@ -129,17 +130,40 @@ public class PostCommentServiceImpl extends AbstractService<PostCommentRepositor
 
     @Override
     public PostCommentGetDTO get(String id) {
-        return null;
+        validator.validKey(id);
+        return returnGetDTO(
+                repository.findById(id)
+                        .orElseThrow(() -> {
+                            throw new NotFoundException("Post Comment not found");
+                        }));
     }
 
     @Override
     public PostCommentDetailDTO detail(String id) {
-        return null;
+        validator.validKey(id);
+        return mapper.fromDetailDTO(
+                repository.findById(id)
+                        .orElseThrow(() -> {
+                            throw new NotFoundException("Post Comment not found");
+                        })
+        );
     }
 
     @Override
     public List<PostCommentGetDTO> list(PostCommentCriteria criteria) {
-        return null;
+        return repository.findAll(
+                PageRequest.of(
+                        criteria.getPage(), criteria.getSize()
+                )).stream()
+                .map(this::returnGetDTO)
+                .toList();
+    }
+
+    private PostCommentGetDTO returnGetDTO(PostCommentEntity entity) {
+        PostCommentGetDTO postCommentGetDTO = mapper.fromGetDTO(entity);
+        postCommentGetDTO.setCommentPostId(entity.getId());
+        postCommentGetDTO.setCommentsCount(entity.getComments().size());
+        return postCommentGetDTO;
     }
 
     private AuthUserGetDTO getAuthDTO(String id) {
