@@ -11,7 +11,6 @@ import org.khasanof.post_service.dto.GenericDTO;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PostCommentRemoveLikeDTO extends GenericDTO {
-    private String postId;
     private String commentId;
-    private String likeId;
+    private String userId;
 }

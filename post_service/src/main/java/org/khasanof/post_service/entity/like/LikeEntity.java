@@ -14,11 +14,16 @@ import java.time.Instant;
 @AllArgsConstructor
 @NoArgsConstructor
 public class LikeEntity {
-    private String id;
     @Field(name = "user_id")
     private String userId;
     private String type;
     @CreatedDate
     @Field(name = "created_at")
     private Instant createdAt;
+
+    public LikeEntity(String userId, String type) {
+        this.userId = userId;
+        this.type = type;
+        this.createdAt = Instant.now();
+    }
 }

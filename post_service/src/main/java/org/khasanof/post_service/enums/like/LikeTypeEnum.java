@@ -15,7 +15,7 @@ public enum LikeTypeEnum {
     public static boolean hasLikeType(String var) {
         return Arrays.stream(values())
                 .anyMatch(
-                        obj -> obj.value.equals(var)
+                        obj -> obj.value.equalsIgnoreCase(var)
                 );
     }
 }

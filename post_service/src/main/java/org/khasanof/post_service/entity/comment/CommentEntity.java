@@ -14,6 +14,7 @@ import java.util.LinkedList;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 @Builder
 public class CommentEntity {
     private String id;

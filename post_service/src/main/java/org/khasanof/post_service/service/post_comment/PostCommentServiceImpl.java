@@ -5,8 +5,10 @@ import org.khasanof.post_service.dto.auth_user.AuthUserGetDTO;
 import org.khasanof.post_service.dto.post_comment.*;
 import org.khasanof.post_service.entity.auth_user.AuthUserEntity;
 import org.khasanof.post_service.entity.comment.CommentEntity;
+import org.khasanof.post_service.entity.like.LikeEntity;
 import org.khasanof.post_service.entity.post_comment.PostCommentEntity;
 import org.khasanof.post_service.enums.comment.CommentLastUpdateType;
+import org.khasanof.post_service.enums.like.LikeTypeEnum;
 import org.khasanof.post_service.mapper.post_comment.PostCommentMapper;
 import org.khasanof.post_service.repository.post.PostRepository;
 import org.khasanof.post_service.repository.post_comment.PostCommentRepository;
@@ -60,23 +62,69 @@ public class PostCommentServiceImpl extends AbstractService<PostCommentRepositor
     }
 
     @Override
-    public void delete(String postId, String commentId) {
+    public void delete(String id) {
+        validator.validKey(id);
+        if (!repository.existsById(id)) {
+            throw new NotFoundException("Post Comment not found");
+        }
+        repository.deleteById(id);
+    }
+
+    @Override
+    public void deleteComment(String postId, String commentId) {
         validator.validKey(postId);
         validator.validKey(commentId);
         PostCommentEntity commentEntity = repository.findById(postId).orElseThrow(() -> {
             throw new NotFoundException("Post Comment not found");
         });
         LinkedList<CommentEntity> comments = commentEntity.getComments();
+        if (!comments.removeIf(f -> f.getId().equals(commentId)))
+            throw new NotFoundException("Comment not found");
+        commentEntity.setComments(comments);
+        repository.save(commentEntity);
     }
 
     @Override
     public void addCommentToLike(PostCommentAddLikeDTO dto) {
-
+        validator.validUpdateDTO(dto);
+        PostCommentEntity commentEntity = repository.findById(dto.getId()).orElseThrow(() -> {
+            throw new NotFoundException("Post Comment Not found");
+        });
+        LinkedList<CommentEntity> comments = commentEntity.getComments();
+        CommentEntity comment = comments.stream().filter(f -> f.getId().equals(dto.getCommentId())).findFirst().orElseThrow(() -> {
+            throw new NotFoundException("Comment not found");
+        });
+        if (!LikeTypeEnum.hasLikeType(dto.getType())) {
+            throw new RuntimeException("Like type is Invalid");
+        }
+        comments.remove(comment);
+        LinkedList<LikeEntity> likes = comment.getLikes();
+        likes.add(new LikeEntity(dto.getUserId(), dto.getType()));
+        comment.setLikes(likes);
+        commentEntity.setComments(comments);
+        commentEntity.setLastUpdateType(CommentLastUpdateType.ADD_LIKE.getValue());
+        repository.save(commentEntity);
     }
 
     @Override
     public void deleteCommentToLike(PostCommentRemoveLikeDTO dto) {
-
+        validator.validCommentRemoveDTO(dto);
+        PostCommentEntity commentEntity = repository.findById(dto.getId()).orElseThrow(() -> {
+            throw new NotFoundException("Post Comment Not found");
+        });
+        LinkedList<CommentEntity> comments = commentEntity.getComments();
+        CommentEntity comment = comments.stream().filter(f -> f.getId().equals(dto.getCommentId())).findFirst().orElseThrow(() -> {
+            throw new NotFoundException("Comment not found");
+        });
+        comments.remove(comment);
+        LinkedList<LikeEntity> likes = comment.getLikes();
+        if (!likes.removeIf(l -> l.getUserId().equals(dto.getUserId()))) {
+            throw new NotFoundException("UserId not found");
+        }
+        comment.setLikes(likes);
+        commentEntity.setComments(comments);
+        commentEntity.setLastUpdateType(CommentLastUpdateType.REMOVE_LIKE.getValue());
+        repository.save(commentEntity);
     }
 
     @Override

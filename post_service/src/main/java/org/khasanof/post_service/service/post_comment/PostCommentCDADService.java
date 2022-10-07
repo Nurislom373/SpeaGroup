@@ -8,7 +8,9 @@ public interface PostCommentCDADService {
 
     void create(PostCommentCreateDTO dto);
 
-    void delete(String postId, String commentId);
+    void delete(String id);
+
+    void deleteComment(String postId, String commentId);
 
     void addCommentToLike(PostCommentAddLikeDTO dto);
 
