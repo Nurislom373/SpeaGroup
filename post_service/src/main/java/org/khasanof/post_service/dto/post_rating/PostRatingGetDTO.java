@@ -12,5 +12,6 @@ public class PostRatingGetDTO extends GenericDTO {
     private String ratingPostId;
     private Long likeCount;
     private Long viewsCount;
+    private Long savedCount;
     private String ratingType;
 }

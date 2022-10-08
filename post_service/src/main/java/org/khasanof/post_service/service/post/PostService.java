@@ -19,4 +19,6 @@ public interface PostService extends GenericCUDService<PostCreateDTO, PostUpdate
 
     boolean existById(String postId);
 
+    boolean existByIdAndCheckBlocked(String postId);
+
 }

@@ -34,7 +34,7 @@ public class PostLikeServiceImpl extends AbstractService<PostLikeRepository, Pos
     @Override
     public void create(PostLikeCreateDTO dto) {
         validator.validCreateDTO(dto);
-        if (!postService.existById(dto.getLikePostId())) {
+        if (!postService.existByIdAndCheckBlocked(dto.getLikePostId())) {
             throw new NotFoundException("Post not found");
         }
         PostLikeEntity likeEntity = repository.findByQuery(dto.getLikePostId());

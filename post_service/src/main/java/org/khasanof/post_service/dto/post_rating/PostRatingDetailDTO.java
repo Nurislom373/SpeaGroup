@@ -16,8 +16,7 @@ import java.util.LinkedList;
 @ToString
 public class PostRatingDetailDTO extends GenericDTO {
     private PostEntity post;
-    private LinkedList<LikeEntity> likes;
-    private LinkedList<ViewEntity> views;
+    private Long savedCount;
     private Long likeCount;
     private Long viewsCount;
     private String ratingType;

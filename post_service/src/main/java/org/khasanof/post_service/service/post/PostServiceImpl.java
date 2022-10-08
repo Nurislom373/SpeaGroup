@@ -14,11 +14,13 @@ import org.khasanof.post_service.dto.post.PostGetDTO;
 import org.khasanof.post_service.dto.post.PostUpdateDTO;
 import org.khasanof.post_service.entity.auth_user.AuthUserEntity;
 import org.khasanof.post_service.entity.post.PostEntity;
+import org.khasanof.post_service.enums.post.PostStatusEnum;
 import org.khasanof.post_service.enums.post.PostVisibilityEnum;
 import org.khasanof.post_service.mapper.post.PostMapper;
 import org.khasanof.post_service.repository.post.PostRepository;
 import org.khasanof.post_service.response.Data;
 import org.khasanof.post_service.service.AbstractService;
+import org.khasanof.post_service.service.post_block.PostBlockService;
 import org.khasanof.post_service.utils.BaseUtils;
 import org.khasanof.post_service.validator.post.PostValidator;
 import org.springframework.beans.BeanUtils;
@@ -115,6 +117,16 @@ public class PostServiceImpl extends AbstractService<PostRepository, PostMapper,
     public boolean existById(String postId) {
         validator.validKey(postId);
         return repository.existsById(postId);
+    }
+
+    @Override
+    public boolean existByIdAndCheckBlocked(String postId) {
+        return PostStatusEnum.BLOCKED.getValue().equals(
+                repository.findById(postId)
+                        .orElseThrow(() -> {
+                            throw new NotFoundException("Post not found");
+                        })
+                        .getStatus());
     }
 
     private PostGetDTO entityParseDTO(PostEntity entity) {
