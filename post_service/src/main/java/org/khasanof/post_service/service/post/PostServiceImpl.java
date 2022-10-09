@@ -20,7 +20,6 @@ import org.khasanof.post_service.mapper.post.PostMapper;
 import org.khasanof.post_service.repository.post.PostRepository;
 import org.khasanof.post_service.response.Data;
 import org.khasanof.post_service.service.AbstractService;
-import org.khasanof.post_service.service.post_block.PostBlockService;
 import org.khasanof.post_service.utils.BaseUtils;
 import org.khasanof.post_service.validator.post.PostValidator;
 import org.springframework.beans.BeanUtils;
@@ -149,4 +148,6 @@ public class PostServiceImpl extends AbstractService<PostRepository, PostMapper,
             throw new RuntimeException(e);
         }
     }
+
+    // TODO post lani ob keladigan api kere obuna bogan bunachilari boyicha bolmasa top reyitingdagi postlar
 }

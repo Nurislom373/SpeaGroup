@@ -6,10 +6,13 @@ import java.time.Instant;
 
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
 @ToString
 public class SaveEntity {
     private String userId;
     private Instant createdAt;
+
+    public SaveEntity(String userId) {
+        this.userId = userId;
+        this.createdAt = Instant.now();
+    }
 }
