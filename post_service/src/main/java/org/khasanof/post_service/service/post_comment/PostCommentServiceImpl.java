@@ -13,35 +13,40 @@ import org.khasanof.post_service.mapper.post_comment.PostCommentMapper;
 import org.khasanof.post_service.repository.post.PostRepository;
 import org.khasanof.post_service.repository.post_comment.PostCommentRepository;
 import org.khasanof.post_service.service.AbstractService;
+import org.khasanof.post_service.service.post.PostService;
 import org.khasanof.post_service.utils.BaseUtils;
 import org.khasanof.post_service.validator.post_comment.PostCommentValidator;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 import org.webjars.NotFoundException;
 
 import java.time.Instant;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.IntStream;
 
 @Service
 public class PostCommentServiceImpl extends AbstractService<PostCommentRepository, PostCommentMapper, PostCommentValidator> implements PostCommentService {
     private final PostRepository postRepository;
+    private final PostService postService;
 
-    public PostCommentServiceImpl(PostCommentRepository repository, PostCommentMapper mapper, PostCommentValidator validator, PostRepository postRepository) {
+    public PostCommentServiceImpl(PostCommentRepository repository, PostCommentMapper mapper, PostCommentValidator validator, PostRepository postRepository, PostService postService) {
         super(repository, mapper, validator);
         this.postRepository = postRepository;
+        this.postService = postService;
     }
 
     @Override
     public void create(PostCommentCreateDTO dto) {
         validator.validCreateDTO(dto);
-        if (!postRepository.existsById(dto.getCommentPostId())) {
-            throw new NotFoundException("Post not found");
-        }
-        PostCommentEntity postComment = repository.findByQuery(dto.getCommentPostId());
-        if (Objects.isNull(postComment)) {
+        Optional<PostCommentEntity> optional = repository.findByPostIdQuery(dto.getCommentPostId());
+        if (optional.isEmpty()) {
+            if (postService.existByIdAndCheckBlocked(dto.getCommentPostId())) {
+                throw new RuntimeException("Post is Blocked");
+            }
             AuthUserEntity user = new AuthUserEntity();
             BeanUtils.copyProperties(getAuthDTO(dto.getUserId()), user);
             PostCommentEntity postCommentEntity = mapper.toCreateDTO(dto);
@@ -50,6 +55,7 @@ public class PostCommentServiceImpl extends AbstractService<PostCommentRepositor
             postCommentEntity.getComments().add(new CommentEntity(String.valueOf(System.currentTimeMillis()), user.getId(), dto.getReplyId(), dto.getMessage()));
             repository.insert(postCommentEntity);
         } else {
+            PostCommentEntity postComment = optional.get();
             AuthUserEntity user = new AuthUserEntity();
             BeanUtils.copyProperties(getAuthDTO(dto.getUserId()), user);
             LinkedList<CommentEntity> comments = postComment.getComments();
@@ -129,6 +135,17 @@ public class PostCommentServiceImpl extends AbstractService<PostCommentRepositor
     }
 
     @Override
+    public PostCommentGetDTO getByPostId(String id) {
+        validator.validKey(id);
+        return returnGetDTO(
+                repository.findByPostIdQuery(id)
+                        .orElseThrow(() -> {
+                            throw new NotFoundException("Post Comment not found");
+                        })
+        );
+    }
+
+    @Override
     public PostCommentGetDTO get(String id) {
         validator.validKey(id);
         return returnGetDTO(
@@ -150,11 +167,30 @@ public class PostCommentServiceImpl extends AbstractService<PostCommentRepositor
     }
 
     @Override
+    public PostCommentDetailDTO detailCommentsCount(String id, Integer count) {
+        validator.validKey(id);
+        Assert.notNull(count, "count must be not null!");
+        PostCommentEntity comment = repository.findByPostIdQuery(id).orElseThrow(() -> {
+            throw new NotFoundException("Post Comment not found");
+        });
+        LinkedList<CommentEntity> comments = comment.getComments();
+        if (comments.size() >= 20) {
+            LinkedList<CommentEntity> countComments = new LinkedList<>();
+            IntStream.range(0, 10).forEach(i -> {
+                countComments.add(comments.get(i));
+            });
+            return new PostCommentDetailDTO(countComments, countComments.size());
+        } else {
+            return new PostCommentDetailDTO(comments, comments.size());
+        }
+    }
+
+    @Override
     public List<PostCommentGetDTO> list(PostCommentCriteria criteria) {
         return repository.findAll(
-                PageRequest.of(
-                        criteria.getPage(), criteria.getSize()
-                )).stream()
+                        PageRequest.of(
+                                criteria.getPage(), criteria.getSize()
+                        )).stream()
                 .map(this::returnGetDTO)
                 .toList();
     }

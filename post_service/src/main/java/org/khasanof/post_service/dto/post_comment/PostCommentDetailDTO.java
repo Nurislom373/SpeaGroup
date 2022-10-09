@@ -22,4 +22,9 @@ public class PostCommentDetailDTO extends GenericDTO {
     private Instant createdAt;
     private String createdBy;
     private boolean isDeleted;
+
+    public PostCommentDetailDTO(LinkedList<CommentEntity> comments, Integer commentsCount) {
+        this.comments = comments;
+        this.commentsCount = commentsCount;
+    }
 }

@@ -1,8 +1,6 @@
 package org.khasanof.post_service.service.post_comment;
 
-import org.khasanof.post_service.dto.post_comment.PostCommentAddLikeDTO;
-import org.khasanof.post_service.dto.post_comment.PostCommentCreateDTO;
-import org.khasanof.post_service.dto.post_comment.PostCommentRemoveLikeDTO;
+import org.khasanof.post_service.dto.post_comment.*;
 
 public interface PostCommentCDADService {
 
@@ -16,4 +14,7 @@ public interface PostCommentCDADService {
 
     void deleteCommentToLike(PostCommentRemoveLikeDTO dto);
 
+    PostCommentGetDTO getByPostId(String id);
+
+    PostCommentDetailDTO detailCommentsCount(String id, Integer count);
 }

@@ -2,10 +2,7 @@ package org.khasanof.post_service.controller.post;
 
 import org.khasanof.post_service.controller.AbstractController;
 import org.khasanof.post_service.criteria.post.PostCriteria;
-import org.khasanof.post_service.dto.post.PostCreateDTO;
-import org.khasanof.post_service.dto.post.PostDetailDTO;
-import org.khasanof.post_service.dto.post.PostGetDTO;
-import org.khasanof.post_service.dto.post.PostUpdateDTO;
+import org.khasanof.post_service.dto.post.*;
 import org.khasanof.post_service.response.Data;
 import org.khasanof.post_service.service.post.PostService;
 import org.khasanof.post_service.utils.BaseUtils;
@@ -51,6 +48,11 @@ public class PostController extends AbstractController<PostService> {
         return new ResponseEntity<>(new Data<>(service.detail(id)), HttpStatus.OK);
     }
 
+    @RequestMapping(value = "detailAndComments/postId={id}&count={count}")
+    public ResponseEntity<Data<PostDetWComDTO>> detailAndComment(@PathVariable String id, @PathVariable Integer count) {
+        return new ResponseEntity<>(new Data<>(service.getByPostIdDetailAndComments(id, count)), HttpStatus.OK);
+    }
+
     @RequestMapping(value = "list", method = RequestMethod.GET)
     public ResponseEntity<Data<List<PostGetDTO>>> list(@Valid PostCriteria criteria) {
         return new ResponseEntity<>(new Data<>(service.list(criteria)), HttpStatus.OK);
@@ -61,5 +63,6 @@ public class PostController extends AbstractController<PostService> {
         return new ResponseEntity<>(new Data<>(service.getAllWithCreatedBy(id)), HttpStatus.OK);
     }
 
+//    TODO write random post when following or top posts api
 
 }

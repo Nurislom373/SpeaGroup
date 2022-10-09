@@ -13,4 +13,6 @@ public interface PostViewService extends GenericGDLService<PostViewGetDTO, PostV
 
     void delete(String id);
 
+    PostViewGetDTO getByPostId(String id);
+
 }

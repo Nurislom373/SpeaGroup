@@ -90,6 +90,17 @@ public class PostSaveServiceImpl extends AbstractService<PostSaveRepository, Pos
     }
 
     @Override
+    public PostSaveGetDTO getByPostId(String id) {
+        validator.validKey(id);
+        return returnToGetDTO(
+                repository.findByPostIdQuery(id)
+                        .orElseThrow(() -> {
+                            throw new NotFoundException("Post Save not found");
+                        })
+        );
+    }
+
+    @Override
     public PostSaveGetDTO get(String id) {
         validator.validKey(id);
         return returnToGetDTO(

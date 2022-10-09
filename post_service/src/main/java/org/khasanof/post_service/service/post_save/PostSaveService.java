@@ -16,4 +16,6 @@ public interface PostSaveService extends GenericGDLService<PostSaveGetDTO, PostS
 
     void delete(String id);
 
+    PostSaveGetDTO getByPostId(String id);
+
 }

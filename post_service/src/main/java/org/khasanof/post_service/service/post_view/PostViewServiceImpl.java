@@ -70,6 +70,17 @@ public class PostViewServiceImpl extends AbstractService<PostViewRepository, Pos
     }
 
     @Override
+    public PostViewGetDTO getByPostId(String id) {
+        validator.validKey(id);
+        return returnToGetDTO(
+                repository.findByPostIdQuery(id)
+                        .orElseThrow(() -> {
+                            throw new NotFoundException("Post View not found");
+                        })
+        );
+    }
+
+    @Override
     public PostViewGetDTO get(String id) {
         validator.validKey(id);
         return returnToGetDTO(

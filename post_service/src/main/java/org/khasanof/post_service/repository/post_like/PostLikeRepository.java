@@ -6,10 +6,12 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface PostLikeRepository extends MongoRepository<PostLikeEntity, String>, BaseRepository {
 
     @Query("db.post_like.find({ 'post_id' : ?0 })")
-    PostLikeEntity findByQuery(String id);
+    Optional<PostLikeEntity> findByPostIdQuery(String id);
 
 }

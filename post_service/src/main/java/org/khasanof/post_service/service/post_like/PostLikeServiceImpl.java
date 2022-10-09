@@ -19,7 +19,7 @@ import org.webjars.NotFoundException;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
+import java.util.Optional;
 
 @Service
 public class PostLikeServiceImpl extends AbstractService<PostLikeRepository, PostLikeMapper, PostLikeValidator> implements PostLikeService {
@@ -34,20 +34,21 @@ public class PostLikeServiceImpl extends AbstractService<PostLikeRepository, Pos
     @Override
     public void create(PostLikeCreateDTO dto) {
         validator.validCreateDTO(dto);
-        if (!postService.existByIdAndCheckBlocked(dto.getLikePostId())) {
-            throw new NotFoundException("Post not found");
-        }
-        PostLikeEntity likeEntity = repository.findByQuery(dto.getLikePostId());
+        Optional<PostLikeEntity> optional = repository.findByPostIdQuery(dto.getLikePostId());
         if (!LikeTypeEnum.hasLikeType(dto.getType())) {
             throw new NotFoundException("Like type Invalid");
         }
-        if (Objects.isNull(likeEntity)) {
+        if (optional.isEmpty()) {
+            if (!postService.existByIdAndCheckBlocked(dto.getLikePostId())) {
+                throw new NotFoundException("Post not found");
+            }
             PostLikeEntity postLikeEntity = mapper.toCreateDTO(dto);
             LinkedList<LikeEntity> likes = postLikeEntity.getLikes();
             likes.add(new LikeEntity(dto.getUserId(), dto.getType()));
             postLikeEntity.setLikes(likes);
             repository.save(postLikeEntity);
         } else {
+            PostLikeEntity likeEntity = optional.get();
             LinkedList<LikeEntity> likes = likeEntity.getLikes();
             likes.add(new LikeEntity(dto.getUserId(), dto.getType()));
             likeEntity.setLikes(likes);
@@ -70,10 +71,11 @@ public class PostLikeServiceImpl extends AbstractService<PostLikeRepository, Pos
         if (!postService.existById(dto.getLikePostId())) {
             throw new NotFoundException("Post not found");
         }
-        PostLikeEntity likeEntity = repository.findByQuery(dto.getLikePostId());
-        if (Objects.isNull(likeEntity)) {
+        Optional<PostLikeEntity> optional = repository.findByPostIdQuery(dto.getLikePostId());
+        if (optional.isEmpty()) {
             throw new NotFoundException("Post Like not found");
         }
+        PostLikeEntity likeEntity = optional.get();
         LinkedList<LikeEntity> likes = likeEntity.getLikes();
         if (!likes.removeIf(l -> l.getUserId().equals(dto.getUserId()))) {
             throw new NotFoundException("Like not found with UserId -> " + dto.getUserId());
@@ -85,7 +87,7 @@ public class PostLikeServiceImpl extends AbstractService<PostLikeRepository, Pos
     @Override
     public PostLikeGetDTO get(String id) {
         validator.validKey(id);
-        return entityToGetDTO(
+        return returnToGetDTO(
                 repository.findById(id)
                         .orElseThrow(() -> {
                             throw new NotFoundException("Post Like not found");
@@ -110,19 +112,32 @@ public class PostLikeServiceImpl extends AbstractService<PostLikeRepository, Pos
                         PageRequest.of(
                                 criteria.getPage(), criteria.getSize()
                         )).stream()
-                .map(this::entityToGetDTO)
+                .map(this::returnToGetDTO)
                 .toList();
     }
 
     @Override
     public long count(String postId) {
         validator.validKey(postId);
-        return repository.findById(postId).orElseThrow(() -> {
-            throw new NotFoundException("Post Like not found");
-        }).getLikes().size();
+        return repository.findById(postId)
+                .orElseThrow(() -> {
+                    throw new NotFoundException("Post Like not found");
+                }).getLikes()
+                .size();
     }
 
-    private PostLikeGetDTO entityToGetDTO(PostLikeEntity entity) {
+    @Override
+    public PostLikeGetDTO getByPostId(String id) {
+        validator.validKey(id);
+        return returnToGetDTO(
+                repository.findByPostIdQuery(id)
+                        .orElseThrow(() -> {
+                            throw new NotFoundException("Post Like not found");
+                        })
+        );
+    }
+
+    private PostLikeGetDTO returnToGetDTO(PostLikeEntity entity) {
         PostLikeGetDTO postLikeGetDTO = mapper.fromGetDTO(entity);
         postLikeGetDTO.setLikePostId(entity.getPostId().getId());
         postLikeGetDTO.setLikesCount(entity.getLikes().size());

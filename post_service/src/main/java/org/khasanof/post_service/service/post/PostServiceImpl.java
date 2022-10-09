@@ -8,10 +8,8 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.khasanof.post_service.criteria.post.PostCriteria;
 import org.khasanof.post_service.dto.auth_user.AuthUserGetDTO;
-import org.khasanof.post_service.dto.post.PostCreateDTO;
-import org.khasanof.post_service.dto.post.PostDetailDTO;
-import org.khasanof.post_service.dto.post.PostGetDTO;
-import org.khasanof.post_service.dto.post.PostUpdateDTO;
+import org.khasanof.post_service.dto.post.*;
+import org.khasanof.post_service.dto.post_comment.PostCommentDetailDTO;
 import org.khasanof.post_service.entity.auth_user.AuthUserEntity;
 import org.khasanof.post_service.entity.post.PostEntity;
 import org.khasanof.post_service.enums.post.PostStatusEnum;
@@ -20,6 +18,10 @@ import org.khasanof.post_service.mapper.post.PostMapper;
 import org.khasanof.post_service.repository.post.PostRepository;
 import org.khasanof.post_service.response.Data;
 import org.khasanof.post_service.service.AbstractService;
+import org.khasanof.post_service.service.post_comment.PostCommentService;
+import org.khasanof.post_service.service.post_like.PostLikeService;
+import org.khasanof.post_service.service.post_save.PostSaveService;
+import org.khasanof.post_service.service.post_view.PostViewService;
 import org.khasanof.post_service.utils.BaseUtils;
 import org.khasanof.post_service.validator.post.PostValidator;
 import org.springframework.beans.BeanUtils;
@@ -33,8 +35,17 @@ import java.util.List;
 @Service
 public class PostServiceImpl extends AbstractService<PostRepository, PostMapper, PostValidator> implements PostService {
 
-    public PostServiceImpl(PostRepository repository, PostMapper mapper, PostValidator validator) {
+    private final PostViewService viewService;
+    private final PostSaveService saveService;
+    private final PostLikeService likeService;
+    private final PostCommentService commentService;
+
+    public PostServiceImpl(PostRepository repository, PostMapper mapper, PostValidator validator, PostViewService viewService, PostSaveService saveService, PostLikeService likeService, PostCommentService commentService) {
         super(repository, mapper, validator);
+        this.viewService = viewService;
+        this.saveService = saveService;
+        this.likeService = likeService;
+        this.commentService = commentService;
     }
 
     @Override
@@ -84,11 +95,16 @@ public class PostServiceImpl extends AbstractService<PostRepository, PostMapper,
     @Override
     public PostDetailDTO detail(String id) {
         validator.validKey(id);
-        return mapper.fromDetailDTO(
+        PostDetailDTO detailDTO = mapper.fromDetailDTO(
                 repository.findById(id)
                         .orElseThrow(() -> {
                             throw new NotFoundException("Post not found");
                         }));
+        detailDTO.setLikesCount(likeService.getByPostId(id).getLikesCount());
+        detailDTO.setViewsCount(viewService.getByPostId(id).getViewsCount());
+        detailDTO.setCommentsCount(commentService.getByPostId(id).getCommentsCount());
+        detailDTO.setSavesCount(saveService.getByPostId(id).getSaveCount());
+        return detailDTO;
     }
 
     @Override
@@ -110,6 +126,24 @@ public class PostServiceImpl extends AbstractService<PostRepository, PostMapper,
                 .stream()
                 .map(this::entityParseDTO)
                 .toList();
+    }
+
+    @Override
+    public PostDetWComDTO getByPostIdDetailAndComments(String id, Integer count) {
+        validator.validKey(id);
+        PostDetWComDTO detWComDTO = mapper.fromPostDetWComDTO(
+                repository.findById(id)
+                        .orElseThrow(() -> {
+                            throw new NotFoundException("Post not found");
+                        }));
+        detWComDTO.setLikesCount(likeService.getByPostId(id).getLikesCount());
+        detWComDTO.setViewsCount(viewService.getByPostId(id).getViewsCount());
+        detWComDTO.setAllCommentsCount(commentService.getByPostId(id).getCommentsCount());
+        detWComDTO.setSavesCount(saveService.getByPostId(id).getSaveCount());
+        PostCommentDetailDTO postCommentDetailDTO = commentService.detailCommentsCount(id, count);
+        detWComDTO.setComments(postCommentDetailDTO.getComments());
+        detWComDTO.setCommentsCount(postCommentDetailDTO.getCommentsCount());
+        return detWComDTO;
     }
 
     @Override
