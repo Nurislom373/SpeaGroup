@@ -24,9 +24,5 @@ public class PostEntity extends Auditable {
     private String status;
     @Field(name = "media_paths")
     private List<String> mediaPaths;
-    @Field(name = "like_count")
-    private Integer likeCount;
-    @Field(name = "comment_count")
-    private Integer commentCount;
     private String visibility;
 }

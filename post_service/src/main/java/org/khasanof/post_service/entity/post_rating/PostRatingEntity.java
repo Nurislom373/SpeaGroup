@@ -19,7 +19,7 @@ public class PostRatingEntity extends Auditable {
     @DocumentReference
     @Field(name = "post_id")
     private PostEntity postId;
-    private Long likeCount;
+    private Long likesCount;
     private Long viewsCount;
     private Long savesCount;
     private String ratingType;
