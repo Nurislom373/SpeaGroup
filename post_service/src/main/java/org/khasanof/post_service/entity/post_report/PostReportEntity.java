@@ -27,7 +27,7 @@ public class PostReportEntity extends Auditable {
     @Field(name = "count_reports")
     private Integer countReports;
     @Field(name = "total_point_reports")
-    private Long totalPointReports;
+    private Integer totalPointReports;
     @Field(name = "last_report_time")
     private Instant lastReportTime;
 }

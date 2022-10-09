@@ -17,6 +17,6 @@ public class PostReportDetailDTO extends GenericDTO {
     private PostEntity post;
     private LinkedList<ReportEntity> reports;
     private Integer countReports;
-    private Long totalPointReports;
+    private Integer totalPointReports;
     private Instant lastReportTime;
 }

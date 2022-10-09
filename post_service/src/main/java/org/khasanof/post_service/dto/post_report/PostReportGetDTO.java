@@ -13,6 +13,6 @@ import java.time.Instant;
 public class PostReportGetDTO extends GenericDTO {
     private String reportPostId;
     private Integer countReports;
-    private Long totalPointReports;
+    private Integer totalPointReports;
     private Instant lastReportTime;
 }
