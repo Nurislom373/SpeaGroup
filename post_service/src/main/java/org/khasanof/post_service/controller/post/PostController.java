@@ -48,7 +48,7 @@ public class PostController extends AbstractController<PostService> {
         return new ResponseEntity<>(new Data<>(service.detail(id)), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "detailAndComments/postId={id}&count={count}")
+    @RequestMapping(value = "detailAndComments/postId={id}&count={count}", method = RequestMethod.DELETE)
     public ResponseEntity<Data<PostDetWComDTO>> detailAndComment(@PathVariable String id, @PathVariable Integer count) {
         return new ResponseEntity<>(new Data<>(service.getByPostIdDetailAndComments(id, count)), HttpStatus.OK);
     }

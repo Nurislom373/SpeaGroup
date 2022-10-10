@@ -1,6 +1,7 @@
 package org.khasanof.post_service.service.post_share;
 
 import org.khasanof.post_service.criteria.post_share.PostShareCriteria;
+import org.khasanof.post_service.dto.post_comment.PostCommentGetDTO;
 import org.khasanof.post_service.dto.post_share.PostShareCreateDTO;
 import org.khasanof.post_service.dto.post_share.PostShareDetailDTO;
 import org.khasanof.post_service.dto.post_share.PostShareGetDTO;
@@ -12,5 +13,7 @@ public interface PostShareService extends GenericGDLService<PostShareGetDTO, Pos
     void create(PostShareCreateDTO dto);
 
     void delete(String id);
+
+    PostShareGetDTO getByPostId(String id);
 
 }

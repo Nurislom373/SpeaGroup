@@ -25,6 +25,7 @@ import org.khasanof.post_service.service.post_view.PostViewService;
 import org.khasanof.post_service.utils.BaseUtils;
 import org.khasanof.post_service.validator.post.PostValidator;
 import org.springframework.beans.BeanUtils;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
@@ -40,7 +41,7 @@ public class PostServiceImpl extends AbstractService<PostRepository, PostMapper,
     private final PostLikeService likeService;
     private final PostCommentService commentService;
 
-    public PostServiceImpl(PostRepository repository, PostMapper mapper, PostValidator validator, PostViewService viewService, PostSaveService saveService, PostLikeService likeService, PostCommentService commentService) {
+    public PostServiceImpl(PostRepository repository, PostMapper mapper, PostValidator validator, @Lazy PostViewService viewService, @Lazy PostSaveService saveService, @Lazy PostLikeService likeService, @Lazy PostCommentService commentService) {
         super(repository, mapper, validator);
         this.viewService = viewService;
         this.saveService = saveService;
