@@ -6,12 +6,15 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.khasanof.post_service.criteria.post.PostCatCriteria;
 import org.khasanof.post_service.criteria.post.PostCriteria;
+import org.khasanof.post_service.criteria.post.PostRatingCriteria;
 import org.khasanof.post_service.dto.auth_user.AuthUserGetDTO;
 import org.khasanof.post_service.dto.post.*;
 import org.khasanof.post_service.dto.post_comment.PostCommentDetailDTO;
 import org.khasanof.post_service.entity.auth_user.AuthUserEntity;
 import org.khasanof.post_service.entity.post.PostEntity;
+import org.khasanof.post_service.entity.post_category.PostCategoryEntity;
 import org.khasanof.post_service.enums.post.PostStatusEnum;
 import org.khasanof.post_service.enums.post.PostVisibilityEnum;
 import org.khasanof.post_service.mapper.post.PostMapper;
@@ -27,6 +30,9 @@ import org.khasanof.post_service.validator.post.PostValidator;
 import org.springframework.beans.BeanUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
 
@@ -41,12 +47,15 @@ public class PostServiceImpl extends AbstractService<PostRepository, PostMapper,
     private final PostLikeService likeService;
     private final PostCommentService commentService;
 
-    public PostServiceImpl(PostRepository repository, PostMapper mapper, PostValidator validator, @Lazy PostViewService viewService, @Lazy PostSaveService saveService, @Lazy PostLikeService likeService, @Lazy PostCommentService commentService) {
+    private final MongoTemplate mongoTemplate;
+
+    public PostServiceImpl(PostRepository repository, PostMapper mapper, PostValidator validator, @Lazy PostViewService viewService, @Lazy PostSaveService saveService, @Lazy PostLikeService likeService, @Lazy PostCommentService commentService, MongoTemplate mongoTemplate) {
         super(repository, mapper, validator);
         this.viewService = viewService;
         this.saveService = saveService;
         this.likeService = likeService;
         this.commentService = commentService;
+        this.mongoTemplate = mongoTemplate;
     }
 
     @Override
@@ -58,6 +67,7 @@ public class PostServiceImpl extends AbstractService<PostRepository, PostMapper,
         AuthUserEntity userEntity = new AuthUserEntity();
         BeanUtils.copyProperties(getAuthUserDTO(dto.getPostUserId()), userEntity);
         postEntity.setUserId(userEntity);
+        postEntity.setCreatedBy(userEntity.getId());
         repository.save(postEntity);
     }
 
@@ -127,6 +137,17 @@ public class PostServiceImpl extends AbstractService<PostRepository, PostMapper,
                 .stream()
                 .map(this::entityParseDTO)
                 .toList();
+    }
+
+    @Override
+    public List<PostGetDTO> listWithCategory(PostCatCriteria catCriteria) {
+        List<PostCategoryEntity> categories = mongoTemplate.find(Query.query(new Criteria("categories").in(catCriteria.getCategoryId())).with(PageRequest.of(catCriteria.getPage(), catCriteria.getSize())), PostCategoryEntity.class);
+        return categories.stream().map(PostCategoryEntity::getPostId).map(this::entityParseDTO).toList();
+    }
+
+    @Override
+    public List<PostGetDTO> listWithRating(PostRatingCriteria ratingCriteria) {
+        return null;
     }
 
     @Override

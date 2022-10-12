@@ -69,6 +69,7 @@ public class PostCommentServiceImpl extends AbstractService<PostCommentRepositor
         }
     }
 
+    @Override
     public void addComment(PostCommentCreateDTO dto) {
         validator.validCreateDTO(dto);
         repository.updateOneQuery(dto.getCommentPostId(), String.valueOf(System.currentTimeMillis()), dto.getUserId(), dto.getMessage());
@@ -194,6 +195,8 @@ public class PostCommentServiceImpl extends AbstractService<PostCommentRepositor
     @Override
     public PostCommentCount getCommentsCount(String id) {
         validator.validKey(id);
+        PostCommentCount count = repository.findByIdCountQuery(id);
+        System.out.println("count = " + count);
         return repository.findByIdCountQuery(id);
     }
 
