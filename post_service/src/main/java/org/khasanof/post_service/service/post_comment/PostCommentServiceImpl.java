@@ -18,6 +18,7 @@ import org.khasanof.post_service.utils.BaseUtils;
 import org.khasanof.post_service.validator.post_comment.PostCommentValidator;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.webjars.NotFoundException;
@@ -66,6 +67,11 @@ public class PostCommentServiceImpl extends AbstractService<PostCommentRepositor
             postComment.setUpdatedBy("-1");
             repository.save(postComment);
         }
+    }
+
+    public void addComment(PostCommentCreateDTO dto) {
+        validator.validCreateDTO(dto);
+        repository.updateOneQuery(dto.getCommentPostId(), String.valueOf(System.currentTimeMillis()), dto.getUserId(), dto.getMessage());
     }
 
     @Override
@@ -183,6 +189,12 @@ public class PostCommentServiceImpl extends AbstractService<PostCommentRepositor
         } else {
             return new PostCommentDetailDTO(comments, comments.size());
         }
+    }
+
+    @Override
+    public PostCommentCount getCommentsCount(String id) {
+        validator.validKey(id);
+        return repository.findByIdCountQuery(id);
     }
 
     @Override

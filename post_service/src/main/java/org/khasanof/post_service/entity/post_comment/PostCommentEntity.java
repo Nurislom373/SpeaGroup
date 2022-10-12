@@ -15,7 +15,6 @@ import java.util.LinkedList;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-@Builder
 @Document(collection = "post_comment")
 public class PostCommentEntity extends Auditable {
     @DocumentReference

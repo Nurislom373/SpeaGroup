@@ -6,6 +6,8 @@ public interface PostCommentCDADService {
 
     void create(PostCommentCreateDTO dto);
 
+    void addComment(PostCommentCreateDTO dto);
+
     void delete(String id);
 
     void deleteComment(String postId, String commentId);
@@ -17,4 +19,6 @@ public interface PostCommentCDADService {
     PostCommentGetDTO getByPostId(String id);
 
     PostCommentDetailDTO detailCommentsCount(String id, Integer count);
+
+    PostCommentCount getCommentsCount(String id);
 }

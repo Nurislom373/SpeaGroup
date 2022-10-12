@@ -10,8 +10,9 @@ import org.khasanof.post_service.dto.GenericDTO;
 @ToString
 public class PostRatingGetDTO extends GenericDTO {
     private String ratingPostId;
-    private Long likeCount;
-    private Long viewsCount;
-    private Long savedCount;
+    private Integer likesCount;
+    private Integer viewsCount;
+    private Integer savedCount;
+    private Integer sharesCount;
     private String ratingType;
 }

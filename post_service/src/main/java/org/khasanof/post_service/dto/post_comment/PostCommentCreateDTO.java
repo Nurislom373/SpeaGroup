@@ -12,7 +12,6 @@ import javax.validation.constraints.Size;
 @Getter
 @Setter
 @AllArgsConstructor
-@NoArgsConstructor
 public class PostCommentCreateDTO implements BaseDTO {
     @NotBlank
     private String commentPostId;

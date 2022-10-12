@@ -14,7 +14,7 @@ import java.util.LinkedList;
 @NoArgsConstructor
 @ToString
 public class PostCommentDetailDTO extends GenericDTO {
-    private PostEntity post;
+    private PostEntity postId;
     private LinkedList<CommentEntity> comments;
     private Integer commentsCount;
     private String lastUpdateType;

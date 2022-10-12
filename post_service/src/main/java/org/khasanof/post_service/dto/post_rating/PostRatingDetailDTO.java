@@ -15,10 +15,11 @@ import java.util.LinkedList;
 @NoArgsConstructor
 @ToString
 public class PostRatingDetailDTO extends GenericDTO {
-    private PostEntity post;
-    private Long savedCount;
-    private Long likeCount;
-    private Long viewsCount;
+    private PostEntity postId;
+    private Integer savedCount;
+    private Integer likesCount;
+    private Integer viewsCount;
+    private Integer sharesCount;
     private String ratingType;
     private Instant createdAt;
     private Instant updatedAt;

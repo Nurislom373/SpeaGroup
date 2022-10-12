@@ -27,6 +27,12 @@ public class PostCommentController extends AbstractController<PostCommentService
         return new ResponseEntity<>(new Data<>("Successfully Created - Post Comment"), HttpStatus.CREATED);
     }
 
+    @RequestMapping(value = "addComment", method = RequestMethod.POST)
+    public ResponseEntity<Data<String>> addComment(@RequestBody PostCommentCreateDTO dto) {
+        service.addComment(dto);
+        return new ResponseEntity<>(new Data<>("Successfully Added - Post Comment"), HttpStatus.CREATED);
+    }
+
     @RequestMapping(value = "delete/postId={postId}&commentId={commentId}", method = RequestMethod.DELETE)
     public ResponseEntity<Data<String>> delete(@PathVariable String postId, @PathVariable String commentId) {
         service.deleteComment(postId, commentId);
@@ -49,6 +55,11 @@ public class PostCommentController extends AbstractController<PostCommentService
     public ResponseEntity<Data<String>> removeLike(@RequestBody PostCommentRemoveLikeDTO dto) {
         service.deleteCommentToLike(dto);
         return new ResponseEntity<>(new Data<>("Successfully Remove Like - Post Comment"), HttpStatus.NO_CONTENT);
+    }
+
+    @RequestMapping(value = "getCommentCount/{id}", method = RequestMethod.GET)
+    public ResponseEntity<Data<PostCommentCount>> getCommentCount(@PathVariable String id) {
+        return new ResponseEntity<>(new Data<>(service.getCommentsCount(id)), HttpStatus.OK);
     }
 
     @RequestMapping(value = "get/{id}", method = RequestMethod.GET)
