@@ -1,7 +1,9 @@
 package org.khasanof.post_service.controller.post;
 
 import org.khasanof.post_service.controller.AbstractController;
+import org.khasanof.post_service.criteria.post.PostCatCriteria;
 import org.khasanof.post_service.criteria.post.PostCriteria;
+import org.khasanof.post_service.criteria.post.PostRatingCriteria;
 import org.khasanof.post_service.dto.post.*;
 import org.khasanof.post_service.response.Data;
 import org.khasanof.post_service.service.post.PostService;
@@ -56,6 +58,16 @@ public class PostController extends AbstractController<PostService> {
     @RequestMapping(value = "list", method = RequestMethod.GET)
     public ResponseEntity<Data<List<PostGetDTO>>> list(@Valid PostCriteria criteria) {
         return new ResponseEntity<>(new Data<>(service.list(criteria)), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "listWithCategory", method = RequestMethod.GET)
+    public ResponseEntity<Data<List<PostGetDTO>>> listWithCategory(@Valid PostCatCriteria criteria) {
+        return new ResponseEntity<>(new Data<>(service.listWithCategory(criteria)), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "listWithRating", method = RequestMethod.GET)
+    public ResponseEntity<Data<List<PostGetDTO>>> listWithRating(@Valid PostRatingCriteria criteria) {
+        return new ResponseEntity<>(new Data<>(service.listWithRating(criteria)), HttpStatus.OK);
     }
 
     @RequestMapping(value = "list/createdBy/{id}", method = RequestMethod.GET)

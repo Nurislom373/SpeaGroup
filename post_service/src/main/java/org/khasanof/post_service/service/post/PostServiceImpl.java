@@ -141,12 +141,14 @@ public class PostServiceImpl extends AbstractService<PostRepository, PostMapper,
 
     @Override
     public List<PostGetDTO> listWithCategory(PostCatCriteria catCriteria) {
+        // TODO writing logic
         List<PostCategoryEntity> categories = mongoTemplate.find(Query.query(new Criteria("categories").in(catCriteria.getCategoryId())).with(PageRequest.of(catCriteria.getPage(), catCriteria.getSize())), PostCategoryEntity.class);
         return categories.stream().map(PostCategoryEntity::getPostId).map(this::entityParseDTO).toList();
     }
 
     @Override
     public List<PostGetDTO> listWithRating(PostRatingCriteria ratingCriteria) {
+        // TODO writing logic
         return null;
     }
 
