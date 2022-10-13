@@ -12,6 +12,6 @@ import java.util.Optional;
 @Repository
 public interface PostCategoryRepository extends MongoRepository<PostCategoryEntity, String>, BaseRepository {
 
-    @Query("db.post_category.find({ 'post_id' : ?0 })")
+    @Query(value = "{ 'post_id' : ?0 }")
     Optional<PostCategoryEntity> findByPostIdQuery(String id);
 }

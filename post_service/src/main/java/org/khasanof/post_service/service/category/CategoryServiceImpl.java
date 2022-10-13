@@ -17,6 +17,7 @@ import org.springframework.util.Assert;
 import org.webjars.NotFoundException;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.StreamSupport;
 
 @Service
@@ -101,9 +102,7 @@ public class CategoryServiceImpl extends AbstractService<CategoryRepository, Cat
     @Override
     public List<CategoryEntity> getAllEntity(List<String> ids) {
         Assert.notNull(ids, "List must be not null!");
-        return StreamSupport.stream(
-                repository.findAllById(ids).spliterator(), false
-        ).toList();
+        return ids.stream().map(repository::findById).map(Optional::orElseThrow).toList();
     }
 
     @Override

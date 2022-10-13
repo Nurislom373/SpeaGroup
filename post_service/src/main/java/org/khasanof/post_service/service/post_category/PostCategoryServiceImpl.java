@@ -16,11 +16,16 @@ import org.khasanof.post_service.service.category.CategoryService;
 import org.khasanof.post_service.service.post.PostService;
 import org.khasanof.post_service.validator.post_category.PostCategoryValidator;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -29,12 +34,14 @@ public class PostCategoryServiceImpl extends AbstractService<PostCategoryReposit
     private final PostService postService;
     private final PostMapper postMapper;
     private final CategoryService categoryService;
+    private final MongoTemplate mongoTemplate;
 
-    public PostCategoryServiceImpl(PostCategoryRepository repository, PostCategoryMapper mapper, PostCategoryValidator validator, PostService postService, PostMapper postMapper, CategoryService categoryService) {
+    public PostCategoryServiceImpl(PostCategoryRepository repository, PostCategoryMapper mapper, PostCategoryValidator validator, PostService postService, PostMapper postMapper, CategoryService categoryService, MongoTemplate mongoTemplate) {
         super(repository, mapper, validator);
         this.postService = postService;
         this.postMapper = postMapper;
         this.categoryService = categoryService;
+        this.mongoTemplate = mongoTemplate;
     }
 
     @Override
@@ -60,29 +67,44 @@ public class PostCategoryServiceImpl extends AbstractService<PostCategoryReposit
             postCategoryEntity.setCategories(categories);
             repository.save(postCategoryEntity);
         }
-
     }
 
     @Override
     public void addAllCategory(PostCategoryAddAllDTO dto) {
         validator.validAddAllDTO(dto);
-        Optional<PostCategoryEntity> optional = repository.findByPostIdQuery(dto.getCategoryPostId());
-        if (optional.isPresent()) {
-            PostCategoryEntity postCategoryEntity = optional.get();
-            List<CategoryEntity> categories = postCategoryEntity.getCategories();
-            categories.addAll(categoryService.getAllEntity(dto.getCategoryIds()));
-            postCategoryEntity.setCategories(categories);
-            postCategoryEntity.setUpdatedAt(Instant.now());
-            repository.save(postCategoryEntity);
+        String categoryPostId = dto.getCategoryPostId();
+        System.out.println("categoryPostId = " + categoryPostId);
+        PostCategoryEntity categoryEntity = mongoTemplate.findOne(
+                Query.query(new Criteria("postId")
+                        .is(postService.getEntity(dto.getCategoryPostId()))
+                ), PostCategoryEntity.class);
+        System.out.println("categoryEntity = " + categoryEntity);
+        if (!Objects.isNull(categoryEntity)) {
+            List<CategoryEntity> categories = categoryEntity.getCategories();
+            List<String> categoryIds = dto.getCategoryIds();
+            categoryIds.forEach((obj) -> {
+                String haveID = categories.stream()
+                        .map(CategoryEntity::getId)
+                        .filter(id -> id.equals(obj))
+                        .findFirst().orElseThrow();
+                // TODO writing true logic with stream api
+                categoryIds.removeIf(f -> f.equals(haveID));
+            });
+            if (categoryIds.size() != 0) {
+                categories.addAll(categoryService.getAllEntity(categoryIds));
+                categoryEntity.setCategories(categories);
+                categoryEntity.setUpdatedAt(Instant.now());
+                repository.save(categoryEntity);
+            }
         } else {
             if (postService.existByIdAndCheckBlocked(dto.getCategoryPostId())) {
                 throw new RuntimeException("Post is blocked!");
             }
-            PostEntity postEntity = postMapper.toGetDTO(postService.get(dto.getCategoryPostId()));
+            PostEntity postEntity = postService.getEntity(dto.getCategoryPostId());
+            System.out.println("postEntity = " + postEntity);
             PostCategoryEntity postCategoryEntity = new PostCategoryEntity();
             postCategoryEntity.setPostId(postEntity);
-            List<CategoryEntity> categories = postCategoryEntity.getCategories();
-            categories.addAll(categoryService.getAllEntity(dto.getCategoryIds()));
+            List<CategoryEntity> categories = new ArrayList<>(categoryService.getAllEntity(dto.getCategoryIds()));
             postCategoryEntity.setCategories(categories);
             repository.save(postCategoryEntity);
         }

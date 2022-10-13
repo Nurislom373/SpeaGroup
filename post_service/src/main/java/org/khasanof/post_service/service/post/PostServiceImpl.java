@@ -11,16 +11,17 @@ import org.khasanof.post_service.criteria.post.PostCriteria;
 import org.khasanof.post_service.criteria.post.PostRatingCriteria;
 import org.khasanof.post_service.dto.auth_user.AuthUserGetDTO;
 import org.khasanof.post_service.dto.post.*;
+import org.khasanof.post_service.dto.post_category.PostCategoryAddAllDTO;
 import org.khasanof.post_service.dto.post_comment.PostCommentDetailDTO;
 import org.khasanof.post_service.entity.auth_user.AuthUserEntity;
 import org.khasanof.post_service.entity.post.PostEntity;
 import org.khasanof.post_service.entity.post_category.PostCategoryEntity;
 import org.khasanof.post_service.enums.post.PostStatusEnum;
-import org.khasanof.post_service.enums.post.PostVisibilityEnum;
 import org.khasanof.post_service.mapper.post.PostMapper;
 import org.khasanof.post_service.repository.post.PostRepository;
 import org.khasanof.post_service.response.Data;
 import org.khasanof.post_service.service.AbstractService;
+import org.khasanof.post_service.service.post_category.PostCategoryService;
 import org.khasanof.post_service.service.post_comment.PostCommentService;
 import org.khasanof.post_service.service.post_like.PostLikeService;
 import org.khasanof.post_service.service.post_save.PostSaveService;
@@ -38,6 +39,7 @@ import org.webjars.NotFoundException;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
 
 @Service
 public class PostServiceImpl extends AbstractService<PostRepository, PostMapper, PostValidator> implements PostService {
@@ -46,28 +48,30 @@ public class PostServiceImpl extends AbstractService<PostRepository, PostMapper,
     private final PostSaveService saveService;
     private final PostLikeService likeService;
     private final PostCommentService commentService;
+    private final PostCategoryService postCategoryService;
     private final MongoTemplate mongoTemplate;
 
-    public PostServiceImpl(PostRepository repository, PostMapper mapper, PostValidator validator, @Lazy PostViewService viewService, @Lazy PostSaveService saveService, @Lazy PostLikeService likeService, @Lazy PostCommentService commentService, MongoTemplate mongoTemplate) {
+    public PostServiceImpl(PostRepository repository, PostMapper mapper, PostValidator validator, @Lazy PostViewService viewService, @Lazy PostSaveService saveService, @Lazy PostLikeService likeService, @Lazy PostCommentService commentService, @Lazy PostCategoryService postCategoryService, MongoTemplate mongoTemplate) {
         super(repository, mapper, validator);
         this.viewService = viewService;
         this.saveService = saveService;
         this.likeService = likeService;
         this.commentService = commentService;
+        this.postCategoryService = postCategoryService;
         this.mongoTemplate = mongoTemplate;
     }
 
     @Override
     public void create(PostCreateDTO dto) {
         validator.validCreateDTO(dto);
-        if (!PostVisibilityEnum.hasVisibility(dto.getVisibility()))
-            throw new RuntimeException("Visibility Invalid!");
+        dto.setVisibility(dto.getVisibility().toUpperCase(Locale.ROOT));
         PostEntity postEntity = mapper.toCreateDTO(dto);
         AuthUserEntity userEntity = new AuthUserEntity();
         BeanUtils.copyProperties(getAuthUserDTO(dto.getPostUserId()), userEntity);
         postEntity.setUserId(userEntity);
         postEntity.setCreatedBy(userEntity.getId());
-        repository.save(postEntity);
+        PostEntity entity = repository.save(postEntity);
+        postCategoryService.addAllCategory(new PostCategoryAddAllDTO(entity.getId(), dto.getCategoriesIds()));
     }
 
     @Override
@@ -77,8 +81,6 @@ public class PostServiceImpl extends AbstractService<PostRepository, PostMapper,
                 .orElseThrow(() -> {
                     throw new NotFoundException("Post not found");
                 });
-        if (!PostVisibilityEnum.hasVisibility(dto.getVisibility()))
-            throw new RuntimeException("Visibility Invalid!");
         BeanUtils.copyProperties(dto, post, "id");
         repository.save(post);
     }
@@ -167,6 +169,14 @@ public class PostServiceImpl extends AbstractService<PostRepository, PostMapper,
         detWComDTO.setComments(postCommentDetailDTO.getComments());
         detWComDTO.setCommentsCount(postCommentDetailDTO.getCommentsCount());
         return detWComDTO;
+    }
+
+    @Override
+    public PostEntity getEntity(String id) {
+        validator.validKey(id);
+        return repository.findById(id).orElseThrow(() -> {
+            throw new NotFoundException("Post not found");
+        });
     }
 
     @Override

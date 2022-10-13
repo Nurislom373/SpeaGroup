@@ -4,6 +4,7 @@ import org.khasanof.post_service.criteria.post.PostCatCriteria;
 import org.khasanof.post_service.criteria.post.PostCriteria;
 import org.khasanof.post_service.criteria.post.PostRatingCriteria;
 import org.khasanof.post_service.dto.post.*;
+import org.khasanof.post_service.entity.post.PostEntity;
 import org.khasanof.post_service.service.BaseService;
 import org.khasanof.post_service.service.GenericCUDService;
 import org.khasanof.post_service.service.GenericGDLService;
@@ -21,6 +22,8 @@ public interface PostService extends GenericCUDService<PostCreateDTO, PostUpdate
     List<PostGetDTO> listWithRating(PostRatingCriteria ratingCriteria);
 
     PostDetWComDTO getByPostIdDetailAndComments(String id, Integer count);
+
+    PostEntity getEntity(String id);
 
     boolean existById(String postId);
 
