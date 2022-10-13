@@ -13,9 +13,11 @@ import org.khasanof.post_service.validator.category.CategoryValidator;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 import org.webjars.NotFoundException;
 
 import java.util.List;
+import java.util.stream.StreamSupport;
 
 @Service
 public class CategoryServiceImpl extends AbstractService<CategoryRepository, CategoryMapper, CategoryValidator> implements CategoryService {
@@ -85,6 +87,23 @@ public class CategoryServiceImpl extends AbstractService<CategoryRepository, Cat
                         )
                 ).toList()
         );
+    }
+
+    @Override
+    public CategoryEntity getEntity(String id) {
+        validator.validKey(id);
+        return repository.findById(id)
+                .orElseThrow(() -> {
+                    throw new NotFoundException("Category not found");
+                });
+    }
+
+    @Override
+    public List<CategoryEntity> getAllEntity(List<String> ids) {
+        Assert.notNull(ids, "List must be not null!");
+        return StreamSupport.stream(
+                repository.findAllById(ids).spliterator(), false
+        ).toList();
     }
 
     @Override

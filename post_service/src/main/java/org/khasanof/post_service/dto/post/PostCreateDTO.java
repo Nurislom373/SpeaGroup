@@ -16,4 +16,5 @@ public class PostCreateDTO implements BaseDTO {
     private String description;
     private List<String> mediaPaths;
     private String visibility;
+    private List<String> categoriesIds;
 }

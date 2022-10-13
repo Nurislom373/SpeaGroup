@@ -15,6 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@ToString
 @Document(collection = "post_category")
 public class PostCategoryEntity extends Auditable {
     @DocumentReference

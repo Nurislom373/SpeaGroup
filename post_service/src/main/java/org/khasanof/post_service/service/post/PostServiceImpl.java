@@ -46,7 +46,6 @@ public class PostServiceImpl extends AbstractService<PostRepository, PostMapper,
     private final PostSaveService saveService;
     private final PostLikeService likeService;
     private final PostCommentService commentService;
-
     private final MongoTemplate mongoTemplate;
 
     public PostServiceImpl(PostRepository repository, PostMapper mapper, PostValidator validator, @Lazy PostViewService viewService, @Lazy PostSaveService saveService, @Lazy PostLikeService likeService, @Lazy PostCommentService commentService, MongoTemplate mongoTemplate) {
