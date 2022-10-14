@@ -26,7 +26,6 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 @Service
 public class PostCategoryServiceImpl extends AbstractService<PostCategoryRepository, PostCategoryMapper, PostCategoryValidator> implements PostCategoryService {
@@ -47,14 +46,25 @@ public class PostCategoryServiceImpl extends AbstractService<PostCategoryReposit
     @Override
     public void addCategory(PostCategoryAddDTO dto) {
         validator.validCreateDTO(dto);
-        Optional<PostCategoryEntity> optional = repository.findByPostIdQuery(dto.getCategoryPostId());
-        if (optional.isPresent()) {
-            PostCategoryEntity postCategoryEntity = optional.get();
-            List<CategoryEntity> categories = postCategoryEntity.getCategories();
-            categories.add(categoryService.getEntity(dto.getCategoryId()));
-            postCategoryEntity.setCategories(categories);
-            postCategoryEntity.setUpdatedAt(Instant.now());
-            repository.save(postCategoryEntity);
+        String categoryPostId = dto.getCategoryPostId();
+        System.out.println("categoryPostId = " + categoryPostId);
+        PostCategoryEntity categoryEntity = mongoTemplate.findOne(
+                Query.query(new Criteria("postId")
+                        .is(postService.getEntity(dto.getCategoryPostId()))
+                ), PostCategoryEntity.class);
+        System.out.println("categoryEntity = " + categoryEntity);
+        if (Objects.nonNull(categoryEntity)) {
+            List<CategoryEntity> categories = categoryEntity.getCategories();
+            CategoryEntity category = categories.stream()
+                    .filter(f -> f.getId().equals(dto.getCategoryId()))
+                    .findFirst().orElse(null);
+            System.out.println("category = " + category);
+            if (category == null) {
+                categories.add(categoryService.getEntity(dto.getCategoryId()));
+                categoryEntity.setCategories(categories);
+                categoryEntity.setUpdatedAt(Instant.now());
+                repository.save(categoryEntity);
+            }
         } else {
             if (postService.existByIdAndCheckBlocked(dto.getCategoryPostId())) {
                 throw new RuntimeException("Post is blocked!");
@@ -82,14 +92,18 @@ public class PostCategoryServiceImpl extends AbstractService<PostCategoryReposit
         if (!Objects.isNull(categoryEntity)) {
             List<CategoryEntity> categories = categoryEntity.getCategories();
             List<String> categoryIds = dto.getCategoryIds();
-            categoryIds.forEach((obj) -> {
-                String haveID = categories.stream()
+            List<String> removeIds = new ArrayList<>();
+            for (String categoryId : categoryIds) {
+                String varId = categories
+                        .stream()
                         .map(CategoryEntity::getId)
-                        .filter(id -> id.equals(obj))
-                        .findFirst().orElseThrow();
-                // TODO writing true logic with stream api
-                categoryIds.removeIf(f -> f.equals(haveID));
-            });
+                        .filter(id -> id.equals(categoryId))
+                        .findFirst().orElse(null);
+                removeIds.add(varId);
+            }
+            if (removeIds.size() != 0) {
+                categoryIds.removeAll(removeIds);
+            }
             if (categoryIds.size() != 0) {
                 categories.addAll(categoryService.getAllEntity(categoryIds));
                 categoryEntity.setCategories(categories);
