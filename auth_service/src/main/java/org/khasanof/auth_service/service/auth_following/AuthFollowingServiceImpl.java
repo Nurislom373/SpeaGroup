@@ -69,6 +69,7 @@ public class AuthFollowingServiceImpl extends AbstractService<AuthFollowingRepos
                         .map(Optional::orElseThrow)
                         .toList();
                 followers1.addAll(userEntities);
+                followingEntity.setFollowers(followers);
                 followingEntity.setUpdatedAt(Instant.now());
                 followingEntity.setUpdatedBy(dto.getAuthId());
                 repository.save(followingEntity);
@@ -129,16 +130,22 @@ public class AuthFollowingServiceImpl extends AbstractService<AuthFollowingRepos
     @Override
     public AuthFollowingDetailDTO detail(String id) {
         validator.validKey(id);
-        return mapper.fromDetailDTO(repository.findById(id).orElseThrow(() -> {
-            throw new NotFoundException("Auth Following not found");
-        }));
+        return mapper.fromDetailDTO(
+                repository.findById(id)
+                        .orElseThrow(() -> {
+                            throw new NotFoundException("Auth Following not found");
+                        })
+        );
     }
 
     @Override
     public List<AuthFollowingGetDTO> list(AuthFollowingCriteria criteria) {
         return repository.findAll(
-                PageRequest.of(criteria.getPage(), criteria.getSize())
-        ).stream().parallel().map(this::getDTO).toList();
+                        PageRequest.of(criteria.getPage(), criteria.getSize())
+                ).stream()
+                .parallel()
+                .map(this::getDTO)
+                .toList();
     }
 
     private String getId(AuthUserEntity entity) {
@@ -147,7 +154,9 @@ public class AuthFollowingServiceImpl extends AbstractService<AuthFollowingRepos
 
     private AuthFollowingGetDTO getDTO(AuthFollowingEntity entity) {
         List<String> ids = entity.getFollowers()
-                .parallelStream().map(this::getId).toList();
+                .parallelStream()
+                .map(this::getId)
+                .toList();
         return new AuthFollowingGetDTO(entity.getUserId().getId(), ids);
     }
 }

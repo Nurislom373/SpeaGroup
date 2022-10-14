@@ -1,9 +1,6 @@
 package org.khasanof.post_service.dto.auth_following;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.khasanof.post_service.dto.GenericDTO;
 
 import java.util.List;
@@ -12,6 +9,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 public class AuthFollowingGetDTO extends GenericDTO {
     private String authId;
     private List<String> followingsId;

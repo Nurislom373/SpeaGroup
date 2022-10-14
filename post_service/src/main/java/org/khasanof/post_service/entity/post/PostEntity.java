@@ -13,7 +13,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
+@ToString(callSuper = true)
 @Document(collection = "post")
 public class PostEntity extends Auditable {
     @DocumentReference

@@ -13,4 +13,6 @@ public interface AuthFollowerService extends GenericGDLService<AuthFollowerGetDT
 
     void delete(String id);
 
+    void deleteFollower(String id, String userId);
+
 }

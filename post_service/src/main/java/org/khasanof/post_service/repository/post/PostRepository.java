@@ -12,4 +12,6 @@ public interface PostRepository extends MongoRepository<PostEntity, String>, Bas
 
     List<PostEntity> findAllByCreatedBy(String id);
 
+    List<PostEntity> findAllByCreatedByOrderByCreatedAtAsc(String id);
+
 }

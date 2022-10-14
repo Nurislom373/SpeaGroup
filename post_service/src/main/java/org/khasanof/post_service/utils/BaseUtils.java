@@ -6,6 +6,7 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.khasanof.post_service.dto.auth_following.AuthFollowingGetDTO;
 import org.khasanof.post_service.dto.auth_user.AuthUserGetDTO;
 import org.khasanof.post_service.response.Data;
 import org.webjars.NotFoundException;
@@ -28,6 +29,19 @@ public class BaseUtils {
             int statusCode = httpResponse.getStatusLine().getStatusCode();
             if (statusCode != 200) throw new NotFoundException(notFoundMessage);
             return objectMapper.readValue(httpResponse.getEntity().getContent(), new TypeReference<Data<T>>() {
+            }).getData();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static AuthFollowingGetDTO authFollowingGetCallAPI(String id, String notFoundMessage) {
+        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+            ObjectMapper objectMapper = new ObjectMapper();
+            CloseableHttpResponse httpResponse = httpClient.execute(new HttpGet(BaseUtils.AUTH_SERVICE + "/auth_following/get/" + id));
+            int statusCode = httpResponse.getStatusLine().getStatusCode();
+            if (statusCode != 200) throw new NotFoundException(notFoundMessage);
+            return objectMapper.readValue(httpResponse.getEntity().getContent(), new TypeReference<Data<AuthFollowingGetDTO>>() {
             }).getData();
         } catch (IOException e) {
             throw new RuntimeException(e);

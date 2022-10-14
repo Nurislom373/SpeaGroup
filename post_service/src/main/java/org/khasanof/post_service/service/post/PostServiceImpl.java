@@ -16,12 +16,15 @@ import org.khasanof.post_service.dto.post.*;
 import org.khasanof.post_service.dto.post_category.PostCategoryAddAllDTO;
 import org.khasanof.post_service.dto.post_comment.PostCommentDetailDTO;
 import org.khasanof.post_service.dto.post_rating.PostRatingCreateDTO;
+import org.khasanof.post_service.dto.post_rating.PostRatingGetDTO;
 import org.khasanof.post_service.entity.auth_user.AuthUserEntity;
 import org.khasanof.post_service.entity.post.PostEntity;
 import org.khasanof.post_service.entity.post_category.PostCategoryEntity;
 import org.khasanof.post_service.entity.post_rating.PostRatingEntity;
 import org.khasanof.post_service.enums.post.PostStatusEnum;
+import org.khasanof.post_service.enums.rating.RatingTypeEnum;
 import org.khasanof.post_service.mapper.post.PostMapper;
+import org.khasanof.post_service.mapper.post_rating.PostRatingMapper;
 import org.khasanof.post_service.repository.post.PostRepository;
 import org.khasanof.post_service.response.Data;
 import org.khasanof.post_service.service.AbstractService;
@@ -44,6 +47,8 @@ import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
@@ -57,9 +62,10 @@ public class PostServiceImpl extends AbstractService<PostRepository, PostMapper,
     private final PostCategoryService postCategoryService;
     private final CategoryService categoryService;
     private final PostRatingService postRatingService;
+    private final PostRatingMapper postRatingMapper;
     private final MongoTemplate mongoTemplate;
 
-    public PostServiceImpl(PostRepository repository, PostMapper mapper, PostValidator validator, @Lazy PostViewService viewService, @Lazy PostSaveService saveService, @Lazy PostLikeService likeService, @Lazy PostCommentService commentService, @Lazy PostCategoryService postCategoryService, CategoryService categoryService, PostRatingService postRatingService, MongoTemplate mongoTemplate) {
+    public PostServiceImpl(PostRepository repository, PostMapper mapper, PostValidator validator, @Lazy PostViewService viewService, @Lazy PostSaveService saveService, @Lazy PostLikeService likeService, @Lazy PostCommentService commentService, @Lazy PostCategoryService postCategoryService, CategoryService categoryService, @Lazy PostRatingService postRatingService, PostRatingMapper postRatingMapper, MongoTemplate mongoTemplate) {
         super(repository, mapper, validator);
         this.viewService = viewService;
         this.saveService = saveService;
@@ -68,6 +74,7 @@ public class PostServiceImpl extends AbstractService<PostRepository, PostMapper,
         this.postCategoryService = postCategoryService;
         this.categoryService = categoryService;
         this.postRatingService = postRatingService;
+        this.postRatingMapper = postRatingMapper;
         this.mongoTemplate = mongoTemplate;
     }
 
@@ -169,6 +176,32 @@ public class PostServiceImpl extends AbstractService<PostRepository, PostMapper,
 
     @Override
     public List<PostGetDTO> listWithUserId(PostUseCriteria criteria) {
+        AuthFollowingGetDTO authFollowingGetDTO = authFollowingGetDTO(criteria.getUserId());
+        System.out.println("authFollowingGetDTO = " + authFollowingGetDTO);
+        if (authFollowingGetDTO.getFollowingsId().size() == 0) {
+            List<PostRatingEntity> entities = mongoTemplate.find(
+                    Query.query(new Criteria("ratingType")
+                                    .is(RatingTypeEnum.RECOMMENDED.getValue())
+                                    .orOperator(new Criteria("ratingType")
+                                            .is(RatingTypeEnum.POPULAR.getValue())))
+                            .with(PageRequest.of(criteria.getPage(), criteria.getSize(), criteria.getDirection(),
+                                    criteria.getFieldsEnum().getValue())),
+                    PostRatingEntity.class);
+            return entities.stream()
+                    .map(PostRatingEntity::getPostId)
+                    .map(this::entityParseDTO)
+                    .toList();
+        }
+        List<String> ids = authFollowingGetDTO.getFollowingsId();
+        List<PostEntity> entityList = ids.stream()
+                .map(repository::findAllByCreatedByOrderByCreatedAtAsc)
+                .flatMap(Collection::stream)
+                .sorted(Comparator.comparing(PostEntity::getCreatedAt).reversed())
+                .toList();
+        entityList.forEach(System.out::println);
+        if (entityList.size() > criteria.getSize()) {
+
+        }
         return null;
     }
 
@@ -236,6 +269,13 @@ public class PostServiceImpl extends AbstractService<PostRepository, PostMapper,
         return dto;
     }
 
+    private PostRatingGetDTO returnToGetDTO(PostRatingEntity entity) {
+        PostRatingGetDTO postRatingGetDTO = postRatingMapper.fromGetDTO(entity);
+        postRatingGetDTO.setRatingPostId(entity.getPostId().getId());
+        postRatingGetDTO.setRatingType(entity.getRatingType());
+        return postRatingGetDTO;
+    }
+
     private AuthUserGetDTO getAuthUserDTO(String id) {
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
             ObjectMapper objectMapper = new ObjectMapper();
@@ -252,7 +292,7 @@ public class PostServiceImpl extends AbstractService<PostRepository, PostMapper,
     }
 
     private AuthFollowingGetDTO authFollowingGetDTO(String userId) {
-        return BaseUtils.callGetAPI(BaseUtils.AUTH_SERVICE + "/auth_following/get/" + userId, "User Following ont found", new AuthFollowingGetDTO());
+        return BaseUtils.authFollowingGetCallAPI(userId, "User Following ont found");
     }
 
     // TODO post lani ob keladigan api kere obuna bogan bunachilari boyicha bolmasa top reyitingdagi postlar
