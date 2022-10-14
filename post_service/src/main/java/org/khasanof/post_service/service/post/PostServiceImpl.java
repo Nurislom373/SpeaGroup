@@ -9,21 +9,26 @@ import org.apache.http.impl.client.HttpClients;
 import org.khasanof.post_service.criteria.post.PostCatCriteria;
 import org.khasanof.post_service.criteria.post.PostCriteria;
 import org.khasanof.post_service.criteria.post.PostRatingCriteria;
+import org.khasanof.post_service.criteria.post.PostUseCriteria;
 import org.khasanof.post_service.dto.auth_user.AuthUserGetDTO;
 import org.khasanof.post_service.dto.post.*;
 import org.khasanof.post_service.dto.post_category.PostCategoryAddAllDTO;
 import org.khasanof.post_service.dto.post_comment.PostCommentDetailDTO;
+import org.khasanof.post_service.dto.post_rating.PostRatingCreateDTO;
 import org.khasanof.post_service.entity.auth_user.AuthUserEntity;
 import org.khasanof.post_service.entity.post.PostEntity;
 import org.khasanof.post_service.entity.post_category.PostCategoryEntity;
+import org.khasanof.post_service.entity.post_rating.PostRatingEntity;
 import org.khasanof.post_service.enums.post.PostStatusEnum;
 import org.khasanof.post_service.mapper.post.PostMapper;
 import org.khasanof.post_service.repository.post.PostRepository;
 import org.khasanof.post_service.response.Data;
 import org.khasanof.post_service.service.AbstractService;
+import org.khasanof.post_service.service.category.CategoryService;
 import org.khasanof.post_service.service.post_category.PostCategoryService;
 import org.khasanof.post_service.service.post_comment.PostCommentService;
 import org.khasanof.post_service.service.post_like.PostLikeService;
+import org.khasanof.post_service.service.post_rating.PostRatingService;
 import org.khasanof.post_service.service.post_save.PostSaveService;
 import org.khasanof.post_service.service.post_view.PostViewService;
 import org.khasanof.post_service.utils.BaseUtils;
@@ -49,15 +54,19 @@ public class PostServiceImpl extends AbstractService<PostRepository, PostMapper,
     private final PostLikeService likeService;
     private final PostCommentService commentService;
     private final PostCategoryService postCategoryService;
+    private final CategoryService categoryService;
+    private final PostRatingService postRatingService;
     private final MongoTemplate mongoTemplate;
 
-    public PostServiceImpl(PostRepository repository, PostMapper mapper, PostValidator validator, @Lazy PostViewService viewService, @Lazy PostSaveService saveService, @Lazy PostLikeService likeService, @Lazy PostCommentService commentService, @Lazy PostCategoryService postCategoryService, MongoTemplate mongoTemplate) {
+    public PostServiceImpl(PostRepository repository, PostMapper mapper, PostValidator validator, @Lazy PostViewService viewService, @Lazy PostSaveService saveService, @Lazy PostLikeService likeService, @Lazy PostCommentService commentService, @Lazy PostCategoryService postCategoryService, CategoryService categoryService, PostRatingService postRatingService, MongoTemplate mongoTemplate) {
         super(repository, mapper, validator);
         this.viewService = viewService;
         this.saveService = saveService;
         this.likeService = likeService;
         this.commentService = commentService;
         this.postCategoryService = postCategoryService;
+        this.categoryService = categoryService;
+        this.postRatingService = postRatingService;
         this.mongoTemplate = mongoTemplate;
     }
 
@@ -70,8 +79,10 @@ public class PostServiceImpl extends AbstractService<PostRepository, PostMapper,
         BeanUtils.copyProperties(getAuthUserDTO(dto.getPostUserId()), userEntity);
         postEntity.setUserId(userEntity);
         postEntity.setCreatedBy(userEntity.getId());
+        postEntity.setStatus(PostStatusEnum.ACTIVE.getValue());
         PostEntity entity = repository.save(postEntity);
         postCategoryService.addAllCategory(new PostCategoryAddAllDTO(entity.getId(), dto.getCategoriesIds()));
+        postRatingService.create(new PostRatingCreateDTO(entity.getId()));
     }
 
     @Override
@@ -142,15 +153,38 @@ public class PostServiceImpl extends AbstractService<PostRepository, PostMapper,
 
     @Override
     public List<PostGetDTO> listWithCategory(PostCatCriteria catCriteria) {
-        // TODO writing logic
-        List<PostCategoryEntity> categories = mongoTemplate.find(Query.query(new Criteria("categories").in(catCriteria.getCategoryId())).with(PageRequest.of(catCriteria.getPage(), catCriteria.getSize())), PostCategoryEntity.class);
-        return categories.stream().map(PostCategoryEntity::getPostId).map(this::entityParseDTO).toList();
+        List<PostCategoryEntity> categories = mongoTemplate.find(
+                Query.query(new Criteria("categories")
+                                .in(categoryService.getEntity(catCriteria.getCategoryId())))
+                        .with(PageRequest.of(catCriteria.getPage(), catCriteria.getSize(),
+                                catCriteria.getDirection(), catCriteria.getFieldsEnum().getValue())),
+                PostCategoryEntity.class);
+        return categories
+                .stream()
+                .map(PostCategoryEntity::getPostId)
+                .map(this::entityParseDTO)
+                .toList();
+    }
+
+    @Override
+    public List<PostGetDTO> listWithUserId(PostUseCriteria criteria) {
+        return null;
     }
 
     @Override
     public List<PostGetDTO> listWithRating(PostRatingCriteria ratingCriteria) {
         // TODO writing logic
-        return null;
+        List<PostRatingEntity> list = mongoTemplate.find(
+                Query.query(new Criteria("ratingType")
+                                .is(ratingCriteria.getTypeEnum().getValue()))
+                        .with(PageRequest.of(ratingCriteria.getPage(), ratingCriteria.getSize(),
+                                ratingCriteria.getDirection(), ratingCriteria.getFieldsEnum().getValue())),
+                PostRatingEntity.class);
+        return list
+                .stream()
+                .map(PostRatingEntity::getPostId)
+                .map(this::entityParseDTO)
+                .toList();
     }
 
     @Override
