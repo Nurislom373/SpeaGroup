@@ -219,6 +219,6 @@ public class PostCommentServiceImpl extends AbstractService<PostCommentRepositor
 
     private AuthUserGetDTO getAuthDTO(String id) {
         return BaseUtils.callGetAPI(
-                BaseUtils.AUTH_SERVICE + "/auth_user/get/" + id, "User ont found");
+                BaseUtils.AUTH_SERVICE + "/auth_user/get/" + id, "User ont found", new AuthUserGetDTO());
     }
 }

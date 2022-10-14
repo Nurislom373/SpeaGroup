@@ -1,5 +1,6 @@
 package org.khasanof.auth_service.validator.auth_following;
 
+import org.bson.types.ObjectId;
 import org.khasanof.auth_service.dto.GenericDTO;
 import org.khasanof.auth_service.dto.auth_following.AuthFollowingCreateDTO;
 import org.khasanof.auth_service.exception.exceptions.InvalidValidationException;
@@ -15,6 +16,14 @@ public class AuthFollowingValidator extends AbstractValidator<AuthFollowingCreat
         if (Objects.isNull(authFollowingCreateDTO)) {
             throw new InvalidValidationException("DTO is null");
         }
+        Boolean orElse = authFollowingCreateDTO.getFollowingsId()
+                .stream()
+                .map(ObjectId::isValid)
+                .filter(f -> !f)
+                .findFirst().orElse(true);
+        if (!ObjectId.isValid(authFollowingCreateDTO.getAuthId()) || !orElse) {
+            throw new InvalidValidationException("Invalid Id!");
+        }
     }
 
     @Override
@@ -27,5 +36,9 @@ public class AuthFollowingValidator extends AbstractValidator<AuthFollowingCreat
         if (Objects.isNull(s)) {
             throw new InvalidValidationException("ID is null");
         }
+        if (!ObjectId.isValid(s)) {
+            throw new InvalidValidationException("Invalid Id!");
+        }
+
     }
 }

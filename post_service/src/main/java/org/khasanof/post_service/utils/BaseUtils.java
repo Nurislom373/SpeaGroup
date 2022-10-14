@@ -21,13 +21,13 @@ public class BaseUtils {
 
     public static final String AUTH_SERVICE = "http://localhost:8800/" + PATH ;
 
-    public static AuthUserGetDTO callGetAPI(String path, String notFoundMessage) {
+    public static <T> T callGetAPI(String path, String notFoundMessage, T t) {
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
             ObjectMapper objectMapper = new ObjectMapper();
             CloseableHttpResponse httpResponse = httpClient.execute(new HttpGet(path));
             int statusCode = httpResponse.getStatusLine().getStatusCode();
             if (statusCode != 200) throw new NotFoundException(notFoundMessage);
-            return objectMapper.readValue(httpResponse.getEntity().getContent(), new TypeReference<Data<AuthUserGetDTO>>() {
+            return objectMapper.readValue(httpResponse.getEntity().getContent(), new TypeReference<Data<T>>() {
             }).getData();
         } catch (IOException e) {
             throw new RuntimeException(e);

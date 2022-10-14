@@ -10,6 +10,7 @@ import org.khasanof.post_service.criteria.post.PostCatCriteria;
 import org.khasanof.post_service.criteria.post.PostCriteria;
 import org.khasanof.post_service.criteria.post.PostRatingCriteria;
 import org.khasanof.post_service.criteria.post.PostUseCriteria;
+import org.khasanof.post_service.dto.auth_following.AuthFollowingGetDTO;
 import org.khasanof.post_service.dto.auth_user.AuthUserGetDTO;
 import org.khasanof.post_service.dto.post.*;
 import org.khasanof.post_service.dto.post_category.PostCategoryAddAllDTO;
@@ -248,6 +249,10 @@ public class PostServiceImpl extends AbstractService<PostRepository, PostMapper,
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private AuthFollowingGetDTO authFollowingGetDTO(String userId) {
+        return BaseUtils.callGetAPI(BaseUtils.AUTH_SERVICE + "/auth_following/get/" + userId, "User Following ont found", new AuthFollowingGetDTO());
     }
 
     // TODO post lani ob keladigan api kere obuna bogan bunachilari boyicha bolmasa top reyitingdagi postlar
