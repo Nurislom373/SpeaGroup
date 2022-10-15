@@ -35,7 +35,7 @@ public class PostBlockServiceImpl extends AbstractService<PostBlockRepository, P
     @Override
     public void create(PostBlockCreateDTO dto) {
         validator.validCreateDTO(dto);
-        if (!postService.existById(dto.getBlockedPostId()))
+        if (postService.existByIdAndCheckBlocked(dto.getBlockedPostId()))
             throw new NotFoundException("Post not found");
         if (!BlockedForEnum.hasBlockedFor(dto.getBlockedCode()))
             throw new RuntimeException("Blocked Code Invalid!");

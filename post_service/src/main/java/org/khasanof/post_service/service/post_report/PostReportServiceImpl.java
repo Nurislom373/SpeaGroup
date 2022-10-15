@@ -42,23 +42,23 @@ public class PostReportServiceImpl extends AbstractService<PostReportRepository,
         if (optional.isPresent()) {
             postReportEntity = optional.get();
             LinkedList<ReportEntity> reports = postReportEntity.getReports();
-            reports.add(new ReportEntity(dto.getUserId(), dto.getReportCode(), dto.getMessage()));
-            int totalPoint = reports.stream().mapToInt(ReportEntity::getPoint).sum();
+            ReportEntity reportEntity = new ReportEntity(dto.getUserId(), dto.getReportCode(), dto.getMessage());
+            reports.add(reportEntity);
             postReportEntity.setReports(reports);
             postReportEntity.setLastReportTime(Instant.now());
             postReportEntity.setCountReports(reports.size());
-            postReportEntity.setTotalPointReports(totalPoint);
+            postReportEntity.setTotalPointReports(postReportEntity.getTotalPointReports() + reportEntity.getPoint());
         } else {
             postReportEntity = mapper.toCreateDTO(dto);
             PostEntity postEntity = postMapper.toGetDTO(postService.get(dto.getReportPostId()));
             postReportEntity.setPostId(postEntity);
             LinkedList<ReportEntity> list = new LinkedList<>();
-            list.add(new ReportEntity(dto.getUserId(), dto.getReportCode(), dto.getMessage()));
+            ReportEntity reportEntity = new ReportEntity(dto.getUserId(), dto.getReportCode(), dto.getMessage());
+            list.add(reportEntity);
             postReportEntity.setReports(list);
-            int totalPoint = list.stream().mapToInt(ReportEntity::getPoint).sum();
             postReportEntity.setLastReportTime(Instant.now());
             postReportEntity.setCountReports(list.size());
-            postReportEntity.setTotalPointReports(totalPoint);
+            postReportEntity.setTotalPointReports(reportEntity.getPoint());
         }
         repository.save(postReportEntity);
     }
@@ -70,6 +70,11 @@ public class PostReportServiceImpl extends AbstractService<PostReportRepository,
             throw new NotFoundException("Post Report not found");
         }
         repository.deleteById(id);
+    }
+
+    @Override
+    public void checkReports(PostReportEntity entity) {
+        entity.getCountReports();
     }
 
     @Override

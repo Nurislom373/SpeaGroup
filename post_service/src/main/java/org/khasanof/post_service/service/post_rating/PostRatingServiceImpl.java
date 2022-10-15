@@ -78,16 +78,25 @@ public class PostRatingServiceImpl extends AbstractService<PostRatingRepository,
     }
 
     @Override
-    public void updateRatingCount(String postId, RatingPointEnum pointEnum) {
+    public void updateRatingCount(String postId, RatingPointEnum pointEnum, boolean remove) {
         validator.validKey(postId);
         PostRatingEntity entity = repository.findByPostIdQuery(postId).orElseThrow(() -> {
             throw new NotFoundException("Post Rating not found");
         });
-        switch (pointEnum) {
-            case LIKE -> entity.setLikesCount(entity.getLikesCount() + 1);
-            case SAVE -> entity.setSavesCount(entity.getSavesCount() + 1);
-            case SHARE -> entity.setSharesCount(entity.getSharesCount() + 1);
-            case VIEW -> entity.setViewsCount(entity.getViewsCount() + 1);
+        if (remove) {
+            switch (pointEnum) {
+                case LIKE -> entity.setLikesCount(entity.getLikesCount() - 1);
+                case SAVE -> entity.setSavesCount(entity.getSavesCount() - 1);
+                case SHARE -> entity.setSharesCount(entity.getSharesCount() - 1);
+                case VIEW -> entity.setViewsCount(entity.getViewsCount() - 1);
+            }
+        } else {
+            switch (pointEnum) {
+                case LIKE -> entity.setLikesCount(entity.getLikesCount() + 1);
+                case SAVE -> entity.setSavesCount(entity.getSavesCount() + 1);
+                case SHARE -> entity.setSharesCount(entity.getSharesCount() + 1);
+                case VIEW -> entity.setViewsCount(entity.getViewsCount() + 1);
+            }
         }
         repository.save(entity);
     }

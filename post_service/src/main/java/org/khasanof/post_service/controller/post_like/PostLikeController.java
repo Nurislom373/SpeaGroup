@@ -2,10 +2,7 @@ package org.khasanof.post_service.controller.post_like;
 
 import org.khasanof.post_service.controller.AbstractController;
 import org.khasanof.post_service.criteria.post_like.PostLikeCriteria;
-import org.khasanof.post_service.dto.post_like.PostLikeCreateDTO;
-import org.khasanof.post_service.dto.post_like.PostLikeDeleteDTO;
-import org.khasanof.post_service.dto.post_like.PostLikeDetailDTO;
-import org.khasanof.post_service.dto.post_like.PostLikeGetDTO;
+import org.khasanof.post_service.dto.post_like.*;
 import org.khasanof.post_service.response.Data;
 import org.khasanof.post_service.service.post_like.PostLikeService;
 import org.khasanof.post_service.utils.BaseUtils;
@@ -45,6 +42,11 @@ public class PostLikeController extends AbstractController<PostLikeService> {
     @RequestMapping(value = "get/{id}", method = RequestMethod.GET)
     public ResponseEntity<Data<PostLikeGetDTO>> get(@PathVariable String id) {
         return new ResponseEntity<>(new Data<>(service.get(id)), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "getLikeCount/postId={id}&type={type}", method = RequestMethod.GET)
+    public ResponseEntity<Data<PostLikeTypeCount>> getLikeCount(@PathVariable String id, @PathVariable String type) {
+        return new ResponseEntity<>(new Data<>(service.getByPostIdAndTypeLikeCount(id, type)), HttpStatus.OK);
     }
 
     @RequestMapping(value = "detail/{id}", method = RequestMethod.GET)

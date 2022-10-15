@@ -242,9 +242,10 @@ public class PostServiceImpl extends AbstractService<PostRepository, PostMapper,
     @Override
     public PostEntity getEntity(String id) {
         validator.validKey(id);
-        return repository.findById(id).orElseThrow(() -> {
-            throw new NotFoundException("Post not found");
-        });
+        return repository.findById(id)
+                .orElseThrow(() -> {
+                    throw new NotFoundException("Post not found");
+                });
     }
 
     @Override

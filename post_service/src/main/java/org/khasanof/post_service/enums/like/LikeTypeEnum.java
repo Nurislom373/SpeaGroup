@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 @Getter
 @RequiredArgsConstructor
@@ -17,5 +18,14 @@ public enum LikeTypeEnum {
                 .anyMatch(
                         obj -> obj.value.equalsIgnoreCase(var)
                 );
+    }
+
+    public static String getType(String type) {
+        return Arrays.stream(values())
+                .filter(
+                        f -> f.value.equalsIgnoreCase(type)
+                ).findFirst()
+                .orElse(null)
+                .getValue();
     }
 }

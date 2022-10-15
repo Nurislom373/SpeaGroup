@@ -7,11 +7,13 @@ import org.khasanof.post_service.dto.post_view.PostViewGetDTO;
 import org.khasanof.post_service.entity.post.PostEntity;
 import org.khasanof.post_service.entity.post_view.PostViewEntity;
 import org.khasanof.post_service.entity.view.ViewEntity;
+import org.khasanof.post_service.enums.rating.RatingPointEnum;
 import org.khasanof.post_service.mapper.post.PostMapper;
 import org.khasanof.post_service.mapper.post_view.PostViewMapper;
 import org.khasanof.post_service.repository.post_view.PostViewRepository;
 import org.khasanof.post_service.service.AbstractService;
 import org.khasanof.post_service.service.post.PostService;
+import org.khasanof.post_service.service.post_rating.PostRatingService;
 import org.khasanof.post_service.validator.post_view.PostViewValidator;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -27,11 +29,13 @@ public class PostViewServiceImpl extends AbstractService<PostViewRepository, Pos
 
     private final PostService postService;
     private final PostMapper postMapper;
+    private final PostRatingService postRatingService;
 
-    public PostViewServiceImpl(PostViewRepository repository, PostViewMapper mapper, PostViewValidator validator, PostService postService, PostMapper postMapper) {
+    public PostViewServiceImpl(PostViewRepository repository, PostViewMapper mapper, PostViewValidator validator, PostService postService, PostMapper postMapper, PostRatingService postRatingService) {
         super(repository, mapper, validator);
         this.postService = postService;
         this.postMapper = postMapper;
+        this.postRatingService = postRatingService;
     }
 
     @Override
@@ -53,11 +57,12 @@ public class PostViewServiceImpl extends AbstractService<PostViewRepository, Pos
             PostEntity postEntity = postMapper.toGetDTO(postService.get(dto.getViewPostId()));
             PostViewEntity postViewEntity = mapper.toCreateDTO(dto);
             postViewEntity.setPostId(postEntity);
-            LinkedList<ViewEntity> views = postViewEntity.getViews();
+            LinkedList<ViewEntity> views = new LinkedList<>();
             views.add(new ViewEntity(dto.getUserId()));
             postViewEntity.setViews(views);
             repository.save(postViewEntity);
         }
+        postRatingService.updateRatingCount(dto.getViewPostId(), RatingPointEnum.VIEW, false);
     }
 
     @Override

@@ -21,5 +21,4 @@ public class AuthFollowingEntity extends Auditable {
     private AuthUserEntity userId;
     @DocumentReference
     private List<AuthUserEntity> followers;
-
 }

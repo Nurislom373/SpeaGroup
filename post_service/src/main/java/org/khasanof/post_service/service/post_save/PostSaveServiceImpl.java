@@ -8,11 +8,13 @@ import org.khasanof.post_service.dto.post_save.PostSaveGetDTO;
 import org.khasanof.post_service.entity.post.PostEntity;
 import org.khasanof.post_service.entity.post_save.PostSaveEntity;
 import org.khasanof.post_service.entity.save.SaveEntity;
+import org.khasanof.post_service.enums.rating.RatingPointEnum;
 import org.khasanof.post_service.mapper.post.PostMapper;
 import org.khasanof.post_service.mapper.post_save.PostSaveMapper;
 import org.khasanof.post_service.repository.post_save.PostSaveRepository;
 import org.khasanof.post_service.service.AbstractService;
 import org.khasanof.post_service.service.post.PostService;
+import org.khasanof.post_service.service.post_rating.PostRatingService;
 import org.khasanof.post_service.validator.post_save.PostSaveValidator;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -28,11 +30,13 @@ public class PostSaveServiceImpl extends AbstractService<PostSaveRepository, Pos
 
     private final PostService postService;
     private final PostMapper postMapper;
+    private final PostRatingService postRatingService;
 
-    public PostSaveServiceImpl(PostSaveRepository repository, PostSaveMapper mapper, PostSaveValidator validator, PostService postService, PostMapper postMapper) {
+    public PostSaveServiceImpl(PostSaveRepository repository, PostSaveMapper mapper, PostSaveValidator validator, PostService postService, PostMapper postMapper, PostRatingService postRatingService) {
         super(repository, mapper, validator);
         this.postService = postService;
         this.postMapper = postMapper;
+        this.postRatingService = postRatingService;
     }
 
     @Override
@@ -59,11 +63,12 @@ public class PostSaveServiceImpl extends AbstractService<PostSaveRepository, Pos
             PostEntity postEntity = postMapper.toGetDTO(postService.get(dto.getSavePostId()));
             PostSaveEntity postSaveEntity = mapper.toCreateDTO(dto);
             postSaveEntity.setPostId(postEntity);
-            LinkedList<SaveEntity> saves = postSaveEntity.getSaves();
+            LinkedList<SaveEntity> saves = new LinkedList<>();
             saves.add(new SaveEntity(dto.getUserId()));
             postSaveEntity.setSaves(saves);
             repository.save(postSaveEntity);
         }
+        postRatingService.updateRatingCount(dto.getSavePostId(), RatingPointEnum.SAVE, false);
     }
 
     @Override
@@ -78,6 +83,7 @@ public class PostSaveServiceImpl extends AbstractService<PostSaveRepository, Pos
         }
         postSave.setSaves(saves);
         repository.save(postSave);
+        postRatingService.updateRatingCount(dto.getSavePostId(), RatingPointEnum.SAVE, true);
     }
 
     @Override

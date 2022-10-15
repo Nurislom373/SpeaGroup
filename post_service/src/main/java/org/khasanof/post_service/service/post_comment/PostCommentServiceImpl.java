@@ -19,6 +19,8 @@ import org.khasanof.post_service.validator.post_comment.PostCommentValidator;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.webjars.NotFoundException;
@@ -26,6 +28,7 @@ import org.webjars.NotFoundException;
 import java.time.Instant;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.IntStream;
 
@@ -33,46 +36,46 @@ import java.util.stream.IntStream;
 public class PostCommentServiceImpl extends AbstractService<PostCommentRepository, PostCommentMapper, PostCommentValidator> implements PostCommentService {
     private final PostRepository postRepository;
     private final PostService postService;
+    private final MongoTemplate mongoTemplate;
 
-    public PostCommentServiceImpl(PostCommentRepository repository, PostCommentMapper mapper, PostCommentValidator validator, PostRepository postRepository, PostService postService) {
+    public PostCommentServiceImpl(PostCommentRepository repository, PostCommentMapper mapper, PostCommentValidator validator, PostRepository postRepository, PostService postService, MongoTemplate mongoTemplate) {
         super(repository, mapper, validator);
         this.postRepository = postRepository;
         this.postService = postService;
+        this.mongoTemplate = mongoTemplate;
     }
 
     @Override
     public void create(PostCommentCreateDTO dto) {
         validator.validCreateDTO(dto);
-        Optional<PostCommentEntity> optional = repository.findByPostIdQuery(dto.getCommentPostId());
-        if (optional.isEmpty()) {
+        PostCommentEntity commentEntity = mongoTemplate.findOne(
+                Query.query(new Criteria("postId")
+                        .is(postService.getEntity(dto.getCommentPostId()))),
+                PostCommentEntity.class);
+        if (Objects.isNull(commentEntity)) {
             if (postService.existByIdAndCheckBlocked(dto.getCommentPostId())) {
                 throw new RuntimeException("Post is Blocked");
             }
-            AuthUserEntity user = new AuthUserEntity();
-            BeanUtils.copyProperties(getAuthDTO(dto.getUserId()), user);
             PostCommentEntity postCommentEntity = mapper.toCreateDTO(dto);
-            postCommentEntity.setPostId(postRepository.findById(dto.getCommentPostId()).get());
-            postCommentEntity.setComments(new LinkedList<>());
-            postCommentEntity.getComments().add(new CommentEntity(String.valueOf(System.currentTimeMillis()), user.getId(), dto.getReplyId(), dto.getMessage()));
-            repository.insert(postCommentEntity);
+            LinkedList<CommentEntity> comments = new LinkedList<>();
+            comments.add(new CommentEntity(String.valueOf(System.currentTimeMillis()), dto.getUserId(), dto.getReplyId(), dto.getMessage()));
+            postCommentEntity.setPostId(postRepository.findById(dto.getCommentPostId()).orElseThrow());
+            postCommentEntity.setComments(comments);
+            repository.save(postCommentEntity);
         } else {
-            PostCommentEntity postComment = optional.get();
-            AuthUserEntity user = new AuthUserEntity();
-            BeanUtils.copyProperties(getAuthDTO(dto.getUserId()), user);
-            LinkedList<CommentEntity> comments = postComment.getComments();
-            comments.add(new CommentEntity(String.valueOf(System.currentTimeMillis()), user.getId(), dto.getReplyId(), dto.getMessage()));
-            postComment.setComments(comments);
-            postComment.setLastUpdateType(CommentLastUpdateType.ADD_COMMENT.getValue());
-            postComment.setUpdatedAt(Instant.now());
-            postComment.setUpdatedBy("-1");
-            repository.save(postComment);
+            LinkedList<CommentEntity> comments = commentEntity.getComments();
+            comments.add(new CommentEntity(String.valueOf(System.currentTimeMillis()), dto.getUserId(), dto.getReplyId(), dto.getMessage()));
+            commentEntity.setComments(comments);
+            commentEntity.setLastUpdateType(CommentLastUpdateType.ADD_COMMENT.getValue());
+            commentEntity.setUpdatedAt(Instant.now());
+            commentEntity.setUpdatedBy("-1");
+            repository.save(commentEntity);
         }
     }
 
     @Override
     public void addComment(PostCommentCreateDTO dto) {
         validator.validCreateDTO(dto);
-        repository.updateOneQuery(dto.getCommentPostId(), String.valueOf(System.currentTimeMillis()), dto.getUserId(), dto.getMessage());
     }
 
     @Override
@@ -101,13 +104,16 @@ public class PostCommentServiceImpl extends AbstractService<PostCommentRepositor
     @Override
     public void addCommentToLike(PostCommentAddLikeDTO dto) {
         validator.validUpdateDTO(dto);
-        PostCommentEntity commentEntity = repository.findById(dto.getId()).orElseThrow(() -> {
-            throw new NotFoundException("Post Comment Not found");
-        });
+        PostCommentEntity commentEntity = repository.findById(dto.getId())
+                .orElseThrow(() -> {
+                    throw new NotFoundException("Post Comment Not found");
+                });
         LinkedList<CommentEntity> comments = commentEntity.getComments();
-        CommentEntity comment = comments.stream().filter(f -> f.getId().equals(dto.getCommentId())).findFirst().orElseThrow(() -> {
-            throw new NotFoundException("Comment not found");
-        });
+        CommentEntity comment = comments.stream()
+                .filter(f -> f.getId().equals(dto.getCommentId()))
+                .findFirst().orElseThrow(() -> {
+                    throw new NotFoundException("Comment not found");
+                });
         if (!LikeTypeEnum.hasLikeType(dto.getType())) {
             throw new RuntimeException("Like type is Invalid");
         }
@@ -123,13 +129,16 @@ public class PostCommentServiceImpl extends AbstractService<PostCommentRepositor
     @Override
     public void deleteCommentToLike(PostCommentRemoveLikeDTO dto) {
         validator.validCommentRemoveDTO(dto);
-        PostCommentEntity commentEntity = repository.findById(dto.getId()).orElseThrow(() -> {
-            throw new NotFoundException("Post Comment Not found");
-        });
+        PostCommentEntity commentEntity = repository.findById(dto.getId())
+                .orElseThrow(() -> {
+                    throw new NotFoundException("Post Comment Not found");
+                });
         LinkedList<CommentEntity> comments = commentEntity.getComments();
-        CommentEntity comment = comments.stream().filter(f -> f.getId().equals(dto.getCommentId())).findFirst().orElseThrow(() -> {
-            throw new NotFoundException("Comment not found");
-        });
+        CommentEntity comment = comments.stream()
+                .filter(f -> f.getId().equals(dto.getCommentId()))
+                .findFirst().orElseThrow(() -> {
+                    throw new NotFoundException("Comment not found");
+                });
         comments.remove(comment);
         LinkedList<LikeEntity> likes = comment.getLikes();
         if (!likes.removeIf(l -> l.getUserId().equals(dto.getUserId()))) {

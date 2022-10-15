@@ -17,6 +17,6 @@ public interface PostRatingService extends GenericGDLService<PostRatingGetDTO, P
 
     void setRating(PostRatingEntity entity);
 
-    void updateRatingCount(String postId, RatingPointEnum pointEnum);
+    void updateRatingCount(String postId, RatingPointEnum pointEnum, boolean remove);
 
 }

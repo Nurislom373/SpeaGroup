@@ -7,11 +7,13 @@ import org.khasanof.post_service.dto.post_share.PostShareGetDTO;
 import org.khasanof.post_service.entity.post.PostEntity;
 import org.khasanof.post_service.entity.post_share.PostShareEntity;
 import org.khasanof.post_service.entity.share.ShareEntity;
+import org.khasanof.post_service.enums.rating.RatingPointEnum;
 import org.khasanof.post_service.mapper.post.PostMapper;
 import org.khasanof.post_service.mapper.post_share.PostShareMapper;
 import org.khasanof.post_service.repository.post_share.PostShareRepository;
 import org.khasanof.post_service.service.AbstractService;
 import org.khasanof.post_service.service.post.PostService;
+import org.khasanof.post_service.service.post_rating.PostRatingService;
 import org.khasanof.post_service.validator.post_share.PostShareValidator;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -26,11 +28,13 @@ import java.util.Optional;
 public class PostShareServiceImpl extends AbstractService<PostShareRepository, PostShareMapper, PostShareValidator> implements PostShareService {
 
     private final PostService postService;
+    private final PostRatingService postRatingService;
     private final PostMapper postMapper;
 
-    public PostShareServiceImpl(PostShareRepository repository, PostShareMapper mapper, PostShareValidator validator, PostService postService, PostMapper postMapper) {
+    public PostShareServiceImpl(PostShareRepository repository, PostShareMapper mapper, PostShareValidator validator, PostService postService, PostRatingService postRatingService, PostMapper postMapper) {
         super(repository, mapper, validator);
         this.postService = postService;
+        this.postRatingService = postRatingService;
         this.postMapper = postMapper;
     }
 
@@ -53,11 +57,12 @@ public class PostShareServiceImpl extends AbstractService<PostShareRepository, P
             PostEntity postEntity = postMapper.toGetDTO(postService.get(dto.getSharePostId()));
             PostShareEntity postShareEntity = mapper.toCreateDTO(dto);
             postShareEntity.setPostId(postEntity);
-            LinkedList<ShareEntity> shares = postShareEntity.getShares();
+            LinkedList<ShareEntity> shares = new LinkedList<>();
             shares.add(new ShareEntity(dto.getUserId(), dto.getType()));
             postShareEntity.setShares(shares);
             repository.save(postShareEntity);
         }
+        postRatingService.updateRatingCount(dto.getSharePostId(), RatingPointEnum.SHARE, false);
     }
 
     @Override
