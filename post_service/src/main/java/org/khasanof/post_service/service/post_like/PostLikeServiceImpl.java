@@ -11,6 +11,7 @@ import org.khasanof.post_service.repository.post_like.PostLikeRepository;
 import org.khasanof.post_service.service.AbstractService;
 import org.khasanof.post_service.service.post.PostService;
 import org.khasanof.post_service.service.post_rating.PostRatingService;
+import org.khasanof.post_service.utils.BaseUtils;
 import org.khasanof.post_service.validator.post_like.PostLikeValidator;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -19,6 +20,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
 
+import java.time.Instant;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -46,26 +48,42 @@ public class PostLikeServiceImpl extends AbstractService<PostLikeRepository, Pos
                         .is(postService.getEntity(dto.getLikePostId()))),
                 PostLikeEntity.class);
         if (Objects.isNull(postLike)) {
-            if (!postService.existByIdAndCheckBlocked(dto.getLikePostId())) {
-                throw new NotFoundException("Post not found");
+            if (postService.existByIdAndCheckBlocked(dto.getLikePostId())) {
+                throw new NotFoundException("Post is blocked!");
             }
             PostLikeEntity postLikeEntity = mapper.toCreateDTO(dto);
             LinkedList<LikeEntity> likes = new LinkedList<>();
             likes.add(new LikeEntity(dto.getUserId(), dto.getType()));
+            postLikeEntity.setPostId(postService.getEntity(dto.getLikePostId()));
             postLikeEntity.setLikes(likes);
             repository.save(postLikeEntity);
         } else {
             LinkedList<LikeEntity> likes = postLike.getLikes();
-            boolean anyMatch = likes.stream()
-                    .anyMatch(a -> a.getUserId()
-                            .equals(dto.getUserId()));
-            if (anyMatch) {
+            LikeEntity entity = likes.stream()
+                    .filter(a -> a.getUserId()
+                            .equals(dto.getUserId()))
+                    .findFirst().orElse(null);
+            if (Objects.isNull(entity)) {
                 likes.add(new LikeEntity(dto.getUserId(), dto.getType()));
                 postLike.setLikes(likes);
+                postLike.setUpdatedAt(Instant.now());
+                postLike.setUpdatedBy(dto.getUserId());
                 repository.save(postLike);
+            } else {
+                if (!entity.getType().equalsIgnoreCase(dto.getType())) {
+                    likes.remove(entity);
+                    entity.setType(dto.getType());
+                    likes.add(entity);
+                    postLike.setLikes(likes);
+                    postLike.setUpdatedAt(Instant.now());
+                    postLike.setUpdatedBy(dto.getUserId());
+                    repository.save(postLike);
+                }
             }
         }
-        postRatingService.updateRatingCount(dto.getLikePostId(), RatingPointEnum.LIKE, false);
+        BaseUtils.EXECUTOR_SERVICE
+                .execute(() -> postRatingService.updateRatingCount(dto.getLikePostId(),
+                        RatingPointEnum.LIKE, false));
     }
 
     @Override
@@ -94,7 +112,9 @@ public class PostLikeServiceImpl extends AbstractService<PostLikeRepository, Pos
         }
         likeEntity.setLikes(likes);
         repository.save(likeEntity);
-        postRatingService.updateRatingCount(dto.getLikePostId(), RatingPointEnum.LIKE, true);
+        BaseUtils.EXECUTOR_SERVICE
+                .execute(() -> postRatingService.updateRatingCount(dto.getLikePostId(),
+                        RatingPointEnum.LIKE, true));
     }
 
     @Override

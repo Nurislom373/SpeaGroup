@@ -15,6 +15,9 @@ import org.khasanof.post_service.service.AbstractService;
 import org.khasanof.post_service.service.post.PostService;
 import org.khasanof.post_service.validator.post_rating.PostRatingValidator;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
 
@@ -28,11 +31,13 @@ public class PostRatingServiceImpl extends AbstractService<PostRatingRepository,
 
     private final PostService postService;
     private final PostMapper postMapper;
+    private final MongoTemplate mongoTemplate;
 
-    public PostRatingServiceImpl(PostRatingRepository repository, PostRatingMapper mapper, PostRatingValidator validator, PostService postService, PostMapper postMapper) {
+    public PostRatingServiceImpl(PostRatingRepository repository, PostRatingMapper mapper, PostRatingValidator validator, PostService postService, PostMapper postMapper, MongoTemplate mongoTemplate) {
         super(repository, mapper, validator);
         this.postService = postService;
         this.postMapper = postMapper;
+        this.mongoTemplate = mongoTemplate;
     }
 
     @Override
@@ -108,6 +113,19 @@ public class PostRatingServiceImpl extends AbstractService<PostRatingRepository,
             throw new NotFoundException("Post Rating not found");
         }
         repository.deleteById(postId);
+    }
+
+    @Override
+    public PostRatingEntity getEntity(String postId) {
+        validator.validKey(postId);
+        PostRatingEntity ratingEntity = mongoTemplate.findOne(
+                Query.query(new Criteria("postId")
+                        .is(postService.getEntity(postId))),
+                PostRatingEntity.class);
+        if (Objects.isNull(ratingEntity)) {
+            throw new NotFoundException("Post Rating not found");
+        }
+        return ratingEntity;
     }
 
     @Override

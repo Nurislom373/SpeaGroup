@@ -22,4 +22,10 @@ public enum RatingTypeEnum {
                         obj -> obj.value.equalsIgnoreCase(var)
                 );
     }
+
+    public static Integer getPoint(String var) {
+        return Arrays.stream(values())
+                .filter(f -> f.value.equalsIgnoreCase(var))
+                .findFirst().orElseThrow().getPoint();
+    }
 }
