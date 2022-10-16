@@ -21,14 +21,14 @@ import org.khasanof.post_service.service.post_rating.PostRatingService;
 import org.khasanof.post_service.utils.BaseUtils;
 import org.khasanof.post_service.validator.post_report.PostReportValidator;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
 
 import java.time.Instant;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.ExecutorService;
+import java.util.*;
 
 @Service
 public class PostReportServiceImpl extends AbstractService<PostReportRepository, PostReportMapper, PostReportValidator> implements PostReportService {
@@ -37,43 +37,55 @@ public class PostReportServiceImpl extends AbstractService<PostReportRepository,
     private final PostRatingService postRatingService;
     private final PostMapper postMapper;
     private final PostBlockService postBlockService;
+    private final MongoTemplate mongoTemplate;
 
-    public PostReportServiceImpl(PostReportRepository repository, PostReportMapper mapper, PostReportValidator validator, PostService postService, PostRatingService postRatingService, PostMapper postMapper, PostBlockService postBlockService) {
+    public PostReportServiceImpl(PostReportRepository repository, PostReportMapper mapper, PostReportValidator validator, PostService postService, PostRatingService postRatingService, PostMapper postMapper, PostBlockService postBlockService, MongoTemplate mongoTemplate) {
         super(repository, mapper, validator);
         this.postService = postService;
         this.postRatingService = postRatingService;
         this.postMapper = postMapper;
         this.postBlockService = postBlockService;
+        this.mongoTemplate = mongoTemplate;
     }
 
     @Override
     public void create(PostReportCreateDTO dto) {
         validator.validCreateDTO(dto);
-        Optional<PostReportEntity> optional = repository.findByPostIdQuery(dto.getReportPostId());
-        PostReportEntity postReportEntity;
-        if (optional.isPresent()) {
-            postReportEntity = optional.get();
-            LinkedList<ReportEntity> reports = postReportEntity.getReports();
-            ReportEntity reportEntity = new ReportEntity(dto.getUserId(), dto.getReportCode(), dto.getMessage());
-            reports.add(reportEntity);
-            postReportEntity.setReports(reports);
-            postReportEntity.setLastReportTime(Instant.now());
-            postReportEntity.setCountReports(reports.size());
-            postReportEntity.setTotalPointReports(postReportEntity.getTotalPointReports() + reportEntity.getPoint());
+        PostReportEntity postReport = mongoTemplate.findOne(
+                Query.query(new Criteria("postId")
+                        .is(postService.getEntity(dto.getReportPostId()))),
+                PostReportEntity.class);
+        if (Objects.nonNull(postReport)) {
+            LinkedList<ReportEntity> reports = postReport.getReports();
+            List<ReportEntity> reportEntities = reports.stream()
+                    .filter(f -> f.getUserId().equals(dto.getUserId()))
+                    .toList();
+            long count = reportEntities.stream()
+                    .filter(f -> f.getReportCode().equalsIgnoreCase(dto.getReportCode()))
+                    .count();
+            if (count <= 2) {
+                ReportEntity reportEntity = new ReportEntity(dto.getUserId(), dto.getReportCode(), dto.getMessage());
+                reports.add(reportEntity);
+                postReport.setReports(reports);
+                postReport.setLastReportTime(Instant.now());
+                postReport.setCountReports(reports.size());
+                postReport.setTotalPointReports(postReport.getTotalPointReports() + reportEntity.getPoint());
+                repository.save(postReport);
+                BaseUtils.EXECUTOR_SERVICE.execute(() -> checkReports(postReport));
+            }
         } else {
-            postReportEntity = mapper.toCreateDTO(dto);
+            PostReportEntity postReportEntity = mapper.toCreateDTO(dto);
             PostEntity postEntity = postMapper.toGetDTO(postService.get(dto.getReportPostId()));
             postReportEntity.setPostId(postEntity);
             LinkedList<ReportEntity> list = new LinkedList<>();
-            ReportEntity reportEntity = new ReportEntity(dto.getUserId(), dto.getReportCode(), dto.getMessage());
+            ReportEntity reportEntity = new ReportEntity(dto.getUserId(), dto.getReportCode().toUpperCase(), dto.getMessage());
             list.add(reportEntity);
             postReportEntity.setReports(list);
             postReportEntity.setLastReportTime(Instant.now());
             postReportEntity.setCountReports(list.size());
             postReportEntity.setTotalPointReports(reportEntity.getPoint());
+            repository.save(postReportEntity);
         }
-        repository.save(postReportEntity);
-        BaseUtils.EXECUTOR_SERVICE.execute(() -> checkReports(postReportEntity));
     }
 
     @Override
@@ -125,10 +137,6 @@ public class PostReportServiceImpl extends AbstractService<PostReportRepository,
                 ).stream()
                 .map(this::returnToGetDTO)
                 .toList();
-    }
-
-    private void checkPointReportsAndBlock(PostReportEntity entity) {
-//        TODO writing logic with block post check
     }
 
     private PostReportGetDTO returnToGetDTO(PostReportEntity entity) {

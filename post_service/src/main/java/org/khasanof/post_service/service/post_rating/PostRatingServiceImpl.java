@@ -85,9 +85,10 @@ public class PostRatingServiceImpl extends AbstractService<PostRatingRepository,
     @Override
     public void updateRatingCount(String postId, RatingPointEnum pointEnum, boolean remove) {
         validator.validKey(postId);
-        PostRatingEntity entity = repository.findByPostIdQuery(postId).orElseThrow(() -> {
-            throw new NotFoundException("Post Rating not found");
-        });
+        PostRatingEntity entity = repository.findByPostIdQuery(postId)
+                .orElseThrow(() -> {
+                    throw new NotFoundException("Post Rating not found");
+                });
         if (remove) {
             switch (pointEnum) {
                 case LIKE -> entity.setLikesCount(entity.getLikesCount() - 1);

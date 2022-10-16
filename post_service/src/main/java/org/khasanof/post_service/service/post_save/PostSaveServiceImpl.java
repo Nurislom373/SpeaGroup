@@ -15,15 +15,19 @@ import org.khasanof.post_service.repository.post_save.PostSaveRepository;
 import org.khasanof.post_service.service.AbstractService;
 import org.khasanof.post_service.service.post.PostService;
 import org.khasanof.post_service.service.post_rating.PostRatingService;
+import org.khasanof.post_service.utils.BaseUtils;
 import org.khasanof.post_service.validator.post_save.PostSaveValidator;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
 
 import java.time.Instant;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
 
 @Service
 public class PostSaveServiceImpl extends AbstractService<PostSaveRepository, PostSaveMapper, PostSaveValidator> implements PostSaveService {
@@ -31,31 +35,35 @@ public class PostSaveServiceImpl extends AbstractService<PostSaveRepository, Pos
     private final PostService postService;
     private final PostMapper postMapper;
     private final PostRatingService postRatingService;
+    private final MongoTemplate mongoTemplate;
 
-    public PostSaveServiceImpl(PostSaveRepository repository, PostSaveMapper mapper, PostSaveValidator validator, PostService postService, PostMapper postMapper, PostRatingService postRatingService) {
+    public PostSaveServiceImpl(PostSaveRepository repository, PostSaveMapper mapper, PostSaveValidator validator, PostService postService, PostMapper postMapper, PostRatingService postRatingService, MongoTemplate mongoTemplate) {
         super(repository, mapper, validator);
         this.postService = postService;
         this.postMapper = postMapper;
         this.postRatingService = postRatingService;
+        this.mongoTemplate = mongoTemplate;
     }
 
     @Override
     public void create(PostSaveCreateDTO dto) {
         validator.validCreateDTO(dto);
-        Optional<PostSaveEntity> optional = repository.findByPostIdQuery(dto.getSavePostId());
-        if (optional.isPresent()) {
-            PostSaveEntity postSaveEntity = optional.get();
-            LinkedList<SaveEntity> saves = postSaveEntity.getSaves();
+        PostSaveEntity saveEntity = mongoTemplate.findOne(
+                Query.query(new Criteria("postId")
+                        .is(postService.getEntity(dto.getSavePostId()))),
+                PostSaveEntity.class);
+        if (Objects.nonNull(saveEntity)) {
+            LinkedList<SaveEntity> saves = saveEntity.getSaves();
             boolean anyMatch = saves.stream()
                     .anyMatch(any -> any.getUserId().equals(dto.getUserId()));
             if (anyMatch) {
                 throw new RuntimeException("User already saved this post!");
             }
             saves.add(new SaveEntity(dto.getUserId()));
-            postSaveEntity.setSaves(saves);
-            postSaveEntity.setUpdatedAt(Instant.now());
-            postSaveEntity.setCreatedBy("-1");
-            repository.save(postSaveEntity);
+            saveEntity.setSaves(saves);
+            saveEntity.setUpdatedAt(Instant.now());
+            saveEntity.setCreatedBy("-1");
+            repository.save(saveEntity);
         } else {
             if (postService.existByIdAndCheckBlocked(dto.getSavePostId())) {
                 throw new RuntimeException("This Post is block");
@@ -68,7 +76,9 @@ public class PostSaveServiceImpl extends AbstractService<PostSaveRepository, Pos
             postSaveEntity.setSaves(saves);
             repository.save(postSaveEntity);
         }
-        postRatingService.updateRatingCount(dto.getSavePostId(), RatingPointEnum.SAVE, false);
+        BaseUtils.EXECUTOR_SERVICE.execute(() ->
+                postRatingService.updateRatingCount(dto.getSavePostId(),
+                        RatingPointEnum.SAVE, false));
     }
 
     @Override
