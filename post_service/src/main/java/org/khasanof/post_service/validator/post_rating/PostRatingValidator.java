@@ -1,5 +1,6 @@
 package org.khasanof.post_service.validator.post_rating;
 
+import org.bson.types.ObjectId;
 import org.khasanof.post_service.dto.GenericDTO;
 import org.khasanof.post_service.dto.post_rating.PostRatingCreateDTO;
 import org.khasanof.post_service.exceptions.exceptions.InvalidValidationException;
@@ -16,6 +17,9 @@ public class PostRatingValidator extends AbstractValidator<PostRatingCreateDTO, 
         if (Objects.isNull(postRatingCreateDTO)) {
             throw new InvalidValidationException("DTO is null");
         }
+        if (!ObjectId.isValid(postRatingCreateDTO.getRatingPostId())) {
+            throw new InvalidValidationException("Invalid ID!");
+        }
     }
 
     @Override
@@ -27,6 +31,9 @@ public class PostRatingValidator extends AbstractValidator<PostRatingCreateDTO, 
     public void validKey(String s) throws InvalidValidationException {
         if (Objects.isNull(s)) {
             throw new InvalidValidationException("ID is null");
+        }
+        if (!ObjectId.isValid(s)) {
+            throw new InvalidValidationException("Invalid ID!");
         }
     }
 }
