@@ -8,6 +8,11 @@ class PostServiceApplicationTests {
 
     @Test
     void contextLoads() {
+        
+    }
+
+    @Test
+    void addTest() {
     }
 
 }

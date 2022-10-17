@@ -20,7 +20,7 @@ public class LocalFileService {
 
     private ConcurrentHashMap<String, Boolean> concurrentFiles = new ConcurrentHashMap<>();
 
-    private final String PATH = "C:\\Nurislom\\Java\\SpeaGroup\\SpeaGroup\\upload_service\\src\\main\\resources\\static\\img\\";
+    private final String PATH = "C:\\Nurislom\\Java\\SpeaGroup\\SpeaGroup\\upload_service\\src\\main\\resources\\img\\";
 
     public String writeFile(MultipartFile file) {
         try {
@@ -43,20 +43,20 @@ public class LocalFileService {
         concurrentFiles.put(asset_id, value);
     }
 
-    @Async
-    @Scheduled(fixedDelay = 30000)
-    public void deleteFiles() {
-        concurrentFiles.keys().asIterator().forEachRemaining((key) -> {
-            if (concurrentFiles.get(key)) {
-                concurrentFiles.remove(key);
-                if (new File(key).delete()) {
-                    System.out.println("File is successfully deleted with - " + Thread.currentThread().getName());
-                } else {
-                    System.out.println("File doesn't exit");
-                }
-            }
-        });
-    }
+//    @Async
+//    @Scheduled(fixedDelay = 30000)
+//    public void deleteFiles() {
+//        concurrentFiles.keys().asIterator().forEachRemaining((key) -> {
+//            if (concurrentFiles.get(key)) {
+//                concurrentFiles.remove(key);
+//                if (new File(key).delete()) {
+//                    System.out.println("File is successfully deleted with - " + Thread.currentThread().getName());
+//                } else {
+//                    System.out.println("File doesn't exit");
+//                }
+//            }
+//        });
+//    }
 
 
 }
