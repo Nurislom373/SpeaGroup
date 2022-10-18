@@ -11,8 +11,12 @@ import java.time.Instant;
 @ToString
 public class InviteEntity {
     private String userId;
-    private String requestUserId;
     private Instant requestTime;
     private String status;
     private Instant acceptTime;
+
+    public InviteEntity(String userId) {
+        this.userId = userId;
+        this.requestTime = Instant.now();
+    }
 }

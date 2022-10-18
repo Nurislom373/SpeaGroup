@@ -1,7 +1,10 @@
 package org.khasanof.auth_service.validator.auth_invite;
 
+import org.bson.types.ObjectId;
 import org.khasanof.auth_service.dto.GenericDTO;
+import org.khasanof.auth_service.dto.auth_invite.AuthInviteChangeStatusDTO;
 import org.khasanof.auth_service.dto.auth_invite.AuthInviteCreateDTO;
+import org.khasanof.auth_service.enums.auth_invite.AuthInviteStatusEnum;
 import org.khasanof.auth_service.exception.exceptions.InvalidValidationException;
 import org.khasanof.auth_service.validator.AbstractValidator;
 import org.springframework.stereotype.Component;
@@ -16,10 +19,26 @@ public class AuthInviteValidator extends AbstractValidator<AuthInviteCreateDTO, 
         if (Objects.isNull(authInviteCreateDTO)) {
             throw new InvalidValidationException("DTO is null");
         }
+        if (!ObjectId.isValid(authInviteCreateDTO.getRequestUserId()) || !ObjectId.isValid(authInviteCreateDTO.getUserId())) {
+            throw new InvalidValidationException("Invalid ID!");
+        }
     }
 
     @Override
     public void validUpdateDTO(GenericDTO genericDTO) throws InvalidValidationException {
+
+    }
+
+    public void validChangeStatusDTO(AuthInviteChangeStatusDTO dto) throws InvalidValidationException {
+        if (Objects.isNull(dto)) {
+            throw new InvalidValidationException("DTO is null");
+        }
+        if (!ObjectId.isValid(dto.getId()) || !ObjectId.isValid(dto.getRequestUserId())) {
+            throw new InvalidValidationException("Invalid ID!");
+        }
+        if (!AuthInviteStatusEnum.hasStatusEnum(dto.getStatus())) {
+            throw new InvalidValidationException("Invalid Status!");
+        }
 
     }
 
@@ -28,7 +47,9 @@ public class AuthInviteValidator extends AbstractValidator<AuthInviteCreateDTO, 
         if (Objects.isNull(s)) {
             throw new InvalidValidationException("ID is null");
         }
-        if ()
+        if (!ObjectId.isValid(s)) {
+            throw new InvalidValidationException("Invalid ID!");
+        }
     }
 
 }

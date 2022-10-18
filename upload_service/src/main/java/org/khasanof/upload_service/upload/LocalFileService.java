@@ -20,15 +20,15 @@ public class LocalFileService {
 
     private ConcurrentHashMap<String, Boolean> concurrentFiles = new ConcurrentHashMap<>();
 
-    private final String PATH = "C:\\Nurislom\\Java\\SpeaGroup\\SpeaGroup\\upload_service\\src\\main\\resources\\img\\";
+    private final String PATH_DELL = "C:\\Nurislom\\Java\\SpeaGroup\\upload_service\\src\\main\\resources\\img\\";
 
     public String writeFile(MultipartFile file) {
         try {
             String org_name = file.getOriginalFilename();
             String extension = StringUtils.getFilenameExtension(org_name);
             String generatedName = System.currentTimeMillis() + "." + extension;
-            Files.copy(file.getInputStream(), Paths.get(PATH, generatedName), StandardCopyOption.REPLACE_EXISTING);
-            return PATH + generatedName;
+            Files.copy(file.getInputStream(), Paths.get(PATH_DELL, generatedName), StandardCopyOption.REPLACE_EXISTING);
+            return PATH_DELL + generatedName;
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -43,20 +43,20 @@ public class LocalFileService {
         concurrentFiles.put(asset_id, value);
     }
 
-//    @Async
-//    @Scheduled(fixedDelay = 30000)
-//    public void deleteFiles() {
-//        concurrentFiles.keys().asIterator().forEachRemaining((key) -> {
-//            if (concurrentFiles.get(key)) {
-//                concurrentFiles.remove(key);
-//                if (new File(key).delete()) {
-//                    System.out.println("File is successfully deleted with - " + Thread.currentThread().getName());
-//                } else {
-//                    System.out.println("File doesn't exit");
-//                }
-//            }
-//        });
-//    }
+    @Async
+    @Scheduled(fixedDelay = 30000)
+    public void deleteFiles() {
+        concurrentFiles.keys().asIterator().forEachRemaining((key) -> {
+            if (concurrentFiles.get(key)) {
+                concurrentFiles.remove(key);
+                if (new File(key).delete()) {
+                    System.out.println("File is successfully deleted with - " + Thread.currentThread().getName());
+                } else {
+                    System.out.println("File doesn't exit");
+                }
+            }
+        });
+    }
 
 
 }

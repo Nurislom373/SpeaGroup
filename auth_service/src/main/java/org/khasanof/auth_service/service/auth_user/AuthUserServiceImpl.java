@@ -138,6 +138,15 @@ public class AuthUserServiceImpl extends AbstractService<
     }
 
     @Override
+    public AuthUserEntity getEntity(String id) {
+        validator.validKey(id);
+        return repository.findById(id)
+                .orElseThrow(() -> {
+                    throw new NotFoundException("User not found");
+                });
+    }
+
+    @Override
     public long count() {
         return repository.count();
     }

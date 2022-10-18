@@ -4,6 +4,7 @@ import lombok.*;
 import org.khasanof.auth_service.dto.GenericDTO;
 
 import java.time.Instant;
+import java.util.List;
 
 @Getter
 @Setter
@@ -11,9 +12,8 @@ import java.time.Instant;
 @NoArgsConstructor
 @ToString
 public class AuthInviteGetDTO extends GenericDTO {
-    private String userId;
-    private String requestUserId;
-    private String status;
-    private Instant requestTime;
-    private Instant acceptTime;
+    private String authUserId;
+    private List<String> inviteIds;
+    private Instant updatedAt;
+    private Instant createdAt;
 }
