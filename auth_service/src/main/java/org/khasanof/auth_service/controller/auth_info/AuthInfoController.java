@@ -4,10 +4,7 @@ import org.khasanof.auth_service.controller.AbstractController;
 import org.khasanof.auth_service.criteria.auth_info.AuthInfoBetweenCriteria;
 import org.khasanof.auth_service.criteria.auth_info.AuthInfoCriteria;
 import org.khasanof.auth_service.criteria.auth_info.AuthInfoSearchCriteria;
-import org.khasanof.auth_service.dto.auth_info.AuthInfoCreateDTO;
-import org.khasanof.auth_service.dto.auth_info.AuthInfoDetailDTO;
-import org.khasanof.auth_service.dto.auth_info.AuthInfoGetDTO;
-import org.khasanof.auth_service.dto.auth_info.AuthInfoUpdateDTO;
+import org.khasanof.auth_service.dto.auth_info.*;
 import org.khasanof.auth_service.response.Data;
 import org.khasanof.auth_service.service.auth_info.AuthInfoService;
 import org.khasanof.auth_service.utils.BaseUtils;
@@ -42,6 +39,12 @@ public class AuthInfoController extends AbstractController<AuthInfoService> {
     public ResponseEntity<Data<String>> delete(@PathVariable String id) {
         service.delete(id);
         return new ResponseEntity<>(new Data<>("Successfully Deleted - Info"), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "changeVisibility", method = RequestMethod.PUT)
+    public ResponseEntity<Data<String>> changeVisibility(@RequestBody AuthInfoChangeVisibilityDTO dto) {
+        service.changeVisibility(dto);
+        return new ResponseEntity<>(new Data<>("Successfully Status Changed - Info"), HttpStatus.OK);
     }
 
     @RequestMapping(value = "get/{id}", method = RequestMethod.GET)
