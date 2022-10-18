@@ -3,14 +3,12 @@ package org.khasanof.auth_service.service.auth_info;
 import org.khasanof.auth_service.criteria.auth_info.AuthInfoBetweenCriteria;
 import org.khasanof.auth_service.criteria.auth_info.AuthInfoCriteria;
 import org.khasanof.auth_service.criteria.auth_info.AuthInfoSearchCriteria;
-import org.khasanof.auth_service.dto.auth_info.AuthInfoCreateDTO;
-import org.khasanof.auth_service.dto.auth_info.AuthInfoDetailDTO;
-import org.khasanof.auth_service.dto.auth_info.AuthInfoGetDTO;
-import org.khasanof.auth_service.dto.auth_info.AuthInfoUpdateDTO;
+import org.khasanof.auth_service.dto.auth_info.*;
 import org.khasanof.auth_service.dto.category.CategoryGetDTO;
 import org.khasanof.auth_service.dto.location.LocationCreateDTO;
 import org.khasanof.auth_service.dto.location.LocationUpdateDTO;
 import org.khasanof.auth_service.entity.auth_info.AuthInfoEntity;
+import org.khasanof.auth_service.entity.auth_invite.AuthInviteEntity;
 import org.khasanof.auth_service.entity.auth_user.AuthUserEntity;
 import org.khasanof.auth_service.entity.category.CategoryEntity;
 import org.khasanof.auth_service.entity.location.LocationEntity;
@@ -18,9 +16,12 @@ import org.khasanof.auth_service.mapper.auth_info.AuthInfoMapper;
 import org.khasanof.auth_service.mapper.category.CategoryMapper;
 import org.khasanof.auth_service.predicate.auth_info.AuthInfoPredicateExecutor;
 import org.khasanof.auth_service.repository.auth_info.AuthInfoRepository;
+import org.khasanof.auth_service.repository.auth_invite.AuthInviteRepository;
 import org.khasanof.auth_service.repository.auth_user.AuthUserRepository;
 import org.khasanof.auth_service.repository.category.CategoryRepository;
 import org.khasanof.auth_service.service.AbstractService;
+import org.khasanof.auth_service.service.auth_invite.AuthInviteService;
+import org.khasanof.auth_service.service.auth_user.AuthUserService;
 import org.khasanof.auth_service.validator.auth_info.AuthInfoValidator;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.PageRequest;
@@ -30,6 +31,7 @@ import org.webjars.NotFoundException;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -41,13 +43,17 @@ import java.util.stream.StreamSupport;
 public class AuthInfoServiceImpl extends AbstractService<AuthInfoRepository, AuthInfoMapper, AuthInfoValidator> implements AuthInfoService {
 
     private final AuthUserRepository userRepository;
+    private final AuthUserService authUserService;
+    private final AuthInviteRepository inviteRepository;
     private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
     private final MongoTemplate mongoTemplate;
 
-    public AuthInfoServiceImpl(AuthInfoRepository repository, AuthInfoMapper mapper, AuthInfoValidator validator, AuthUserRepository userRepository, CategoryRepository categoryRepository, CategoryMapper categoryMapper, MongoTemplate mongoTemplate) {
+    public AuthInfoServiceImpl(AuthInfoRepository repository, AuthInfoMapper mapper, AuthInfoValidator validator, AuthUserRepository userRepository, AuthUserService authUserService, AuthInviteRepository inviteRepository, CategoryRepository categoryRepository, CategoryMapper categoryMapper, MongoTemplate mongoTemplate) {
         super(repository, mapper, validator);
         this.userRepository = userRepository;
+        this.authUserService = authUserService;
+        this.inviteRepository = inviteRepository;
         this.categoryRepository = categoryRepository;
         this.categoryMapper = categoryMapper;
         this.mongoTemplate = mongoTemplate;
@@ -322,6 +328,20 @@ public class AuthInfoServiceImpl extends AbstractService<AuthInfoRepository, Aut
                 .size();
     }
 
+    @Override
+    public void changeVisibility(AuthInfoChangeVisibilityDTO dto) {
+        validator.validChangeVisibility(dto);
+        AuthInfoEntity authInfo = repository.findByUserIdEquals(dto.getId())
+                .orElseThrow(() -> {
+                    throw new NotFoundException("User Info not found");
+                });
+        authInfo.setVisibility(dto.getVisibility());
+        authInfo.setUpdatedAt(Instant.now());
+        authInfo.setUpdatedBy(dto.getId());
+        repository.save(authInfo);
+        inviteRepository.save(new AuthInviteEntity(authUserService.getEntity(dto.getId())));
+    }
+
     private Date strParseToDate(String date) {
         try {
             SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
@@ -334,4 +354,5 @@ public class AuthInfoServiceImpl extends AbstractService<AuthInfoRepository, Aut
     private String categoryGetId(CategoryEntity entity) {
         return entity.getId();
     }
+
 }

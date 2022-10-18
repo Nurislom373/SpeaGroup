@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class AuthInviteServiceImpl extends AbstractService<AuthInviteRepository, AuthInviteMapper, AuthInviteValidator> implements AuthInviteService {
@@ -34,6 +35,9 @@ public class AuthInviteServiceImpl extends AbstractService<AuthInviteRepository,
         AuthInviteEntity authInvite = repository.findById(dto.getRequestUserId())
                 .orElseThrow(() -> new NotFoundException("User Invites not found"));
         LinkedList<InviteEntity> invites = authInvite.getInvites();
+        if (Objects.isNull(invites)) {
+            invites = new LinkedList<>();
+        }
         boolean anyMatch = invites.stream()
                 .anyMatch(any -> any.getUserId().equals(dto.getUserId()));
         if (!anyMatch) {

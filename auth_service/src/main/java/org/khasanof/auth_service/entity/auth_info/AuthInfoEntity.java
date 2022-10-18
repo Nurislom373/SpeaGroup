@@ -36,6 +36,7 @@ public class AuthInfoEntity extends Auditable {
     private Date bornYear;
     @Field(name = "phone_number")
     private String phoneNumber;
+    private String visibility;
     @DocumentReference
     private List<CategoryEntity> interests;
 }

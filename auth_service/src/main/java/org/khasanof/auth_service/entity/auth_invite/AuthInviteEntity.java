@@ -21,4 +21,8 @@ public class AuthInviteEntity extends Auditable {
     @Field(name = "post_id")
     private AuthUserEntity userId;
     private LinkedList<InviteEntity> invites;
+
+    public AuthInviteEntity(AuthUserEntity userId) {
+        this.userId = userId;
+    }
 }

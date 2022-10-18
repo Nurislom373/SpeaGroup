@@ -22,8 +22,6 @@ public class AuthInfoCreateDTO implements BaseDTO {
     private LocationEntity location;
     private List<EducationEntity> educations;
     private List<EmploymentEntity> employments;
-    @Min(value = 7)
-    @Max(value = 90)
     private String bornYearStr;
     private String phoneNumber;
     private List<String> interestsId;
