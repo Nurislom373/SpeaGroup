@@ -8,6 +8,9 @@ import org.khasanof.upload_service.upload.dto.CloudinaryDetailDTO;
 import org.khasanof.upload_service.upload.dto.CloudinaryGetDTO;
 import org.khasanof.upload_service.upload.entity.CloudinaryEntity;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
@@ -18,6 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @EnableScheduling
@@ -26,11 +30,13 @@ public class SimpleCloudinaryService implements CloudinaryService {
     private final CloudinaryRepository cloudinaryRepository;
     private final LocalFileService localFileService;
     private final Cloudinary cloudinary;
+    private final MongoTemplate mongoTemplate;
     private final CloudinaryMapper cloudinaryMapper;
 
-    public SimpleCloudinaryService(CloudinaryRepository couldinaryRepository, LocalFileService localFileService, CloudinaryMapper cloudinaryMapper) {
+    public SimpleCloudinaryService(CloudinaryRepository couldinaryRepository, LocalFileService localFileService, MongoTemplate mongoTemplate, CloudinaryMapper cloudinaryMapper) {
         this.cloudinaryRepository = couldinaryRepository;
         this.localFileService = localFileService;
+        this.mongoTemplate = mongoTemplate;
         this.cloudinaryMapper = cloudinaryMapper;
         this.cloudinary = new Cloudinary(ObjectUtils.asMap(
                 "cloud_name", "dtkrdcbhi",
@@ -99,6 +105,17 @@ public class SimpleCloudinaryService implements CloudinaryService {
             cloudinaryRepository.deleteById(id);
         else
             throw new NotFoundException("Cloudinary not found");
+    }
+
+    @Override
+    public void checkSecureUrl(String url) {
+        Assert.notNull(url, "DTO must be not null!");
+        CloudinaryEntity entity = mongoTemplate.findOne(
+                Query.query(new Criteria("secure_url")
+                        .is(url)), CloudinaryEntity.class);
+        if (Objects.isNull(entity)) {
+            throw new NotFoundException("upload url not found!");
+        }
     }
 
     @Override

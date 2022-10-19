@@ -28,6 +28,8 @@ public interface PostService extends GenericCUDService<PostCreateDTO, PostUpdate
 
     PostEntity getEntity(String id);
 
+    void deleteByUserIdAllPost(String id);
+
     boolean existById(String postId);
 
     boolean existByIdAndCheckBlocked(String postId);

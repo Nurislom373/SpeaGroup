@@ -249,6 +249,12 @@ public class PostServiceImpl extends AbstractService<PostRepository, PostMapper,
     }
 
     @Override
+    public void deleteByUserIdAllPost(String id) {
+        validator.validKey(id);
+        repository.deleteAllByUserId(id);
+    }
+
+    @Override
     public boolean existById(String postId) {
         validator.validKey(postId);
         return repository.existsById(postId);

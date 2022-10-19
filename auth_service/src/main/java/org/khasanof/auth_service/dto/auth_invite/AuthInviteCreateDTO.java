@@ -12,7 +12,7 @@ import javax.validation.constraints.NotBlank;
 @ToString
 public class AuthInviteCreateDTO implements BaseDTO {
     @NotBlank
-    private String userId;
+    private String inviteUserId;
     @NotBlank
     private String requestUserId;
 }

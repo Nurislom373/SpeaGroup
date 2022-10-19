@@ -39,9 +39,9 @@ public class AuthInviteServiceImpl extends AbstractService<AuthInviteRepository,
             invites = new LinkedList<>();
         }
         boolean anyMatch = invites.stream()
-                .anyMatch(any -> any.getUserId().equals(dto.getUserId()));
+                .anyMatch(any -> any.getUserId().equals(dto.getInviteUserId()));
         if (!anyMatch) {
-            invites.add(new InviteEntity(dto.getUserId()));
+            invites.add(new InviteEntity(dto.getInviteUserId()));
             authInvite.setInvites(invites);
             authInvite.setUpdatedAt(Instant.now());
             repository.save(authInvite);

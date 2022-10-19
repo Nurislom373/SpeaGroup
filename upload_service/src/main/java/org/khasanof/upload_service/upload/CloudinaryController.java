@@ -39,6 +39,12 @@ public class CloudinaryController {
         return new ResponseEntity<>(new Data<>("Successfully Deleted - Cloudinary"), HttpStatus.NO_CONTENT);
     }
 
+    @RequestMapping(value = "urlCheck/{url}", method = RequestMethod.GET)
+    public ResponseEntity<Data<String>> checkUrl(@PathVariable String url) {
+        service.checkSecureUrl(url);
+        return new ResponseEntity<>(new Data<>("Successfully Check Url - Cloudinary"), HttpStatus.OK);
+    }
+
     @RequestMapping(value = "get/{id}", method = RequestMethod.GET)
     public ResponseEntity<Data<CloudinaryGetDTO>> get(@PathVariable String id) {
         return new ResponseEntity<>(new Data<>(service.get(id)), HttpStatus.OK);

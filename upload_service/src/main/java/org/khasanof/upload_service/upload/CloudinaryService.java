@@ -19,6 +19,8 @@ public interface CloudinaryService {
 
     void delete(String id);
 
+    void checkSecureUrl(String url);
+
     void delete(CloudinaryEntity entity);
 
     List<CloudinaryGetDTO> getMultiGet(List<String> ids);

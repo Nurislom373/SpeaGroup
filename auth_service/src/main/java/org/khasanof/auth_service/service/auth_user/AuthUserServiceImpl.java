@@ -23,6 +23,7 @@ import org.khasanof.auth_service.service.auth_info.AuthInfoService;
 import org.khasanof.auth_service.utils.BaseUtils;
 import org.khasanof.auth_service.validator.auth_user.AuthUserValidator;
 import org.springframework.beans.BeanUtils;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -45,7 +46,7 @@ public class AuthUserServiceImpl extends AbstractService<
     private final AuthRoleRepository roleRepository;
     private final AuthInfoService authInfoService;
 
-    public AuthUserServiceImpl(AuthUserRepository repository, AuthUserMapper mapper, AuthUserValidator validator, AuthUserProducerService userProducerService, MongoTemplate mongoTemplate, AuthRoleRepository roleRepository, AuthInfoService authInfoService) {
+    public AuthUserServiceImpl(AuthUserRepository repository, AuthUserMapper mapper, AuthUserValidator validator, AuthUserProducerService userProducerService, MongoTemplate mongoTemplate, AuthRoleRepository roleRepository, @Lazy AuthInfoService authInfoService) {
         super(repository, mapper, validator);
         this.userProducerService = userProducerService;
         this.mongoTemplate = mongoTemplate;
@@ -103,14 +104,16 @@ public class AuthUserServiceImpl extends AbstractService<
             throw new NotFoundException("User not found");
         }
         repository.delete(authUser.get());
+        userProducerService.sendMessage(id);
     }
 
     @Override
     public AuthUserGetDTO get(String id) {
         validator.validKey(id);
-        AuthUserEntity authUser = repository.findById(id).orElseThrow(() -> {
-            throw new NotFoundException("User was not found by id %s".formatted(id));
-        });
+        AuthUserEntity authUser = repository.findById(id)
+                .orElseThrow(() -> {
+                    throw new NotFoundException("User not found by id %s".formatted(id));
+                });
         return mapper.fromGetDTO(authUser);
     }
 

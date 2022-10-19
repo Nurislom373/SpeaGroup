@@ -14,4 +14,6 @@ public interface PostRepository extends MongoRepository<PostEntity, String>, Bas
 
     List<PostEntity> findAllByCreatedByOrderByCreatedAtAsc(String id);
 
+    void deleteAllByUserId(String id);
+
 }
