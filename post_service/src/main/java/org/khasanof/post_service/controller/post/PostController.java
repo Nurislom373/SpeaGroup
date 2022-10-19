@@ -1,5 +1,6 @@
 package org.khasanof.post_service.controller.post;
 
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.khasanof.post_service.controller.AbstractController;
 import org.khasanof.post_service.criteria.post.PostCatCriteria;
 import org.khasanof.post_service.criteria.post.PostCriteria;
@@ -72,6 +73,7 @@ public class PostController extends AbstractController<PostService> {
     }
 
     @RequestMapping(value = "listWithUserId", method = RequestMethod.GET)
+    @CircuitBreaker(name = "auth_service", fallbackMethod = "failMethod")
     public ResponseEntity<Data<List<PostGetDTO>>> listWithUserId(@Valid PostUseCriteria criteria) {
         return new ResponseEntity<>(new Data<>(service.listWithUserId(criteria)), HttpStatus.OK);
     }
@@ -81,6 +83,8 @@ public class PostController extends AbstractController<PostService> {
         return new ResponseEntity<>(new Data<>(service.getAllWithCreatedBy(id)), HttpStatus.OK);
     }
 
-//    TODO write random post when following or top posts api
+    public ResponseEntity<Data<String>> failMethod(Exception e) {
+        return new ResponseEntity<>(new Data<>("Server is down!!!"), HttpStatus.OK);
+    }
 
 }

@@ -1,6 +1,7 @@
 package org.khasanof.auth_service.service.auth;
 
 import com.auth0.jwt.JWT;
+import org.khasanof.auth_service.dto.auth.AuthChangePasswordDTO;
 import org.khasanof.auth_service.dto.auth.AuthRequestDTO;
 import org.khasanof.auth_service.dto.auth_block.AuthBlockCreateDTO;
 import org.khasanof.auth_service.dto.token.TokenDTO;
@@ -93,6 +94,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .build();
+    }
+
+    @Override
+    public void changePassword(AuthChangePasswordDTO dto) {
+        Assert.isNull(dto, "DTO must be not null!");
+
     }
 
 }

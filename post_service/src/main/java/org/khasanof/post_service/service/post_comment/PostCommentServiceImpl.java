@@ -91,9 +91,10 @@ public class PostCommentServiceImpl extends AbstractService<PostCommentRepositor
     public void deleteComment(String postId, String commentId) {
         validator.validKey(postId);
         validator.validKey(commentId);
-        PostCommentEntity commentEntity = repository.findById(postId).orElseThrow(() -> {
-            throw new NotFoundException("Post Comment not found");
-        });
+        PostCommentEntity commentEntity = repository.findById(postId)
+                .orElseThrow(() -> {
+                    throw new NotFoundException("Post Comment not found");
+                });
         LinkedList<CommentEntity> comments = commentEntity.getComments();
         if (!comments.removeIf(f -> f.getId().equals(commentId)))
             throw new NotFoundException("Comment not found");
@@ -186,9 +187,10 @@ public class PostCommentServiceImpl extends AbstractService<PostCommentRepositor
     public PostCommentDetailDTO detailCommentsCount(String id, Integer count) {
         validator.validKey(id);
         Assert.notNull(count, "count must be not null!");
-        PostCommentEntity comment = repository.findByPostIdQuery(id).orElseThrow(() -> {
-            throw new NotFoundException("Post Comment not found");
-        });
+        PostCommentEntity comment = repository.findByPostIdQuery(id)
+                .orElseThrow(() -> {
+                    throw new NotFoundException("Post Comment not found");
+                });
         LinkedList<CommentEntity> comments = comment.getComments();
         if (comments.size() >= 20) {
             LinkedList<CommentEntity> countComments = new LinkedList<>();

@@ -40,12 +40,14 @@ public class AuthUserServiceImpl extends AbstractService<
         AuthUserMapper,
         AuthUserValidator> implements AuthUserService {
 
+    private final AuthUserProducerService userProducerService;
     private final MongoTemplate mongoTemplate;
     private final AuthRoleRepository roleRepository;
     private final AuthInfoService authInfoService;
 
-    public AuthUserServiceImpl(AuthUserRepository repository, AuthUserMapper mapper, AuthUserValidator validator, MongoTemplate mongoTemplate, AuthRoleRepository roleRepository, AuthInfoService authInfoService) {
+    public AuthUserServiceImpl(AuthUserRepository repository, AuthUserMapper mapper, AuthUserValidator validator, AuthUserProducerService userProducerService, MongoTemplate mongoTemplate, AuthRoleRepository roleRepository, AuthInfoService authInfoService) {
         super(repository, mapper, validator);
+        this.userProducerService = userProducerService;
         this.mongoTemplate = mongoTemplate;
         this.roleRepository = roleRepository;
         this.authInfoService = authInfoService;
