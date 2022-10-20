@@ -31,20 +31,17 @@ public class AuthUserController extends AbstractController<AuthUserService> {
         return new ResponseEntity<>(new Data<>("Successfully Created - User"), HttpStatus.CREATED);
     }
 
-
     @RequestMapping(value = "update", method = RequestMethod.PUT)
     public ResponseEntity<Data<String>> update(@RequestBody AuthUserUpdateDTO dto) {
         service.update(dto);
         return new ResponseEntity<>(new Data<>("Successfully Updated - User"), HttpStatus.OK);
     }
 
-
     @RequestMapping(value = "delete/{id}", method = RequestMethod.DELETE)
     public ResponseEntity<Data<String>> delete(@Parameter(description = "id of authUser to be deleted", required = true) @PathVariable String id) {
         service.delete(id);
         return new ResponseEntity<>(new Data<>("Successfully Deleted - User"), HttpStatus.OK);
     }
-
 
     @RequestMapping(value = "get/{id}", method = RequestMethod.GET)
     public ResponseEntity<Data<AuthUserGetDTO>> get(@Parameter(description = "id of authUser to be gotten", required = true) @PathVariable String id) {

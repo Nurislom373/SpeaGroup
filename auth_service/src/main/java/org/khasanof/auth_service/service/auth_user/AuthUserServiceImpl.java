@@ -57,8 +57,12 @@ public class AuthUserServiceImpl extends AbstractService<
     @Override
     public void create(AuthUserCreateDTO createDto) {
         validator.validCreateDTO(createDto);
-        AuthUserEntity userEntity = mongoTemplate.findOne(Query.query(Criteria.where("email").is(createDto.getEmail())
-                .orOperator(Criteria.where("username").is(createDto.getUsername()))), AuthUserEntity.class);
+        AuthUserEntity userEntity = mongoTemplate.findOne(
+                Query.query(Criteria.where("email")
+                        .is(createDto.getEmail())
+                        .orOperator(Criteria.where("username")
+                                .is(createDto.getUsername()))),
+                AuthUserEntity.class);
         if (Objects.nonNull(userEntity)) {
             short equalsCount = 0;
             if (createDto.getEmail().equals(userEntity.getEmail())) {
@@ -83,7 +87,15 @@ public class AuthUserServiceImpl extends AbstractService<
         authUserEntity.setPassword(BaseUtils.ENCODER.encode(createDto.getPassword()));
         AuthUserEntity entity = repository.insert(authUserEntity);
         roleRepository.insert(new AuthRoleEntity(entity, AuthRoleEnum.USER.getValue()));
-        authInfoService.create(new AuthInfoCreateDTO(entity.getId(), BaseUtils.DEFAULT_CATEGORIES));
+        if (Objects.isNull(createDto.getCategoryIds())) {
+            BaseUtils.EXECUTOR_SERVICE.execute(() ->
+                    authInfoService.create(new AuthInfoCreateDTO(entity.getId(),
+                            createDto.getCategoryIds())));
+        } else {
+            BaseUtils.EXECUTOR_SERVICE.execute(() ->
+                    authInfoService.create(new AuthInfoCreateDTO(entity.getId(),
+                            BaseUtils.DEFAULT_CATEGORIES)));
+        }
     }
 
     @Override

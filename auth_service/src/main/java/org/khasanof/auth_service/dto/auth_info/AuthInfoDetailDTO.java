@@ -5,8 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.khasanof.auth_service.dto.GenericDTO;
+import org.khasanof.auth_service.dto.category.CategoryGetDTO;
 import org.khasanof.auth_service.entity.auth_user.AuthUserEntity;
-import org.khasanof.auth_service.entity.category.CategoryEntity;
 import org.khasanof.auth_service.entity.education.EducationEntity;
 import org.khasanof.auth_service.entity.employment.EmploymentEntity;
 import org.khasanof.auth_service.entity.location.LocationEntity;
@@ -26,5 +26,5 @@ public class AuthInfoDetailDTO extends GenericDTO {
     private Short age;
     private Date bornYear;
     private String phoneNumber;
-    private List<CategoryEntity> interests;
+    private List<CategoryGetDTO> interests;
 }

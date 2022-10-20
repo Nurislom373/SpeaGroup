@@ -1,0 +1,14 @@
+package org.khasanof.post_service.dto.category;
+
+import lombok.*;
+
+import java.util.List;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@ToString
+public class CategoryFindAllRequestDTO {
+    private List<String> ids;
+}

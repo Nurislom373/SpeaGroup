@@ -4,23 +4,20 @@ import org.khasanof.auth_service.criteria.auth_info.AuthInfoBetweenCriteria;
 import org.khasanof.auth_service.criteria.auth_info.AuthInfoCriteria;
 import org.khasanof.auth_service.criteria.auth_info.AuthInfoSearchCriteria;
 import org.khasanof.auth_service.dto.auth_info.*;
+import org.khasanof.auth_service.dto.category.CategoryFindAllRequestDTO;
 import org.khasanof.auth_service.dto.category.CategoryGetDTO;
 import org.khasanof.auth_service.dto.location.LocationCreateDTO;
 import org.khasanof.auth_service.dto.location.LocationUpdateDTO;
 import org.khasanof.auth_service.entity.auth_info.AuthInfoEntity;
 import org.khasanof.auth_service.entity.auth_invite.AuthInviteEntity;
 import org.khasanof.auth_service.entity.auth_user.AuthUserEntity;
-import org.khasanof.auth_service.entity.category.CategoryEntity;
 import org.khasanof.auth_service.entity.location.LocationEntity;
 import org.khasanof.auth_service.mapper.auth_info.AuthInfoMapper;
-import org.khasanof.auth_service.mapper.category.CategoryMapper;
 import org.khasanof.auth_service.predicate.auth_info.AuthInfoPredicateExecutor;
 import org.khasanof.auth_service.repository.auth_info.AuthInfoRepository;
 import org.khasanof.auth_service.repository.auth_invite.AuthInviteRepository;
 import org.khasanof.auth_service.repository.auth_user.AuthUserRepository;
-import org.khasanof.auth_service.repository.category.CategoryRepository;
 import org.khasanof.auth_service.service.AbstractService;
-import org.khasanof.auth_service.service.auth_invite.AuthInviteService;
 import org.khasanof.auth_service.service.auth_user.AuthUserService;
 import org.khasanof.auth_service.validator.auth_info.AuthInfoValidator;
 import org.springframework.beans.BeanUtils;
@@ -32,12 +29,9 @@ import org.webjars.NotFoundException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.IntStream;
-import java.util.stream.StreamSupport;
 
 @Service
 public class AuthInfoServiceImpl extends AbstractService<AuthInfoRepository, AuthInfoMapper, AuthInfoValidator> implements AuthInfoService {
@@ -45,32 +39,31 @@ public class AuthInfoServiceImpl extends AbstractService<AuthInfoRepository, Aut
     private final AuthUserRepository userRepository;
     private final AuthUserService authUserService;
     private final AuthInviteRepository inviteRepository;
-    private final CategoryRepository categoryRepository;
-    private final CategoryMapper categoryMapper;
+    private final PostCategoryFeignClient categoryFeignClient;
     private final MongoTemplate mongoTemplate;
 
-    public AuthInfoServiceImpl(AuthInfoRepository repository, AuthInfoMapper mapper, AuthInfoValidator validator, AuthUserRepository userRepository, AuthUserService authUserService, AuthInviteRepository inviteRepository, CategoryRepository categoryRepository, CategoryMapper categoryMapper, MongoTemplate mongoTemplate) {
+    public AuthInfoServiceImpl(AuthInfoRepository repository, AuthInfoMapper mapper, AuthInfoValidator validator, AuthUserRepository userRepository, AuthUserService authUserService, AuthInviteRepository inviteRepository, PostCategoryFeignClient categoryFeignClient, MongoTemplate mongoTemplate) {
         super(repository, mapper, validator);
         this.userRepository = userRepository;
         this.authUserService = authUserService;
         this.inviteRepository = inviteRepository;
-        this.categoryRepository = categoryRepository;
-        this.categoryMapper = categoryMapper;
+        this.categoryFeignClient = categoryFeignClient;
         this.mongoTemplate = mongoTemplate;
     }
 
     @Override
     public void create(AuthInfoCreateDTO dto) {
         validator.validCreateDTO(dto);
-        AuthUserEntity userEntity = userRepository.findById(dto.getAuthid()).orElseThrow(() -> {
-            throw new NotFoundException("User not found");
-        });
-        List<CategoryEntity> list = StreamSupport.stream(
-                categoryRepository.findAllById(
-                        dto.getInterestsId()).spliterator(), false
-        ).toList();
-        if (list.isEmpty())
-            throw new NotFoundException("Category not found");
+        AuthUserEntity userEntity = userRepository.findById(dto.getAuthid())
+                .orElseThrow(() -> {
+                    throw new NotFoundException("User not found");
+                });
+        List<CategoryGetDTO> dtoList = categoryFeignClient.findAllById(
+                        new CategoryFindAllRequestDTO(dto.getInterestsId()))
+                .getData();
+        List<String> list = dtoList.stream()
+                .map(CategoryGetDTO::getId)
+                .toList();
         AuthInfoEntity authInfoEntity = mapper.toCreateDTO(dto);
         authInfoEntity.setUserId(userEntity);
         authInfoEntity.setBornYear(Objects.isNull(dto.getBornYearStr()) ? null : strParseToDate(dto.getBornYearStr()));
@@ -81,17 +74,18 @@ public class AuthInfoServiceImpl extends AbstractService<AuthInfoRepository, Aut
     @Override
     public void update(AuthInfoUpdateDTO dto) {
         validator.validUpdateDTO(dto);
-        AuthInfoEntity entity = repository.findById(dto.getId()).orElseThrow(() -> {
-            throw new NotFoundException("Info not found");
-        });
+        AuthInfoEntity entity = repository.findById(dto.getId())
+                .orElseThrow(() -> {
+                    throw new NotFoundException("Info not found");
+                });
         if (Objects.nonNull(dto.getInterestsId())) {
-            List<CategoryEntity> categoryEntities = new ArrayList<>();
-            dto.getInterestsId().forEach((obj) -> {
-                categoryEntities.add(
-                        categoryRepository.findById(obj).orElseThrow(() -> new NotFoundException("Category not found"))
-                );
-            });
-            entity.setInterests(categoryEntities);
+            List<CategoryGetDTO> list = categoryFeignClient.findAllById(
+                            new CategoryFindAllRequestDTO(dto.getInterestsId()))
+                    .getData();
+            List<String> ids = list.stream()
+                    .map(CategoryGetDTO::getId)
+                    .toList();
+            entity.setInterests(ids);
         }
         BeanUtils.copyProperties(dto, entity);
         repository.save(entity);
@@ -109,14 +103,11 @@ public class AuthInfoServiceImpl extends AbstractService<AuthInfoRepository, Aut
     @Override
     public AuthInfoGetDTO get(String id) {
         validator.validKey(id);
-        AuthInfoEntity entity = repository.findById(id).orElseThrow(() -> {
-            throw new NotFoundException("Info not found");
-        });
-        AuthInfoGetDTO getDTO = mapper.fromGetDTO(entity);
-        entity.getInterests().forEach((obj) -> {
-            getDTO.getInterestsId().add(obj.getId());
-        });
-        return getDTO;
+        return returnToGetDTO(
+                repository.findById(id)
+                        .orElseThrow(() -> {
+                            throw new NotFoundException("Info not found");
+                        }));
     }
 
     @Override
@@ -131,23 +122,15 @@ public class AuthInfoServiceImpl extends AbstractService<AuthInfoRepository, Aut
 
     @Override
     public List<AuthInfoGetDTO> list(AuthInfoCriteria criteria) {
-        List<AuthInfoEntity> all = repository.findAll(
-                PageRequest.of(
-                        criteria.getPage(),
-                        criteria.getSize(),
-                        criteria.getDirection(),
-                        criteria.getFieldsEnum().getValue()
-                )).stream().toList();
-        List<AuthInfoGetDTO> list = mapper.fromGetListDTO(all);
-        for (int i = 0; i < all.size(); i++) {
-            list.get(i).setInterestsId(
-                    all.get(i).getInterests()
-                            .stream()
-                            .map(this::categoryGetId)
-                            .toList()
-            );
-        }
-        return list;
+        return repository.findAll(
+                        PageRequest.of(
+                                criteria.getPage(),
+                                criteria.getSize(),
+                                criteria.getDirection(),
+                                criteria.getFieldsEnum().getValue()
+                        )).stream()
+                .map(this::returnToGetDTO)
+                .toList();
     }
 
     @Override
@@ -157,36 +140,18 @@ public class AuthInfoServiceImpl extends AbstractService<AuthInfoRepository, Aut
 
     @Override
     public List<AuthInfoGetDTO> listWithSc(AuthInfoSearchCriteria searchCriteria) {
-        List<AuthInfoEntity> all = mongoTemplate.find(
-                new AuthInfoPredicateExecutor.SearchPredicate(searchCriteria).searchQuery(),
-                AuthInfoEntity.class);
-        List<AuthInfoGetDTO> list = mapper.fromGetListDTO(all);
-        IntStream.range(0, all.size()).forEach(i -> {
-            list.get(i).setInterestsId(
-                    all.get(i).getInterests()
-                            .stream()
-                            .map(this::categoryGetId)
-                            .toList()
-            );
-        });
-        return list;
+        return mongoTemplate.find(
+                        new AuthInfoPredicateExecutor.SearchPredicate(searchCriteria).searchQuery(),
+                        AuthInfoEntity.class).stream()
+                .map(this::returnToGetDTO).toList();
     }
 
     @Override
     public List<AuthInfoGetDTO> listWithBc(AuthInfoBetweenCriteria betweenCriteria) {
-        List<AuthInfoEntity> all = mongoTemplate.find(
-                new AuthInfoPredicateExecutor.BetweenPredicate(betweenCriteria).betweenQuery(),
-                AuthInfoEntity.class);
-        List<AuthInfoGetDTO> list = mapper.fromGetListDTO(all);
-        IntStream.range(0, list.size()).forEach(i -> {
-            list.get(i).setInterestsId(
-                    all.get(i).getInterests()
-                            .stream()
-                            .map(this::categoryGetId)
-                            .toList()
-            );
-        });
-        return list;
+        return mongoTemplate.find(
+                        new AuthInfoPredicateExecutor.BetweenPredicate(betweenCriteria).betweenQuery(),
+                        AuthInfoEntity.class).stream()
+                .map(this::returnToGetDTO).toList();
     }
 
     @Override
@@ -234,11 +199,8 @@ public class AuthInfoServiceImpl extends AbstractService<AuthInfoRepository, Aut
                 .orElseThrow(() -> {
                     throw new NotFoundException("Info not found");
                 });
-        CategoryEntity category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> {
-                    throw new NotFoundException("Category not found");
-                });
-        entity.getInterests().add(category);
+        CategoryGetDTO data = categoryFeignClient.get(categoryId).getData();
+        entity.getInterests().add(data.getId());
         repository.save(entity);
     }
 
@@ -250,13 +212,11 @@ public class AuthInfoServiceImpl extends AbstractService<AuthInfoRepository, Aut
                 .orElseThrow(() -> {
                     throw new NotFoundException("Info not found");
                 });
-        categoryIds.forEach((id) -> {
-            CategoryEntity category = categoryRepository.findById(id)
-                    .orElseThrow(() -> {
-                        throw new NotFoundException("Category not found");
-                    });
-            entity.getInterests().add(category);
-        });
+        List<CategoryGetDTO> data = categoryFeignClient.findAllById(
+                        new CategoryFindAllRequestDTO(categoryIds))
+                .getData();
+        List<String> ids = data.stream().map(CategoryGetDTO::getId).toList();
+        entity.setInterests(ids);
         repository.save(entity);
     }
 
@@ -269,8 +229,7 @@ public class AuthInfoServiceImpl extends AbstractService<AuthInfoRepository, Aut
                     throw new NotFoundException("Info not found");
                 });
         boolean removeIf = entity.getInterests()
-                .removeIf(obj -> obj.getId()
-                        .equals(categoryId));
+                .removeIf(obj -> obj.equals(categoryId));
         if (!removeIf)
             throw new RuntimeException("Category not found");
         repository.save(entity);
@@ -286,8 +245,7 @@ public class AuthInfoServiceImpl extends AbstractService<AuthInfoRepository, Aut
                 });
         categoryIds.forEach((id) -> {
             entity.getInterests()
-                    .removeIf(obj -> obj.getId()
-                            .equals(id));
+                    .removeIf(obj -> obj.equals(id));
         });
         repository.save(entity);
     }
@@ -296,26 +254,24 @@ public class AuthInfoServiceImpl extends AbstractService<AuthInfoRepository, Aut
     public CategoryGetDTO getCategory(String infoId, String categoryId) {
         validator.validKey(infoId);
         validator.validKey(categoryId);
-        return categoryMapper.fromGetDTO(
-                repository.findById(infoId).orElseThrow(() -> {
-                            throw new NotFoundException("Info not found");
-                        }).getInterests().stream().filter(
-                                obj -> obj.getId()
-                                        .equals(categoryId))
-                        .findAny().orElseThrow(() -> {
-                            throw new NotFoundException("Category not found");
-                        }));
+        return categoryFeignClient.get(
+                        repository.findById(infoId)
+                                .orElseThrow(() -> {
+                                    throw new NotFoundException("Info not found");
+                                }).getId())
+                .getData();
     }
 
     @Override
     public List<CategoryGetDTO> listCategory(String infoId) {
         validator.validKey(infoId);
-        return categoryMapper.fromGetListDTO(
-                repository.findById(infoId)
-                        .orElseThrow(() -> {
-                            throw new NotFoundException("Info not found");
-                        }).getInterests()
-        );
+        return categoryFeignClient.findAllById(
+                new CategoryFindAllRequestDTO(
+                        repository.findById(infoId)
+                                .orElseThrow(() -> {
+                                    throw new NotFoundException("Info not found");
+                                }).getInterests())
+        ).getData();
     }
 
     @Override
@@ -331,15 +287,22 @@ public class AuthInfoServiceImpl extends AbstractService<AuthInfoRepository, Aut
     @Override
     public void changeVisibility(AuthInfoChangeVisibilityDTO dto) {
         validator.validChangeVisibility(dto);
-        AuthInfoEntity authInfo = repository.findByUserIdEquals(dto.getId())
+        AuthInfoEntity authInfo = repository.findByUserIdEquals(
+                        authUserService.getEntity(dto.getId()))
                 .orElseThrow(() -> {
-                    throw new NotFoundException("User Info not found");
+                    throw new NotFoundException("Info not found");
                 });
         authInfo.setVisibility(dto.getVisibility());
         authInfo.setUpdatedAt(Instant.now());
         authInfo.setUpdatedBy(dto.getId());
         repository.save(authInfo);
         inviteRepository.save(new AuthInviteEntity(authUserService.getEntity(dto.getId())));
+    }
+
+    private AuthInfoGetDTO returnToGetDTO(AuthInfoEntity entity) {
+        AuthInfoGetDTO authInfoGetDTO = mapper.fromGetDTO(entity);
+        authInfoGetDTO.setAuthid(entity.getUserId().getId());
+        return authInfoGetDTO;
     }
 
     private Date strParseToDate(String date) {
@@ -349,10 +312,6 @@ public class AuthInfoServiceImpl extends AbstractService<AuthInfoRepository, Aut
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private String categoryGetId(CategoryEntity entity) {
-        return entity.getId();
     }
 
 }

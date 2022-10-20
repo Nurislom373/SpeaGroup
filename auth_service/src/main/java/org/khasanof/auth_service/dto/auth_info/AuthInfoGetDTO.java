@@ -24,5 +24,5 @@ public class AuthInfoGetDTO extends GenericDTO {
     private Short age;
     private Date bornYear;
     private String phoneNumber;
-    private List<String> interestsId;
+    private List<String> interests;
 }

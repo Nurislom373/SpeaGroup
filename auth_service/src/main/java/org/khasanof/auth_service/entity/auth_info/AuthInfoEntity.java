@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.khasanof.auth_service.entity.Auditable;
 import org.khasanof.auth_service.entity.auth_user.AuthUserEntity;
-import org.khasanof.auth_service.entity.category.CategoryEntity;
 import org.khasanof.auth_service.entity.education.EducationEntity;
 import org.khasanof.auth_service.entity.employment.EmploymentEntity;
 import org.khasanof.auth_service.entity.location.LocationEntity;
@@ -37,6 +36,5 @@ public class AuthInfoEntity extends Auditable {
     @Field(name = "phone_number")
     private String phoneNumber;
     private String visibility;
-    @DocumentReference
-    private List<CategoryEntity> interests;
+    private List<String> interests;
 }

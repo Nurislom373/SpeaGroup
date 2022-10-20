@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.khasanof.auth_service.dto.BaseDTO;
 
+import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -19,4 +21,5 @@ public class AuthUserCreateDTO implements BaseDTO {
     private String password;
     private String language;
     private String imagePath;
+    private List<String> categoryIds;
 }

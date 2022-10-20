@@ -2,10 +2,7 @@ package org.khasanof.post_service.controller.category;
 
 import org.khasanof.post_service.controller.AbstractController;
 import org.khasanof.post_service.criteria.category.CategoryCriteria;
-import org.khasanof.post_service.dto.category.CategoryCreateDTO;
-import org.khasanof.post_service.dto.category.CategoryDetailDTO;
-import org.khasanof.post_service.dto.category.CategoryGetDTO;
-import org.khasanof.post_service.dto.category.CategoryUpdateDTO;
+import org.khasanof.post_service.dto.category.*;
 import org.khasanof.post_service.response.Data;
 import org.khasanof.post_service.service.category.CategoryService;
 import org.khasanof.post_service.utils.BaseUtils;
@@ -50,6 +47,11 @@ public class CategoryController extends AbstractController<CategoryService> {
     @RequestMapping(value = "detail/{id}", method = RequestMethod.GET)
     public ResponseEntity<Data<CategoryDetailDTO>> detail(@PathVariable String id) {
         return new ResponseEntity<>(new Data<>(service.detail(id)), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "findAllById", method = RequestMethod.POST)
+    public ResponseEntity<Data<List<CategoryGetDTO>>> findAllById(@RequestBody CategoryFindAllRequestDTO dto) {
+        return new ResponseEntity<>(new Data<>(service.getAllEntity(dto.getIds())), HttpStatus.OK);
     }
 
     @RequestMapping(value = "list", method = RequestMethod.GET)
