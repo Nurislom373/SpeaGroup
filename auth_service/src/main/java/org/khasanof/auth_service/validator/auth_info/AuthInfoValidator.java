@@ -27,15 +27,19 @@ public class AuthInfoValidator extends AbstractValidator<AuthInfoCreateDTO, Auth
             throw new InvalidValidationException("Invalid ID!");
         }
         Pattern pattern = Pattern.compile("^(\\\\+\\\\d{1,3}( )?)?((\\\\(\\\\d{3}\\\\))|\\\\d{3})[- .]?\\\\d{3}[- .]?\\\\d{4}$");
-        Matcher matcher = pattern.matcher(authInfoCreateDTO.getPhoneNumber());
-        if (!matcher.matches()) {
-            throw new InvalidValidationException("Invalid Phone Number!");
+        if (Objects.nonNull(authInfoCreateDTO.getPhoneNumber())) {
+            Matcher matcher = pattern.matcher(authInfoCreateDTO.getPhoneNumber());
+            if (!matcher.matches()) {
+                throw new InvalidValidationException("Invalid Phone Number!");
+            }
         }
-        String bornYearStr = authInfoCreateDTO.getBornYearStr();
-        if (StringUtils.isNumeric(bornYearStr)) {
-            int year = Integer.parseInt(bornYearStr);
-            if (year < 1920 || year > 2022) {
-                throw new InvalidValidationException("Born year Invalid!");
+        if (Objects.nonNull(authInfoCreateDTO.getBornYearStr())) {
+            String bornYearStr = authInfoCreateDTO.getBornYearStr();
+            if (StringUtils.isNumeric(bornYearStr)) {
+                int year = Integer.parseInt(bornYearStr);
+                if (year < 1920 || year > 2022) {
+                    throw new InvalidValidationException("Born year Invalid!");
+                }
             }
         }
     }

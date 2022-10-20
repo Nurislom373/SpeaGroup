@@ -51,7 +51,7 @@ public class CategoryController extends AbstractController<CategoryService> {
 
     @RequestMapping(value = "findAllById", method = RequestMethod.POST)
     public ResponseEntity<Data<List<CategoryGetDTO>>> findAllById(@RequestBody CategoryFindAllRequestDTO dto) {
-        return new ResponseEntity<>(new Data<>(service.getAllEntity(dto.getIds())), HttpStatus.OK);
+        return new ResponseEntity<>(new Data<>(service.findAllById(dto.getIds())), HttpStatus.OK);
     }
 
     @RequestMapping(value = "list", method = RequestMethod.GET)

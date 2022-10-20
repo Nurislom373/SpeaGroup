@@ -99,8 +99,17 @@ public class CategoryServiceImpl extends AbstractService<CategoryRepository, Cat
     }
 
     @Override
-    public List<CategoryGetDTO> getAllEntity(List<String> ids) {
+    public List<CategoryEntity> getAllEntity(List<String> ids) {
         Assert.notNull(ids, "List must be not null!");
+        return
+                ids.stream()
+                        .map(repository::findById)
+                        .map(Optional::orElseThrow)
+                        .toList();
+    }
+
+    @Override
+    public List<CategoryGetDTO> findAllById(List<String> ids) {
         return mapper.fromGetListDTO(
                 ids.stream()
                         .map(repository::findById)
