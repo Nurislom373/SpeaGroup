@@ -10,9 +10,9 @@ public class PostConsumerService {
 
     private final PostService postService;
 
-    @KafkaListener(topics = "auth", groupId = "0", containerFactory = "kafkaListenerContainerFactory")
-    public void consume(String id) {
-        postService.deleteByUserIdAllPost(id);
+    @KafkaListener(topics = "auth", groupId = "0", containerFactory = "apacheKafkaListenerContainerFactory")
+    public void consume(Object id) {
+        postService.deleteByUserIdAllPost((String) id);
     }
 
 }
