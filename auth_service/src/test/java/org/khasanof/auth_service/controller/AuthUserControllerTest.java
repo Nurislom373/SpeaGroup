@@ -13,6 +13,7 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -21,6 +22,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.util.LinkedMultiValueMap;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -28,27 +30,43 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 public class AuthUserControllerTest {
     @Autowired
     private MockMvc mockMvc;
+
+    @MockBean
+    private AuthUserServiceImpl authUserService;
     @Autowired
     private ObjectMapper objectMapper;
 
     @Test
     public void getMethodTest() throws Exception {
-        MvcResult mvcResult1 = mockMvc.perform(
+        mockMvc.perform(
                         MockMvcRequestBuilders.get("/api/v1/auth_user/get/{id}",
                                 "6320c3daef1ded597035d899"))
                 .andExpect(MockMvcResultMatchers.status().is2xxSuccessful())
-                .andDo(MockMvcResultHandlers.print())
-                .andReturn();
+                .andDo(MockMvcResultHandlers.print());
 
         MvcResult mvcResult2 = mockMvc.perform(
                         MockMvcRequestBuilders.get("/api/v1/auth_user/get/{id}",
                                 "6320c3daef1ded597035d89"))
-                .andExpect(MockMvcResultMatchers.status().isBadRequest())
                 .andDo(MockMvcResultHandlers.print())
                 .andReturn();
 
-        Assertions.assertEquals(HttpStatus.OK.value(), mvcResult1.getResponse().getStatus());
         Assertions.assertEquals(HttpStatus.BAD_REQUEST.value(), mvcResult2.getResponse().getStatus());
+    }
+
+    @Test
+    public void listMethodTest() throws Exception {
+        LinkedMultiValueMap<String, String> map = new LinkedMultiValueMap<>();
+        map.add("size", "20");
+        map.add("page", "0");
+        map.add("direction", "ASC");
+        map.add("fieldsEnum", "USERNAME");
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/auth_user/list")
+                .params(map)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data").exists())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[*].id").isNotEmpty());
     }
 
     @Test
