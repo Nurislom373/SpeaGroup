@@ -16,6 +16,9 @@ public class AuthUserValidator extends AbstractValidator<AuthUserCreateDTO, Auth
         if (Objects.isNull(authUserCreateDTO)) {
             throw new InvalidValidationException("DTO is null");
         }
+        if (authUserCreateDTO.getUsername().length() < 4 || authUserCreateDTO.getUsername().length() > 50) {
+            throw new InvalidValidationException("Must be Username min size 4 max 50");
+        }
     }
 
     @Override
