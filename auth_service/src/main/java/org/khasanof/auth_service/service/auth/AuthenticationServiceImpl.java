@@ -10,6 +10,7 @@ import org.khasanof.auth_service.dto.token.TokenDTO;
 import org.khasanof.auth_service.entity.auth_role.AuthRoleEntity;
 import org.khasanof.auth_service.entity.auth_token.AuthTokenEntity;
 import org.khasanof.auth_service.entity.auth_user.AuthUserEntity;
+import org.khasanof.auth_service.enums.auth_token.AuthTokenType;
 import org.khasanof.auth_service.exception.exceptions.InvalidValidationException;
 import org.khasanof.auth_service.exception.exceptions.PasswordDoesNotMatchException;
 import org.khasanof.auth_service.repository.auth_role.AuthRoleRepository;
@@ -103,8 +104,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .sign(JWTUtils.getAlgorithm());
 
         AuthTokenEntity tokenEntity = authTokenRepository.save(
-                new AuthTokenEntity(userEntity, accessToken, BaseUtils.currentTimeAddMinute(50)
-                ));
+                new AuthTokenEntity(userEntity, AuthTokenType.ACCESS,
+                        accessToken, BaseUtils.currentTimeAddMinute(50)));
         tokenRedisRepository.save(tokenEntity);
 
         return TokenDTO.builder()

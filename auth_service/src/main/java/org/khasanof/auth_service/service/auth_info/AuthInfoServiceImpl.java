@@ -12,6 +12,7 @@ import org.khasanof.auth_service.entity.auth_info.AuthInfoEntity;
 import org.khasanof.auth_service.entity.auth_invite.AuthInviteEntity;
 import org.khasanof.auth_service.entity.auth_user.AuthUserEntity;
 import org.khasanof.auth_service.entity.location.LocationEntity;
+import org.khasanof.auth_service.enums.auth_info.AuthInfoVisibilityEnum;
 import org.khasanof.auth_service.mapper.auth_info.AuthInfoMapper;
 import org.khasanof.auth_service.predicate.auth_info.AuthInfoPredicateExecutor;
 import org.khasanof.auth_service.repository.auth_info.AuthInfoRepository;
@@ -296,7 +297,8 @@ public class AuthInfoServiceImpl extends AbstractService<AuthInfoRepository, Aut
         authInfo.setUpdatedAt(Instant.now());
         authInfo.setUpdatedBy(dto.getId());
         repository.save(authInfo);
-        inviteRepository.save(new AuthInviteEntity(authUserService.getEntity(dto.getId())));
+        if (AuthInfoVisibilityEnum.PRIVATE.getValue().equalsIgnoreCase(dto.getVisibility()))
+            inviteRepository.save(new AuthInviteEntity(authUserService.getEntity(dto.getId())));
     }
 
     private AuthInfoGetDTO returnToGetDTO(AuthInfoEntity entity) {

@@ -10,6 +10,7 @@ import org.khasanof.auth_service.mapper.auth_follower.AuthFollowerMapper;
 import org.khasanof.auth_service.repository.auth_follower.AuthFollowerRepository;
 import org.khasanof.auth_service.repository.auth_user.AuthUserRepository;
 import org.khasanof.auth_service.service.AbstractService;
+import org.khasanof.auth_service.service.auth_user.AuthUserService;
 import org.khasanof.auth_service.validator.auth_follower.AuthFollowerValidator;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -29,28 +30,27 @@ public class AuthFollowerServiceImpl extends AbstractService<AuthFollowerReposit
 
     private final AuthUserRepository userRepository;
     private final MongoTemplate mongoTemplate;
+    private final AuthUserService userService;
 
-    public AuthFollowerServiceImpl(AuthFollowerRepository repository, AuthFollowerMapper mapper, AuthFollowerValidator validator, AuthUserRepository userRepository, MongoTemplate mongoTemplate) {
+    public AuthFollowerServiceImpl(AuthFollowerRepository repository, AuthFollowerMapper mapper, AuthFollowerValidator validator, AuthUserRepository userRepository, MongoTemplate mongoTemplate, AuthUserService userService) {
         super(repository, mapper, validator);
         this.userRepository = userRepository;
         this.mongoTemplate = mongoTemplate;
+        this.userService = userService;
     }
 
     @Override
     public void create(AuthFollowerCreateDTO dto) {
         validator.validCreateDTO(dto);
-        AuthUserEntity user = userRepository.findById(dto.getAuthId())
-                .orElseThrow(() -> {
-                    throw new NotFoundException("User not found");
-                });
         AuthFollowerEntity followerEntity = mongoTemplate.findOne(
-                Query.query(new Criteria("userId").is(user)),
+                Query.query(new Criteria("userId")
+                        .is(userService.getEntity(dto.getAuthId()))),
                 AuthFollowerEntity.class);
         if (Objects.nonNull(followerEntity)) {
             List<String> followerId = dto.getFollowerId();
             List<AuthUserEntity> followers = followerEntity.getFollowers();
             List<String> alreadyFollowers = new ArrayList<>();
-            for (String fol : followerId) {
+            followerId.forEach((fol) -> {
                 alreadyFollowers.add(
                         followers.stream()
                                 .filter(f -> f.getId().equals(fol))
@@ -58,7 +58,7 @@ public class AuthFollowerServiceImpl extends AbstractService<AuthFollowerReposit
                                 .findFirst()
                                 .orElse(null)
                 );
-            }
+            });
             if (alreadyFollowers.size() != 0) {
                 followerId.removeAll(alreadyFollowers);
             }
@@ -83,7 +83,7 @@ public class AuthFollowerServiceImpl extends AbstractService<AuthFollowerReposit
                         }));
             });
             repository.save(AuthFollowerEntity.builder()
-                    .userId(user)
+                    .userId(userService.getEntity(dto.getAuthId()))
                     .followers(list)
                     .build());
         }
@@ -102,9 +102,10 @@ public class AuthFollowerServiceImpl extends AbstractService<AuthFollowerReposit
     public void deleteFollower(String id, String userId) {
         validator.validKey(id);
         validator.validKey(userId);
-        AuthFollowerEntity authFollower = repository.findById(id).orElseThrow(() -> {
-            throw new NotFoundException("User Follower not found");
-        });
+        AuthFollowerEntity authFollower = repository.findById(id)
+                .orElseThrow(() -> {
+                    throw new NotFoundException("User Follower not found");
+                });
         List<AuthUserEntity> followers = authFollower.getFollowers();
         if (!followers.removeIf(f -> f.getId().equals(userId))) {
             throw new NotFoundException("User not found");

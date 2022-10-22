@@ -1,13 +1,11 @@
 package org.khasanof.auth_service.controller.auth_token;
 
 import org.khasanof.auth_service.controller.AbstractController;
-import org.khasanof.auth_service.criteria.auth_role.AuthRoleCriteria;
 import org.khasanof.auth_service.criteria.auth_token.AuthTokenCriteria;
-import org.khasanof.auth_service.dto.auth_role.AuthRoleGetDTO;
+import org.khasanof.auth_service.criteria.auth_token.AuthTokenTypeCriteria;
 import org.khasanof.auth_service.dto.auth_token.AuthTokenCreateDTO;
 import org.khasanof.auth_service.dto.auth_token.AuthTokenDetailDTO;
 import org.khasanof.auth_service.dto.auth_token.AuthTokenGetDTO;
-import org.khasanof.auth_service.dto.auth_token.AuthTokenUpdateDTO;
 import org.khasanof.auth_service.response.Data;
 import org.khasanof.auth_service.service.auth_token.AuthTokenService;
 import org.khasanof.auth_service.utils.BaseUtils;
@@ -32,12 +30,6 @@ public class AuthTokenController extends AbstractController<AuthTokenService> {
         return new ResponseEntity<>(new Data<>("Successfully Created - Token"), HttpStatus.CREATED);
     }
 
-    @RequestMapping(value = "update", method = RequestMethod.PUT)
-    public ResponseEntity<Data<String>> update(@RequestBody AuthTokenUpdateDTO dto) {
-        service.update(dto);
-        return new ResponseEntity<>(new Data<>("Successfully Updated - Token"), HttpStatus.OK);
-    }
-
     @RequestMapping(value = "delete/{id}", method = RequestMethod.DELETE)
     public ResponseEntity<Data<String>> delete(@PathVariable String id) {
         service.delete(id);
@@ -57,6 +49,11 @@ public class AuthTokenController extends AbstractController<AuthTokenService> {
     @RequestMapping(value = "list", method = RequestMethod.GET)
     public ResponseEntity<Data<List<AuthTokenGetDTO>>> list(@Valid AuthTokenCriteria criteria) {
         return new ResponseEntity<>(new Data<>(service.list(criteria)), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "listType", method = RequestMethod.GET)
+    public ResponseEntity<Data<List<AuthTokenGetDTO>>> listType(@Valid AuthTokenTypeCriteria criteria) {
+        return new ResponseEntity<>(new Data<>(service.listType(criteria)), HttpStatus.OK);
     }
 
 }

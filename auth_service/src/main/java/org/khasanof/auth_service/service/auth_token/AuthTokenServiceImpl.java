@@ -1,54 +1,65 @@
 package org.khasanof.auth_service.service.auth_token;
 
+import lombok.extern.slf4j.Slf4j;
 import org.khasanof.auth_service.criteria.auth_token.AuthTokenCriteria;
+import org.khasanof.auth_service.criteria.auth_token.AuthTokenTypeCriteria;
 import org.khasanof.auth_service.dto.auth_token.AuthTokenCreateDTO;
 import org.khasanof.auth_service.dto.auth_token.AuthTokenDetailDTO;
 import org.khasanof.auth_service.dto.auth_token.AuthTokenGetDTO;
-import org.khasanof.auth_service.dto.auth_token.AuthTokenUpdateDTO;
 import org.khasanof.auth_service.entity.auth_token.AuthTokenEntity;
 import org.khasanof.auth_service.mapper.auth_token.AuthTokenMapper;
 import org.khasanof.auth_service.repository.auth_token.AuthTokenRepository;
-import org.khasanof.auth_service.repository.auth_user.AuthUserRepository;
 import org.khasanof.auth_service.service.AbstractService;
+import org.khasanof.auth_service.service.auth_user.AuthUserService;
 import org.khasanof.auth_service.validator.auth_token.AuthTokenValidator;
-import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 @Service
+@EnableScheduling
+@Slf4j
 public class AuthTokenServiceImpl extends AbstractService<AuthTokenRepository, AuthTokenMapper, AuthTokenValidator> implements AuthTokenService {
 
-    private final AuthUserRepository userRepository;
+    private final AuthUserService userService;
+    private final MongoTemplate mongoTemplate;
 
-    public AuthTokenServiceImpl(AuthTokenRepository repository, AuthTokenMapper mapper, AuthTokenValidator validator, AuthUserRepository userRepository) {
+    public AuthTokenServiceImpl(AuthTokenRepository repository, AuthTokenMapper mapper, AuthTokenValidator validator, AuthUserService userService, MongoTemplate mongoTemplate) {
         super(repository, mapper, validator);
-        this.userRepository = userRepository;
+        this.userService = userService;
+        this.mongoTemplate = mongoTemplate;
     }
 
     @Override
     public void create(AuthTokenCreateDTO dto) {
         validator.validCreateDTO(dto);
-        AuthTokenEntity authTokenEntity = mapper.toCreateDTO(dto);
-        authTokenEntity.setUserId(userRepository.findById(dto.getAuthId()).orElseThrow(() -> {
-            throw new NotFoundException("User not found");
-        }));
-        authTokenEntity.setDuration(changeIntegerMinToTime(dto.getMinTime()));
-        repository.save(authTokenEntity);
-    }
-
-    @Override
-    public void update(AuthTokenUpdateDTO dto) {
-        validator.validUpdateDTO(dto);
-        AuthTokenEntity token = repository.findById(dto.getId()).orElseThrow(() -> {
-            throw new NotFoundException("Token not found");
-        });
-        BeanUtils.copyProperties(dto, token, "id");
-        repository.save(token);
+        AuthTokenEntity tokenEntity = mongoTemplate.findOne(
+                Query.query(Criteria.where("userId")
+                        .is(userService.getEntity(dto.getAuthId()))
+                        .orOperator(Criteria.where("type")
+                                .is(dto.getType()))), AuthTokenEntity.class);
+        if (Objects.nonNull(tokenEntity)) {
+            tokenEntity.setToken(dto.getToken());
+            tokenEntity.setDuration(changeIntegerMinToTime(dto.getMinTime()));
+            tokenEntity.setUpdatedAt(Instant.now());
+            tokenEntity.setUpdatedBy(dto.getAuthId());
+            repository.save(tokenEntity);
+        } else {
+            AuthTokenEntity authTokenEntity = mapper.toCreateDTO(dto);
+            authTokenEntity.setUserId(userService.getEntity(dto.getAuthId()));
+            authTokenEntity.setDuration(changeIntegerMinToTime(dto.getMinTime()));
+            repository.save(authTokenEntity);
+        }
     }
 
     @Override
@@ -61,24 +72,38 @@ public class AuthTokenServiceImpl extends AbstractService<AuthTokenRepository, A
     }
 
     @Override
+    public List<AuthTokenGetDTO> listType(AuthTokenTypeCriteria criteria) {
+        return mongoTemplate.find(
+                        Query.query(Criteria.where("type")
+                                .is(criteria.getType())).with(PageRequest.of(criteria.getPage(),
+                                criteria.getSize())), AuthTokenEntity.class)
+                .stream().map(this::returnToGetDTO).toList();
+    }
+
+    @Override
     public AuthTokenGetDTO get(String id) {
         validator.validKey(id);
-        return mapper.fromGetDTO(repository.findById(id).orElseThrow(() -> new NotFoundException("token not found")));
+        return returnToGetDTO(
+                repository.findById(id)
+                        .orElseThrow(() -> new NotFoundException("token not found")));
     }
 
     @Override
     public AuthTokenDetailDTO detail(String id) {
         validator.validKey(id);
-        AuthTokenEntity token = repository.findById(id).orElseThrow(() -> new NotFoundException("token not found"));
-        AuthTokenDetailDTO authTokenDetailDTO = mapper.fromDetailDTO(token);
-        authTokenDetailDTO.setUser(token.getUserId());
-        return authTokenDetailDTO;
+        return mapper.fromDetailDTO(
+                repository.findById(id)
+                        .orElseThrow(() -> new NotFoundException("token not found")));
     }
 
     @Override
     public List<AuthTokenGetDTO> list(AuthTokenCriteria criteria) {
-        PageRequest pageRequest = PageRequest.of(criteria.getPage(), criteria.getSize(), criteria.getSort(), criteria.getFields().getValue());
-        return mapper.fromGetListDTO(repository.findAll(pageRequest).toList());
+        return repository.findAll(
+                        PageRequest.of(criteria.getPage(), criteria.getSize(),
+                                criteria.getSort(), criteria.getFieldsEnum().getValue())
+                ).stream()
+                .map(this::returnToGetDTO)
+                .toList();
     }
 
     @Override
@@ -86,9 +111,25 @@ public class AuthTokenServiceImpl extends AbstractService<AuthTokenRepository, A
         return repository.count();
     }
 
+    @Override
+    @Scheduled(fixedDelay = 30000)
+    public void autoIsDead() {
+        repository.findAll().stream()
+                .filter(token -> token.getDuration()
+                        .isAfter(Instant.now()))
+                .peek(obj -> obj.setDead(true))
+                .forEach(repository::save);
+        log.info("isDead set token when expiry is end");
+    }
+
+    private AuthTokenGetDTO returnToGetDTO(AuthTokenEntity entity) {
+        AuthTokenGetDTO authTokenGetDTO = mapper.fromGetDTO(entity);
+        authTokenGetDTO.setAuthUserId(entity.getUserId().getId());
+        return authTokenGetDTO;
+    }
+
     private Instant changeIntegerMinToTime(Integer minTime) {
-        Instant now = Instant.now();
-        return now.plusNanos(TimeUnit.MINUTES.toNanos(minTime));
+        return Instant.now().plusNanos(TimeUnit.MINUTES.toNanos(minTime));
     }
 
 }
