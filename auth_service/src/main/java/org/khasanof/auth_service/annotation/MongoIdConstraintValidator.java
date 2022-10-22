@@ -5,7 +5,7 @@ import org.bson.types.ObjectId;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-public class IsMongoIdValidator implements ConstraintValidator<IsMongoId, String> {
+public class MongoIdConstraintValidator implements ConstraintValidator<MongoIdConstraint, String> {
 
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {

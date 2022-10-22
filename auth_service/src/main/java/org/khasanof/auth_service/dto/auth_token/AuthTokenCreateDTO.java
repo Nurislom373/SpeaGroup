@@ -1,11 +1,11 @@
 package org.khasanof.auth_service.dto.auth_token;
 
 import lombok.*;
-import org.khasanof.auth_service.annotation.IsMongoId;
+import org.khasanof.auth_service.annotation.MongoIdConstraint;
 import org.khasanof.auth_service.dto.BaseDTO;
 import org.khasanof.auth_service.enums.auth_token.AuthTokenType;
 
-import javax.validation.constraints.Email;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
@@ -15,9 +15,13 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 public class AuthTokenCreateDTO implements BaseDTO {
     @NotBlank
-    @IsMongoId
+    @MongoIdConstraint
     private String authId;
+    @NotBlank
     private AuthTokenType type;
+    @NotBlank
     private String token;
+    @NotNull
+    @Min(value = 1)
     private Integer minTime;
 }

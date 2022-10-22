@@ -6,9 +6,9 @@ import java.lang.annotation.*;
 
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = IsMongoIdValidator.class)
+@Constraint(validatedBy = MongoIdConstraintValidator.class)
 @Documented
-public @interface IsMongoId {
+public @interface MongoIdConstraint {
 
     String message() default "Invalid.Username";
 
