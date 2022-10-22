@@ -4,14 +4,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.khasanof.auth_service.response.Data;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.webjars.NotFoundException;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -51,17 +45,5 @@ public class BaseUtils {
 
     public static Instant currentTimeAddMinute(Integer minute) {
         return Instant.ofEpochMilli(System.currentTimeMillis() + (minute * 60 * 1000));
-    }
-
-    public static Data<Object> callGetAPI(String path, String notFoundMessage, TypeReference<Data<Object>> reference) {
-        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
-            ObjectMapper objectMapper = new ObjectMapper();
-            CloseableHttpResponse httpResponse = httpClient.execute(new HttpGet(path));
-            int statusCode = httpResponse.getStatusLine().getStatusCode();
-            if (statusCode != 200) throw new NotFoundException(notFoundMessage);
-            return objectMapper.readValue(httpResponse.getEntity().getContent(), reference);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 }

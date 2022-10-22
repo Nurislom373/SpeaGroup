@@ -17,7 +17,5 @@ public class AuthBlockCreateDTO implements BaseDTO {
     @NotNull
     private String authId;
     @NotNull
-    private Integer durationTime;
-    @NotNull
     private String blockedForId;
 }

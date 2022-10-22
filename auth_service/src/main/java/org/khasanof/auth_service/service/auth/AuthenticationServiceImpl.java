@@ -70,7 +70,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             throw new RuntimeException("User not found");
 
         if (atomicInteger.get() == 3) {
-            authBlockService.create(new AuthBlockCreateDTO(userEntity.getId(), 20, "251dyfdty56"));
+            authBlockService.create(new AuthBlockCreateDTO(userEntity.getId(), "251dyfdty56"));
         }
 
         if (!BaseUtils.ENCODER.matches(dto.getPassword(), userEntity.getPassword())) {

@@ -11,6 +11,6 @@ import java.util.Optional;
 @Repository
 public interface AuthBlockRepository extends MongoRepository<AuthBlockEntity, String>, BaseRepository {
 
-    AuthBlockEntity findByUserId(String userId);
+    AuthBlockEntity findByUserIdEquals(AuthUserEntity userId);
 
 }

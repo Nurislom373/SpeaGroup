@@ -1,6 +1,5 @@
 package org.khasanof.auth_service.controller.auth_user;
 
-import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.swagger.v3.oas.annotations.Parameter;
 import org.khasanof.auth_service.controller.AbstractController;
 import org.khasanof.auth_service.criteria.auth_user.AuthUserBetweenCriteria;
@@ -22,6 +21,7 @@ import java.util.List;
 @RestController
 @RequestMapping(value = BaseUtils.PATH + "/auth_user/*")
 public class AuthUserController extends AbstractController<AuthUserService> {
+
     public AuthUserController(AuthUserService service) {
         super(service);
     }

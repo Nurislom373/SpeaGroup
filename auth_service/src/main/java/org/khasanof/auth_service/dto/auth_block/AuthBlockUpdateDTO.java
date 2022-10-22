@@ -11,6 +11,5 @@ import org.khasanof.auth_service.dto.GenericDTO;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AuthBlockUpdateDTO extends GenericDTO {
-    private Integer durationTime;
     private String blockedForId;
 }

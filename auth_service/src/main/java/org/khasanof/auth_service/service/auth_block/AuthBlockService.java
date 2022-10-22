@@ -10,8 +10,13 @@ import org.khasanof.auth_service.service.GenericCUDService;
 import org.khasanof.auth_service.service.GenericGDLService;
 
 public interface AuthBlockService extends
-        GenericCUDService<AuthBlockCreateDTO, AuthBlockUpdateDTO, String>,
         GenericGDLService<AuthBlockGetDTO, AuthBlockDetailDTO, String, AuthBlockCriteria>,
         BaseService {
+
+    void create(AuthBlockCreateDTO dto);
+
+    void delete(String id);
+
+    void autoDeleteTimeOut();
 
 }
