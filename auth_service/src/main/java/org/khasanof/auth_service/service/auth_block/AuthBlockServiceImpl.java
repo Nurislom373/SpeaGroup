@@ -1,5 +1,6 @@
 package org.khasanof.auth_service.service.auth_block;
 
+import lombok.extern.slf4j.Slf4j;
 import org.khasanof.auth_service.criteria.auth_block.AuthBlockCriteria;
 import org.khasanof.auth_service.dto.auth_block.AuthBlockCreateDTO;
 import org.khasanof.auth_service.dto.auth_block.AuthBlockDetailDTO;
@@ -19,6 +20,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
 
@@ -28,6 +31,8 @@ import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 @Service
+@EnableScheduling
+@Slf4j
 public class AuthBlockServiceImpl extends AbstractService<AuthBlockRepository, AuthBlockMapper, AuthBlockValidator> implements AuthBlockService {
 
     private final AuthUserRepository userRepository;
@@ -79,8 +84,14 @@ public class AuthBlockServiceImpl extends AbstractService<AuthBlockRepository, A
     }
 
     @Override
+    @Scheduled(fixedDelay = 30000)
     public void autoDeleteTimeOut() {
-        // TODO write auto user unlock when time out
+        BaseUtils.EXECUTOR_SERVICE.execute(() -> repository.findAll()
+                .parallelStream()
+                .filter(block -> block.getDuration()
+                        .isAfter(Instant.now()))
+                .forEach(repository::delete));
+        log.info("Auto Delete Start to find");
     }
 
     @Override
@@ -96,10 +107,11 @@ public class AuthBlockServiceImpl extends AbstractService<AuthBlockRepository, A
 
     @Override
     public AuthBlockDetailDTO detail(String id) {
-        return mapper.fromDetailDTO(repository.findById(id)
-                .orElseThrow(() -> {
-                    throw new NotFoundException("Auth Block not found");
-                })
+        return mapper.fromDetailDTO(
+                repository.findById(id)
+                        .orElseThrow(() -> {
+                            throw new NotFoundException("Auth Block not found");
+                        })
         );
     }
 
@@ -121,6 +133,7 @@ public class AuthBlockServiceImpl extends AbstractService<AuthBlockRepository, A
     }
 
     private Instant minusToNow(Instant time) {
-        return Instant.now().minusNanos(TimeUnit.MINUTES.toNanos(time.getNano()));
+        return Instant.now()
+                .minusNanos(TimeUnit.MINUTES.toNanos(time.getNano()));
     }
 }

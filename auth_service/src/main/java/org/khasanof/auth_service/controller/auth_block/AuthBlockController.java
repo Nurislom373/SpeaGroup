@@ -30,12 +30,6 @@ public class AuthBlockController extends AbstractController<AuthBlockService> {
         return new ResponseEntity<>(new Data<>("Successfully Created - Auth Block"), HttpStatus.CREATED);
     }
 
-    @RequestMapping(value = "update", method = RequestMethod.PUT)
-    public ResponseEntity<Data<String>> update(@RequestBody AuthBlockUpdateDTO dto) {
-        service.update(dto);
-        return new ResponseEntity<>(new Data<>("Successfully Updated - Auth Block"), HttpStatus.OK);
-    }
-
     @RequestMapping(value = "delete/{id}", method = RequestMethod.DELETE)
     public ResponseEntity<Data<String>> delete(@PathVariable String id) {
         service.delete(id);
