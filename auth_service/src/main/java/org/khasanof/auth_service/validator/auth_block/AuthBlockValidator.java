@@ -1,15 +1,16 @@
 package org.khasanof.auth_service.validator.auth_block;
 
+import org.khasanof.auth_service.dto.GenericDTO;
 import org.khasanof.auth_service.dto.auth_block.AuthBlockCreateDTO;
-import org.khasanof.auth_service.dto.auth_block.AuthBlockUpdateDTO;
 import org.khasanof.auth_service.exception.exceptions.InvalidValidationException;
 import org.khasanof.auth_service.validator.AbstractValidator;
 import org.springframework.stereotype.Component;
 
+import java.awt.geom.GeneralPath;
 import java.util.Objects;
 
 @Component
-public class AuthBlockValidator extends AbstractValidator<AuthBlockCreateDTO, AuthBlockUpdateDTO, String> {
+public class AuthBlockValidator extends AbstractValidator<AuthBlockCreateDTO, GenericDTO, String> {
     @Override
     public void validCreateDTO(AuthBlockCreateDTO authBlockCreateDTO) throws InvalidValidationException {
         if (Objects.isNull(authBlockCreateDTO)) {
@@ -18,10 +19,8 @@ public class AuthBlockValidator extends AbstractValidator<AuthBlockCreateDTO, Au
     }
 
     @Override
-    public void validUpdateDTO(AuthBlockUpdateDTO authBlockUpdateDTO) throws InvalidValidationException {
-        if (Objects.isNull(authBlockUpdateDTO)) {
-            throw new InvalidValidationException("DTO is null");
-        }
+    public void validUpdateDTO(GenericDTO genericDTO) throws InvalidValidationException {
+
     }
 
     @Override

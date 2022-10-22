@@ -5,7 +5,6 @@ import org.khasanof.auth_service.criteria.auth_block.AuthBlockCriteria;
 import org.khasanof.auth_service.dto.auth_block.AuthBlockCreateDTO;
 import org.khasanof.auth_service.dto.auth_block.AuthBlockDetailDTO;
 import org.khasanof.auth_service.dto.auth_block.AuthBlockGetDTO;
-import org.khasanof.auth_service.dto.auth_block.AuthBlockUpdateDTO;
 import org.khasanof.auth_service.response.Data;
 import org.khasanof.auth_service.service.auth_block.AuthBlockService;
 import org.khasanof.auth_service.utils.BaseUtils;
