@@ -109,28 +109,29 @@ public class AuthUserServiceImpl extends AbstractService<
     @Override
     public void delete(String id) {
         validator.validKey(id);
-        Optional<AuthUserEntity> authUser = repository.findById(id);
-        if (authUser.isEmpty()) {
+        if (!repository.existsById(id)) {
             throw new NotFoundException("User not found");
         }
-        repository.delete(authUser.get());
+        repository.deleteById(id);
         userProducerService.sendMessage(id);
     }
 
     @Override
     public AuthUserGetDTO get(String id) {
         validator.validKey(id);
-        AuthUserEntity authUser = repository.findById(id)
-                .orElseThrow(() -> {
-                    throw new NotFoundException("User not found by id %s".formatted(id));
-                });
-        return mapper.fromGetDTO(authUser);
+        return mapper.fromGetDTO(
+                repository.findById(id)
+                        .orElseThrow(() -> {
+                            throw new NotFoundException("User not found by id %s".formatted(id));
+                        })
+        );
     }
 
     @Override
     public AuthUserDetailDTO detail(String id) {
         validator.validKey(id);
-        return mapper.fromDetailDTO(repository.findById(id).orElseThrow(() -> new NotFoundException("User not found")));
+        return mapper.fromDetailDTO(repository.findById(id)
+                .orElseThrow(() -> new NotFoundException("User not found")));
     }
 
     @Override

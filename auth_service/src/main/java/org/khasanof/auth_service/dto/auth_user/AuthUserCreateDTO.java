@@ -6,8 +6,10 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.khasanof.auth_service.dto.BaseDTO;
 
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.List;
 
 @Getter
@@ -15,20 +17,27 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AuthUserCreateDTO implements BaseDTO {
-    @NotBlank
+    @NotBlank(message = "firstName is mandatory")
+    @Size(min = 3, max = 120)
     private String firstName;
-    @NotBlank
+    @NotBlank(message = "lastName is mandatory")
+    @Size(min = 3, max = 120)
     private String lastName;
-    @NotBlank
+    @NotBlank(message = "email is mandatory")
+    @Email
+    @Size(min = 5, max = 250)
     private String email;
     private String description;
-    @NotBlank
+    @NotBlank(message = "username is mandatory")
+    @Size(min = 5, max = 50)
     private String username;
-    @NotBlank
+    @NotBlank(message = "password is mandatory")
+    @Size(min = 8, max = 120)
     private String password;
-    @NotBlank
+    @NotBlank(message = "language is mandatory")
+    @Size(min = 2, max = 2)
     private String language;
-    @NotNull
+    @NotBlank(message = "imagePath is mandatory")
     private String imagePath;
     private List<String> categoryIds;
 }
