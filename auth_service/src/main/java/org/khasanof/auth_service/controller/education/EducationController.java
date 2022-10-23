@@ -33,13 +33,13 @@ public class EducationController extends AbstractController<EducationService> {
         return new ResponseEntity<>(new Data<>("Successfully Added - Education"), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "update", method = RequestMethod.POST)
+    @RequestMapping(value = "update", method = RequestMethod.PUT)
     public ResponseEntity<Data<String>> update(@RequestBody EducationUpdateDTO dto) {
         service.update(dto);
         return new ResponseEntity<>(new Data<>("Successfully Updated - Education"), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "updateAll", method = RequestMethod.POST)
+    @RequestMapping(value = "updateAll", method = RequestMethod.PUT)
     public ResponseEntity<Data<String>> updateAll(@RequestBody List<EducationUpdateDTO> dtos) {
         service.updateAll(dtos);
         return new ResponseEntity<>(new Data<>("Successfully Updated - Education"), HttpStatus.OK);

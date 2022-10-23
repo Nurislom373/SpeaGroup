@@ -33,13 +33,13 @@ public class EmploymentController extends AbstractController<EmploymentService> 
         return new ResponseEntity<>(new Data<>("Successfully Added - Employment"), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "update", method = RequestMethod.POST)
+    @RequestMapping(value = "update", method = RequestMethod.PUT)
     public ResponseEntity<Data<String>> update(@RequestBody EmploymentUpdateDTO dto) {
         service.update(dto);
         return new ResponseEntity<>(new Data<>("Successfully Updated - Employment"), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "updateAll", method = RequestMethod.POST)
+    @RequestMapping(value = "updateAll", method = RequestMethod.PUT)
     public ResponseEntity<Data<String>> updateAll(@RequestBody List<EmploymentUpdateDTO> dtos) {
         service.updateAll(dtos);
         return new ResponseEntity<>(new Data<>("Successfully Updated - Employment"), HttpStatus.OK);
