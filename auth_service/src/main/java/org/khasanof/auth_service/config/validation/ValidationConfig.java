@@ -1,4 +1,4 @@
-package org.khasanof.auth_service.config.mongoValidator;
+package org.khasanof.auth_service.config.validation;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -6,15 +6,16 @@ import org.springframework.data.mongodb.core.mapping.event.ValidatingMongoEventL
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 @Configuration
-public class MongoValidatorConfig {
+public class ValidationConfig {
 
     @Bean
     public ValidatingMongoEventListener validatingMongoEventListener() {
-        return new ValidatingMongoEventListener(validatorFactoryBean());
+        return new ValidatingMongoEventListener(factoryBean());
     }
 
     @Bean
-    public LocalValidatorFactoryBean validatorFactoryBean() {
+    public LocalValidatorFactoryBean factoryBean() {
         return new LocalValidatorFactoryBean();
     }
+
 }

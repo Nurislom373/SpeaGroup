@@ -28,4 +28,11 @@ public class AuthTokenEntity extends Auditable {
     private String token;
     private Instant duration;
     private boolean isDead;
+
+    public AuthTokenEntity(AuthUserEntity userId, AuthTokenType type, String token, Instant duration) {
+        this.userId = userId;
+        this.type = type;
+        this.token = token;
+        this.duration = duration;
+    }
 }

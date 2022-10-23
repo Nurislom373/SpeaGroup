@@ -9,15 +9,16 @@ import org.khasanof.auth_service.mapper.employment.EmploymentMapper;
 import org.khasanof.auth_service.repository.auth_info.AuthInfoRepository;
 import org.khasanof.auth_service.service.AbstractService;
 import org.khasanof.auth_service.validator.employment.EmploymentValidator;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.Objects;
 
 @Service
 public class EmploymentServiceImpl extends AbstractService<AuthInfoRepository, EmploymentMapper, EmploymentValidator> implements EmploymentService {
@@ -33,10 +34,23 @@ public class EmploymentServiceImpl extends AbstractService<AuthInfoRepository, E
                 .orElseThrow(() -> {
                     throw new NotFoundException("Info not found");
                 });
-        EmploymentEntity employmentEntity = mapper.toCreateDTO(dto);
-        employmentEntity.setStartYear(strParseToDate(dto.getStartYearStr()));
-        employmentEntity.setEndYear(strParseToDate(dto.getEndYearStr()));
-        entity.getEmployments().add(employmentEntity);
+        List<EmploymentEntity> list;
+        if (entity.getEmployments().size() < 1) {
+            list = new ArrayList<>();
+            list.add(new EmploymentEntity(dto.getCompany(), dto.getPosition(),
+                    strParseToDate(dto.getStartYearStr()), strParseToDate(dto.getEndYearStr()),
+                    dto.getType()));
+        } else {
+            list = entity.getEmployments();
+            EmploymentEntity employmentEntity = mapper.toCreateDTO(dto);
+            employmentEntity.setId(String.valueOf(System.currentTimeMillis()));
+            employmentEntity.setStartYear(strParseToDate(dto.getStartYearStr()));
+            employmentEntity.setEndYear(strParseToDate(dto.getEndYearStr()));
+            list.add(employmentEntity);
+        }
+        entity.setEmployments(list);
+        entity.setUpdatedAt(Instant.now());
+        entity.setUpdatedBy(entity.getUserId().getId());
         repository.save(entity);
     }
 
@@ -52,18 +66,20 @@ public class EmploymentServiceImpl extends AbstractService<AuthInfoRepository, E
                 .orElseThrow(() -> {
                     throw new NotFoundException("Info not found");
                 });
-        AtomicBoolean define = new AtomicBoolean(false);
-        entity.getEmployments().forEach((emp) -> {
-            if (dto.getId().equals(emp.getId())) {
-                emp.setEndYear(strParseToDate(dto.getEndYearStr()));
-                emp.setStartYear(strParseToDate(dto.getStartYearStr()));
-                BeanUtils.copyProperties(dto, emp);
-                define.set(true);
-            }
-        });
-        if (!define.get()) throw new NotFoundException("Employment not found");
+        List<EmploymentEntity> employments = entity.getEmployments();
+        if (Objects.isNull(employments)) {
+            throw new RuntimeException("Employment is null!");
+        }
+        EmploymentEntity employment = employments.stream()
+                .filter(f -> f.getId().equals(dto.getEmploymentId()))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException("Employment not found"));
+        employments.remove(employment);
+        employments.add(swapObj(dto, employment));
+        entity.setEmployments(employments);
+        entity.setUpdatedAt(Instant.now());
+        entity.setUpdatedBy(entity.getUserId().getId());
         repository.save(entity);
-
     }
 
     @Override
@@ -75,17 +91,17 @@ public class EmploymentServiceImpl extends AbstractService<AuthInfoRepository, E
     public void delete(String infoId, String id) {
         validator.validKey(infoId);
         validator.validKey(id);
-        AuthInfoEntity entity = repository.findById(infoId).orElseThrow(() -> {
-            throw new NotFoundException("Info not found");
-        });
-        AtomicBoolean define = new AtomicBoolean(false);
-        entity.getEmployments().forEach((emp) -> {
-            if (id.equals(emp.getId())) {
-                entity.getEmployments().remove(emp);
-                define.set(true);
-            }
-        });
-        if (!define.get()) throw new NotFoundException("Employment not found");
+        AuthInfoEntity entity = repository.findById(infoId)
+                .orElseThrow(() -> {
+                    throw new NotFoundException("Info not found");
+                });
+        List<EmploymentEntity> employments = entity.getEmployments();
+        if (!employments.removeIf(f -> f.getId().equals(id))) {
+            throw new NotFoundException("Employment not found");
+        }
+        entity.setEmployments(employments);
+        entity.setUpdatedAt(Instant.now());
+        entity.setUpdatedBy(entity.getUserId().getId());
         repository.save(entity);
     }
 
@@ -119,7 +135,17 @@ public class EmploymentServiceImpl extends AbstractService<AuthInfoRepository, E
         return repository.findById(infoId)
                 .orElseThrow(() -> {
                     throw new NotFoundException("Info not found");
-                }).getEmployments().size();
+                }).getEmployments()
+                .size();
+    }
+
+    private EmploymentEntity swapObj(EmploymentUpdateDTO dto, EmploymentEntity entity) {
+        entity.setType(dto.getType());
+        entity.setCompany(entity.getCompany());
+        entity.setPosition(dto.getPosition());
+        entity.setEndYear(strParseToDate(dto.getEndYearStr()));
+        entity.setStartYear(strParseToDate(dto.getStartYearStr()));
+        return entity;
     }
 
     private Date strParseToDate(String date) {

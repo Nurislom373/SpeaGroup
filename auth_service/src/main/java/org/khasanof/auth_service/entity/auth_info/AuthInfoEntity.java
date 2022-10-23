@@ -26,9 +26,7 @@ public class AuthInfoEntity extends Auditable {
     @Field(name = "user_id")
     private AuthUserEntity userId;
     private LocationEntity location;
-    @DocumentReference
     private List<EducationEntity> educations;
-    @DocumentReference
     private List<EmploymentEntity> employments;
     private Short age;
     @Field(name = "born_year")

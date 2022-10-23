@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.khasanof.auth_service.dto.GenericDTO;
 import org.khasanof.auth_service.entity.location.LocationEntity;
+import org.khasanof.auth_service.enums.employment.EmploymentTypeEnum;
 
 import java.util.Date;
 
@@ -14,10 +15,10 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class EmploymentGetDTO extends GenericDTO {
+    private String id;
     private String company;
     private String position;
     private Date startYear;
     private Date endYear;
-    private String type;
-    private LocationEntity location;
+    private EmploymentTypeEnum type;
 }
