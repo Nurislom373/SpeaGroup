@@ -15,24 +15,19 @@ import javax.validation.constraints.Size;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AuthUserUpdateDTO extends GenericDTO {
-    @NotNull
     @NotBlank
     @Size(min = 3, max = 120)
     private String firstName;
-    @NotNull
     @NotBlank
     @Size(min = 3, max = 120)
     private String lastName;
-    @NotNull
     @NotBlank
     @Size(min = 5, max = 250)
     private String email;
     private String description;
-    @NotNull
     @NotBlank
     @Size(min = 4, max = 50)
     private String username;
-    @NotNull
     @NotBlank
     @Size(min = 2, max = 2)
     private String language;

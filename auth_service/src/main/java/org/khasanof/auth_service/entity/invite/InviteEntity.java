@@ -1,6 +1,7 @@
 package org.khasanof.auth_service.entity.invite;
 
 import lombok.*;
+import org.khasanof.auth_service.enums.auth_invite.AuthInviteStatusEnum;
 
 import java.time.Instant;
 
@@ -12,7 +13,7 @@ import java.time.Instant;
 public class InviteEntity {
     private String userId;
     private Instant requestTime;
-    private String status;
+    private AuthInviteStatusEnum status;
     private Instant acceptTime;
 
     public InviteEntity(String userId) {

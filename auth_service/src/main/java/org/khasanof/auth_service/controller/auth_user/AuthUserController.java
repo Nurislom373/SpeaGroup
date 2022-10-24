@@ -27,13 +27,13 @@ public class AuthUserController extends AbstractController<AuthUserService> {
     }
 
     @RequestMapping(value = "create", method = RequestMethod.POST)
-    public ResponseEntity<Data<String>> create(@RequestBody AuthUserCreateDTO dto) {
+    public ResponseEntity<Data<String>> create(@Valid @RequestBody AuthUserCreateDTO dto) {
         service.create(dto);
         return new ResponseEntity<>(new Data<>("Successfully Created - User"), HttpStatus.CREATED);
     }
 
     @RequestMapping(value = "update", method = RequestMethod.PUT)
-    public ResponseEntity<Data<String>> update(@RequestBody AuthUserUpdateDTO dto) {
+    public ResponseEntity<Data<String>> update(@Valid @RequestBody AuthUserUpdateDTO dto) {
         service.update(dto);
         return new ResponseEntity<>(new Data<>("Successfully Updated - User"), HttpStatus.OK);
     }

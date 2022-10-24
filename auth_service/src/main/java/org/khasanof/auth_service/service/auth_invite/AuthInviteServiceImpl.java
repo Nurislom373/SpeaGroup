@@ -71,11 +71,13 @@ public class AuthInviteServiceImpl extends AbstractService<AuthInviteRepository,
                 .orElseThrow(() -> new NotFoundException("Invite not found"));
         invites.remove(entity);
         entity.setStatus(dto.getStatus());
-        if (AuthInviteStatusEnum.ACCEPT.getValue().equalsIgnoreCase(dto.getStatus())) {
+        if (AuthInviteStatusEnum.ACCEPT.equals(dto.getStatus())) {
             entity.setAcceptTime(Instant.now());
         }
         invites.add(entity);
         inviteEntity.setInvites(invites);
+        inviteEntity.setUpdatedAt(Instant.now());
+        inviteEntity.setUpdatedBy(inviteEntity.getUserId().getId());
         repository.save(inviteEntity);
     }
 
@@ -92,6 +94,8 @@ public class AuthInviteServiceImpl extends AbstractService<AuthInviteRepository,
             throw new NotFoundException("Request User not found");
         }
         authInvite.setInvites(invites);
+        authInvite.setUpdatedAt(Instant.now());
+        authInvite.setUpdatedBy(authInvite.getUserId().getId());
         repository.save(authInvite);
     }
 

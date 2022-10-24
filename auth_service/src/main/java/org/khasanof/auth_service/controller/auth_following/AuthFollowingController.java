@@ -24,7 +24,7 @@ public class AuthFollowingController extends AbstractController<AuthFollowingSer
     }
 
     @RequestMapping(value = "add", method = RequestMethod.POST)
-    public ResponseEntity<Data<String>> add(@RequestBody AuthFollowingCreateDTO dto) {
+    public ResponseEntity<Data<String>> add(@Valid @RequestBody AuthFollowingCreateDTO dto) {
         service.create(dto);
         return new ResponseEntity<>(new Data<>("Successfully Added - Auth Following"), HttpStatus.CREATED);
     }

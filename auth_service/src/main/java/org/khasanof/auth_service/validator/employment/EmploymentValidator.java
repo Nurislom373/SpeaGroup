@@ -24,24 +24,12 @@ public class EmploymentValidator extends AbstractValidator<EmploymentCreateDTO, 
         if (Objects.isNull(employmentCreateDTO)) {
             throw new InvalidValidationException("DTO is null");
         }
-        if (!ObjectId.isValid(employmentCreateDTO.getInfoId())) {
-            throw new InvalidValidationException("Invalid InfoId!");
-        }
-        if (!validator.isValid(employmentCreateDTO.getStartYearStr()) || !validator.isValid(employmentCreateDTO.getEndYearStr())) {
-            throw new InvalidValidationException("Invalid Date!");
-        }
     }
 
     @Override
     public void validUpdateDTO(EmploymentUpdateDTO employmentUpdateDTO) throws InvalidValidationException {
         if (Objects.isNull(employmentUpdateDTO)) {
             throw new InvalidValidationException("DTO is null");
-        }
-        if (!ObjectId.isValid(employmentUpdateDTO.getInfoId())) {
-            throw new InvalidValidationException("Invalid InfoId!");
-        }
-        if (!validator.isValid(employmentUpdateDTO.getStartYearStr()) || !validator.isValid(employmentUpdateDTO.getEndYearStr())) {
-            throw new InvalidValidationException("Invalid Date!");
         }
     }
 

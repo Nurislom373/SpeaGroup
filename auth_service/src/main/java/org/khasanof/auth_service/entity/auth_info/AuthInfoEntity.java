@@ -9,6 +9,7 @@ import org.khasanof.auth_service.entity.auth_user.AuthUserEntity;
 import org.khasanof.auth_service.entity.education.EducationEntity;
 import org.khasanof.auth_service.entity.employment.EmploymentEntity;
 import org.khasanof.auth_service.entity.location.LocationEntity;
+import org.khasanof.auth_service.enums.auth_info.AuthInfoVisibilityEnum;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DocumentReference;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -33,6 +34,6 @@ public class AuthInfoEntity extends Auditable {
     private Date bornYear;
     @Field(name = "phone_number")
     private String phoneNumber;
-    private String visibility;
+    private AuthInfoVisibilityEnum visibility;
     private List<String> interests;
 }

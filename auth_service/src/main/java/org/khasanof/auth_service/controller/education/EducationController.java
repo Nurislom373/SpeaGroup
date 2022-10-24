@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -22,25 +23,25 @@ public class EducationController extends AbstractController<EducationService> {
     }
 
     @RequestMapping(value = "add", method = RequestMethod.POST)
-    public ResponseEntity<Data<String>> add(@RequestBody EducationCreateDTO dto) {
+    public ResponseEntity<Data<String>> add(@Valid @RequestBody EducationCreateDTO dto) {
         service.add(dto);
         return new ResponseEntity<>(new Data<>("Successfully Added - Education"), HttpStatus.OK);
     }
 
     @RequestMapping(value = "addAll", method = RequestMethod.POST)
-    public ResponseEntity<Data<String>> addAll(@RequestBody List<EducationCreateDTO> dtos) {
+    public ResponseEntity<Data<String>> addAll(@Valid @RequestBody List<EducationCreateDTO> dtos) {
         service.addAll(dtos);
         return new ResponseEntity<>(new Data<>("Successfully Added - Education"), HttpStatus.OK);
     }
 
     @RequestMapping(value = "update", method = RequestMethod.PUT)
-    public ResponseEntity<Data<String>> update(@RequestBody EducationUpdateDTO dto) {
+    public ResponseEntity<Data<String>> update(@Valid @RequestBody EducationUpdateDTO dto) {
         service.update(dto);
         return new ResponseEntity<>(new Data<>("Successfully Updated - Education"), HttpStatus.OK);
     }
 
     @RequestMapping(value = "updateAll", method = RequestMethod.PUT)
-    public ResponseEntity<Data<String>> updateAll(@RequestBody List<EducationUpdateDTO> dtos) {
+    public ResponseEntity<Data<String>> updateAll(@Valid @RequestBody List<EducationUpdateDTO> dtos) {
         service.updateAll(dtos);
         return new ResponseEntity<>(new Data<>("Successfully Updated - Education"), HttpStatus.OK);
     }

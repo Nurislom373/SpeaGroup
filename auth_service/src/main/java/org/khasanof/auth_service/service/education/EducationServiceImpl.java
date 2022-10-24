@@ -15,6 +15,8 @@ import org.webjars.NotFoundException;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -32,10 +34,22 @@ public class EducationServiceImpl extends AbstractService<AuthInfoRepository, Ed
                 .orElseThrow(() -> {
                     throw new NotFoundException("Info not found");
                 });
-        EducationEntity educationEntity = mapper.toCreateDTO(dto);
-        educationEntity.setStartYear(strParseToDate(dto.getStartYearStr()));
-        educationEntity.setEndYear(strParseToDate(dto.getEndYearStr()));
-        entity.getEducations().add(educationEntity);
+        List<EducationEntity> list;
+        if (entity.getEducations().size() < 1) {
+            list = new ArrayList<>();
+            list.add(new EducationEntity(dto.getEducation(), strParseToDate(dto.getStartYearStr()),
+                    strParseToDate(dto.getEndYearStr()), dto.getPrimaryMajor(), dto.getSecondaryMajor()));
+        } else {
+            list = entity.getEducations();
+            EducationEntity educationEntity = mapper.toCreateDTO(dto);
+            educationEntity.setId(String.valueOf(System.currentTimeMillis()));
+            educationEntity.setStartYear(strParseToDate(dto.getStartYearStr()));
+            educationEntity.setEndYear(strParseToDate(dto.getEndYearStr()));
+            list.add(educationEntity);
+        }
+        entity.setEducations(list);
+        entity.setUpdatedAt(Instant.now());
+        entity.setUpdatedBy(entity.getUserId().getId());
         repository.save(entity);
     }
 
@@ -47,16 +61,23 @@ public class EducationServiceImpl extends AbstractService<AuthInfoRepository, Ed
     @Override
     public void update(EducationUpdateDTO dto) {
         validator.validUpdateDTO(dto);
-        AuthInfoEntity entity = repository.findById(dto.getInfoId()).orElseThrow(() -> {
-            throw new NotFoundException("Info not found");
-        });
-        entity.getEducations().forEach((edu) -> {
-            if (dto.getId().equals(edu.getId())) {
-                BeanUtils.copyProperties(dto, edu);
-                edu.setEndYear(strParseToDate(dto.getEndYearStr()));
-                edu.setStartYear(strParseToDate(dto.getStartYearStr()));
-            }
-        });
+        AuthInfoEntity entity = repository.findById(dto.getInfoId())
+                .orElseThrow(() -> {
+                    throw new NotFoundException("Info not found");
+                });
+        List<EducationEntity> educations = entity.getEducations();
+        if (educations.isEmpty()) {
+            throw new RuntimeException("Education is null!");
+        }
+        EducationEntity education = educations.stream()
+                .filter(f -> f.getId().equals(dto.getEducationId()))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException("Education not found"));
+        educations.remove(education);
+        educations.add(swapToEntity(education, dto));
+        entity.setEducations(educations);
+        entity.setUpdatedAt(Instant.now());
+        entity.setUpdatedBy(entity.getUserId().getId());
         repository.save(entity);
     }
 
@@ -73,11 +94,16 @@ public class EducationServiceImpl extends AbstractService<AuthInfoRepository, Ed
                 .orElseThrow(() -> {
                     throw new NotFoundException("Info not found");
                 });
-        entity.getEducations().forEach((edu) -> {
-            if (id.equals(edu.getId())) {
-                entity.getEducations().remove(edu);
-            }
-        });
+        List<EducationEntity> educations = entity.getEducations();
+        if (educations.isEmpty()) {
+            throw new RuntimeException("Education is null!");
+        }
+        if (!educations.removeIf(f -> f.getId().equals(id))) {
+            throw new NotFoundException("Education not found");
+        }
+        entity.setEducations(educations);
+        entity.setUpdatedAt(Instant.now());
+        entity.setUpdatedBy(entity.getUserId().getId());
         repository.save(entity);
     }
 
@@ -109,6 +135,14 @@ public class EducationServiceImpl extends AbstractService<AuthInfoRepository, Ed
                 .orElseThrow(() -> new NotFoundException("Info not found"))
                 .getEducations()
                 .size();
+    }
+
+    private EducationEntity swapToEntity(EducationEntity entity, EducationUpdateDTO dto) {
+        BeanUtils.copyProperties(dto, entity);
+        entity.setId(dto.getEducationId());
+        entity.setEndYear(strParseToDate(dto.getEndYearStr()));
+        entity.setStartYear(strParseToDate(dto.getStartYearStr()));
+        return entity;
     }
 
     private Date strParseToDate(String date) {

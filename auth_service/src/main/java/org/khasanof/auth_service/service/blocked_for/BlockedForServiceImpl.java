@@ -14,6 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
 
+import java.time.Instant;
 import java.util.List;
 
 @Service
@@ -41,6 +42,8 @@ public class BlockedForServiceImpl
                     throw new NotFoundException("BlockedFor not found");
                 });
         BeanUtils.copyProperties(dto, entity, "id");
+        entity.setUpdatedAt(Instant.now());
+        entity.setUpdatedBy("-1");
         repository.save(entity);
     }
 

@@ -1,5 +1,6 @@
 package org.khasanof.auth_service.validator.education;
 
+import org.bson.types.ObjectId;
 import org.khasanof.auth_service.dto.education.EducationCreateDTO;
 import org.khasanof.auth_service.dto.education.EducationUpdateDTO;
 import org.khasanof.auth_service.exception.exceptions.InvalidValidationException;
@@ -29,6 +30,9 @@ public class EducationValidator extends AbstractValidator<EducationCreateDTO, Ed
     public void validKey(String s) throws InvalidValidationException {
         if (Objects.isNull(s)) {
             throw new NotFoundException("ID is null");
+        }
+        if (!ObjectId.isValid(s)) {
+            throw new InvalidValidationException("Invalid ID!");
         }
     }
 }

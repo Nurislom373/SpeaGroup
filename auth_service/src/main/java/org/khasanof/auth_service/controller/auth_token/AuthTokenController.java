@@ -25,7 +25,7 @@ public class AuthTokenController extends AbstractController<AuthTokenService> {
     }
 
     @RequestMapping(value = "create", method = RequestMethod.POST)
-    public ResponseEntity<Data<String>> create(@RequestBody AuthTokenCreateDTO dto) {
+    public ResponseEntity<Data<String>> create(@Valid @RequestBody AuthTokenCreateDTO dto) {
         service.create(dto);
         return new ResponseEntity<>(new Data<>("Successfully Created - Token"), HttpStatus.CREATED);
     }

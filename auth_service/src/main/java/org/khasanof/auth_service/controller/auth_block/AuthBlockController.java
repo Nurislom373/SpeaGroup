@@ -24,7 +24,7 @@ public class AuthBlockController extends AbstractController<AuthBlockService> {
     }
 
     @RequestMapping(value = "create", method = RequestMethod.POST)
-    public ResponseEntity<Data<String>> create(@RequestBody AuthBlockCreateDTO dto) {
+    public ResponseEntity<Data<String>> create(@Valid @RequestBody AuthBlockCreateDTO dto) {
         service.create(dto);
         return new ResponseEntity<>(new Data<>("Successfully Created - Auth Block"), HttpStatus.CREATED);
     }

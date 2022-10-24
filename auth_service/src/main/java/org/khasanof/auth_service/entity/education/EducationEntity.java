@@ -14,15 +14,20 @@ import java.util.Date;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Document(collection = "education")
-public class EducationEntity extends Auditable {
+public class EducationEntity {
+    private String id;
     private String education;
-    @Field(name = "start_year")
     private Date startYear;
-    @Field(name = "end_year")
     private Date endYear;
-    @Field(name = "primary_major")
     private String primaryMajor;
-    @Field(name = "secondary_major")
     private String secondaryMajor;
+
+    public EducationEntity(String education, Date startYear, Date endYear, String primaryMajor, String secondaryMajor) {
+        this.id = String.valueOf(System.currentTimeMillis());
+        this.education = education;
+        this.startYear = startYear;
+        this.endYear = endYear;
+        this.primaryMajor = primaryMajor;
+        this.secondaryMajor = secondaryMajor;
+    }
 }

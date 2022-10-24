@@ -24,13 +24,13 @@ public class BlockedForController extends AbstractController<BlockedForService> 
     }
 
     @RequestMapping(value = "create", method = RequestMethod.POST)
-    public ResponseEntity<Data<String>> create(@RequestBody BlockedForCreateDTO dto) {
+    public ResponseEntity<Data<String>> create(@Valid @RequestBody BlockedForCreateDTO dto) {
         service.create(dto);
         return new ResponseEntity<>(new Data<>("Successfully Created - Blocked For"), HttpStatus.CREATED);
     }
 
     @RequestMapping(value = "update", method = RequestMethod.PUT)
-    public ResponseEntity<Data<String>> update(@RequestBody BlockedForUpdateDTO dto) {
+    public ResponseEntity<Data<String>> update(@Valid @RequestBody BlockedForUpdateDTO dto) {
         service.update(dto);
         return new ResponseEntity<>(new Data<>("Successfully Created - Blocked For"), HttpStatus.OK);
     }

@@ -24,7 +24,7 @@ public class AuthRoleController extends AbstractController<AuthRoleService> {
     }
 
     @RequestMapping(value = "create", method = RequestMethod.POST)
-    public ResponseEntity<Data<String>> create(@RequestBody AuthRoleCreateDTO dto) {
+    public ResponseEntity<Data<String>> create(@Valid @RequestBody AuthRoleCreateDTO dto) {
         service.create(dto);
         return new ResponseEntity<>(new Data<>("Successfully Created - Role"), HttpStatus.CREATED);
     }

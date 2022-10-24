@@ -4,9 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.khasanof.auth_service.annotation.MongoIdConstraint;
 import org.khasanof.auth_service.dto.BaseDTO;
 import org.khasanof.auth_service.entity.blocked_for.BlockedForEntity;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 @Getter
@@ -14,8 +16,10 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AuthBlockCreateDTO implements BaseDTO {
-    @NotNull
+    @NotBlank
+    @MongoIdConstraint
     private String authId;
-    @NotNull
+    @NotBlank
+    @MongoIdConstraint
     private String blockedForId;
 }

@@ -24,13 +24,13 @@ public class AuthInfoController extends AbstractController<AuthInfoService> {
     }
 
     @RequestMapping(value = "create", method = RequestMethod.POST)
-    public ResponseEntity<Data<String>> create(@RequestBody AuthInfoCreateDTO dto) {
+    public ResponseEntity<Data<String>> create(@Valid @RequestBody AuthInfoCreateDTO dto) {
         service.create(dto);
         return new ResponseEntity<>(new Data<>("Successfully Created - Info"), HttpStatus.CREATED);
     }
 
     @RequestMapping(value = "update", method = RequestMethod.PUT)
-    public ResponseEntity<Data<String>> update(@RequestBody AuthInfoUpdateDTO dto) {
+    public ResponseEntity<Data<String>> update(@Valid @RequestBody AuthInfoUpdateDTO dto) {
         service.update(dto);
         return new ResponseEntity<>(new Data<>("Successfully Updated - Info"), HttpStatus.OK);
     }

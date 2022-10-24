@@ -5,31 +5,42 @@ import org.khasanof.auth_service.dto.auth_role.AuthRoleCreateDTO;
 import org.khasanof.auth_service.dto.auth_role.AuthRoleDetailDTO;
 import org.khasanof.auth_service.dto.auth_role.AuthRoleGetDTO;
 import org.khasanof.auth_service.entity.auth_role.AuthRoleEntity;
-import org.khasanof.auth_service.enums.auth_role.AuthRoleEnum;
 import org.khasanof.auth_service.mapper.auth_role.AuthRoleMapper;
 import org.khasanof.auth_service.repository.auth_role.AuthRoleRepository;
 import org.khasanof.auth_service.service.AbstractService;
 import org.khasanof.auth_service.service.auth_user.AuthUserService;
 import org.khasanof.auth_service.validator.auth_role.AuthRoleValidator;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class AuthRoleServiceImpl extends AbstractService<AuthRoleRepository, AuthRoleMapper, AuthRoleValidator> implements AuthRoleService {
     private final AuthUserService userService;
+    private final MongoTemplate mongoTemplate;
 
-    public AuthRoleServiceImpl(AuthRoleRepository repository, AuthRoleMapper mapper, AuthRoleValidator validator, AuthUserService userService) {
+    public AuthRoleServiceImpl(AuthRoleRepository repository, AuthRoleMapper mapper, AuthRoleValidator validator, AuthUserService userService, MongoTemplate mongoTemplate) {
         super(repository, mapper, validator);
         this.userService = userService;
+        this.mongoTemplate = mongoTemplate;
     }
 
     @Override
     public void create(AuthRoleCreateDTO dto) {
         validator.validCreateDTO(dto);
-        checkRole(dto.getRole());
+        AuthRoleEntity entity = mongoTemplate.findOne(
+                Query.query(new Criteria("userId")
+                        .is(userService.getEntity(dto.getAuthId()))),
+                AuthRoleEntity.class);
+        if (Objects.nonNull(entity)) {
+            throw new RuntimeException("User Role Already Created!");
+        }
         AuthRoleEntity authRoleEntity = mapper.toCreateDTO(dto);
         authRoleEntity.setUserId(userService.getEntity(dto.getAuthId()));
         repository.save(authRoleEntity);
@@ -83,9 +94,5 @@ public class AuthRoleServiceImpl extends AbstractService<AuthRoleRepository, Aut
         AuthRoleGetDTO authRoleGetDTO = mapper.fromGetDTO(entity);
         authRoleGetDTO.setAuthId(entity.getUserId().getId());
         return authRoleGetDTO;
-    }
-
-    private boolean checkRole(String role) {
-        return AuthRoleEnum.hasRole(role);
     }
 }

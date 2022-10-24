@@ -96,6 +96,9 @@ public class EmploymentServiceImpl extends AbstractService<AuthInfoRepository, E
                     throw new NotFoundException("Info not found");
                 });
         List<EmploymentEntity> employments = entity.getEmployments();
+        if (employments.isEmpty()) {
+            throw new RuntimeException("Employments is null");
+        }
         if (!employments.removeIf(f -> f.getId().equals(id))) {
             throw new NotFoundException("Employment not found");
         }

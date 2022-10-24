@@ -25,7 +25,7 @@ public class AuthInviteController extends AbstractController<AuthInviteService> 
     }
 
     @RequestMapping(value = "create", method = RequestMethod.POST)
-    public ResponseEntity<Data<String>> create(@RequestBody AuthInviteCreateDTO dto) {
+    public ResponseEntity<Data<String>> create(@Valid @RequestBody AuthInviteCreateDTO dto) {
         service.create(dto);
         return new ResponseEntity<>(new Data<>("Successfully Created - Auth Invite"), HttpStatus.CREATED);
     }
@@ -43,7 +43,7 @@ public class AuthInviteController extends AbstractController<AuthInviteService> 
     }
 
     @RequestMapping(value = "inviteChangeStatus", method = RequestMethod.PUT)
-    public ResponseEntity<Data<String>> inviteChangeStatus(@RequestBody AuthInviteChangeStatusDTO dto) {
+    public ResponseEntity<Data<String>> inviteChangeStatus(@Valid @RequestBody AuthInviteChangeStatusDTO dto) {
         service.inviteSelect(dto);
         return new ResponseEntity<>(new Data<>("Successfully Status Changed - Auth Invite"), HttpStatus.OK);
     }

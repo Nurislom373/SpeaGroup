@@ -19,9 +19,6 @@ public class AuthInviteValidator extends AbstractValidator<AuthInviteCreateDTO, 
         if (Objects.isNull(authInviteCreateDTO)) {
             throw new InvalidValidationException("DTO is null");
         }
-        if (!ObjectId.isValid(authInviteCreateDTO.getRequestUserId()) || !ObjectId.isValid(authInviteCreateDTO.getInviteUserId())) {
-            throw new InvalidValidationException("Invalid ID!");
-        }
     }
 
     @Override
@@ -33,13 +30,6 @@ public class AuthInviteValidator extends AbstractValidator<AuthInviteCreateDTO, 
         if (Objects.isNull(dto)) {
             throw new InvalidValidationException("DTO is null");
         }
-        if (!ObjectId.isValid(dto.getId()) || !ObjectId.isValid(dto.getRequestUserId())) {
-            throw new InvalidValidationException("Invalid ID!");
-        }
-        if (!AuthInviteStatusEnum.hasStatusEnum(dto.getStatus())) {
-            throw new InvalidValidationException("Invalid Status!");
-        }
-
     }
 
     @Override

@@ -4,10 +4,13 @@ import org.khasanof.auth_service.exception.exceptions.AlreadyCreatedException;
 import org.khasanof.auth_service.exception.exceptions.InvalidValidationException;
 import org.khasanof.auth_service.exception.exceptions.PasswordDoesNotMatchException;
 import org.khasanof.auth_service.response.ApplicationError;
+import org.khasanof.auth_service.response.Data;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.support.WebExchangeBindException;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import org.webjars.NotFoundException;
@@ -56,7 +59,5 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         applicationError.setTime(LocalDateTime.now());
         return new ResponseEntity<>(applicationError, HttpStatus.BAD_REQUEST);
     }
-
-
 
 }

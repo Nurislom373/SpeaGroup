@@ -297,7 +297,7 @@ public class AuthInfoServiceImpl extends AbstractService<AuthInfoRepository, Aut
         authInfo.setUpdatedAt(Instant.now());
         authInfo.setUpdatedBy(dto.getId());
         repository.save(authInfo);
-        if (AuthInfoVisibilityEnum.PRIVATE.getValue().equalsIgnoreCase(dto.getVisibility()))
+        if (AuthInfoVisibilityEnum.PRIVATE.equals(dto.getVisibility()))
             inviteRepository.save(new AuthInviteEntity(authUserService.getEntity(dto.getId())));
     }
 

@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -22,25 +23,25 @@ public class EmploymentController extends AbstractController<EmploymentService> 
     }
 
     @RequestMapping(value = "add", method = RequestMethod.POST)
-    public ResponseEntity<Data<String>> add(@RequestBody EmploymentCreateDTO dto) {
+    public ResponseEntity<Data<String>> add(@Valid @RequestBody EmploymentCreateDTO dto) {
         service.add(dto);
         return new ResponseEntity<>(new Data<>("Successfully Added - Employment"), HttpStatus.OK);
     }
 
     @RequestMapping(value = "addAll", method = RequestMethod.POST)
-    public ResponseEntity<Data<String>> addAll(@RequestBody List<EmploymentCreateDTO> dtos) {
+    public ResponseEntity<Data<String>> addAll(@Valid @RequestBody List<EmploymentCreateDTO> dtos) {
         service.addAll(dtos);
         return new ResponseEntity<>(new Data<>("Successfully Added - Employment"), HttpStatus.OK);
     }
 
     @RequestMapping(value = "update", method = RequestMethod.PUT)
-    public ResponseEntity<Data<String>> update(@RequestBody EmploymentUpdateDTO dto) {
+    public ResponseEntity<Data<String>> update(@Valid @RequestBody EmploymentUpdateDTO dto) {
         service.update(dto);
         return new ResponseEntity<>(new Data<>("Successfully Updated - Employment"), HttpStatus.OK);
     }
 
     @RequestMapping(value = "updateAll", method = RequestMethod.PUT)
-    public ResponseEntity<Data<String>> updateAll(@RequestBody List<EmploymentUpdateDTO> dtos) {
+    public ResponseEntity<Data<String>> updateAll(@Valid @RequestBody List<EmploymentUpdateDTO> dtos) {
         service.updateAll(dtos);
         return new ResponseEntity<>(new Data<>("Successfully Updated - Employment"), HttpStatus.OK);
     }
