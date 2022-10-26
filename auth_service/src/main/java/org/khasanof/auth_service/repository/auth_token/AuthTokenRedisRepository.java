@@ -1,6 +1,7 @@
 package org.khasanof.auth_service.repository.auth_token;
 
 import org.khasanof.auth_service.entity.auth_token.AuthTokenEntity;
+import org.khasanof.auth_service.repository.BaseRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -11,7 +12,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Repository
-public class AuthTokenRedisRepository {
+public class AuthTokenRedisRepository implements BaseRepository {
 
     private final HashOperations hashOperations;
     public static final String HASH_KEY = "Token";
@@ -20,9 +21,9 @@ public class AuthTokenRedisRepository {
         this.hashOperations = redisTemplate.opsForHash();
     }
 
-    public AuthTokenEntity save(AuthTokenEntity token) {
-        hashOperations.put(HASH_KEY, token.getId(), token);
-        return token;
+    public AuthTokenEntity save(AuthTokenEntity entity) {
+        hashOperations.put(HASH_KEY, entity.getId(), entity);
+        return entity;
     }
 
     public AuthTokenEntity update(AuthTokenEntity token) {

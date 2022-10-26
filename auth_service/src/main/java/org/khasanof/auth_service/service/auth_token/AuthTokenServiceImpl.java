@@ -8,6 +8,7 @@ import org.khasanof.auth_service.dto.auth_token.AuthTokenDetailDTO;
 import org.khasanof.auth_service.dto.auth_token.AuthTokenGetDTO;
 import org.khasanof.auth_service.entity.auth_token.AuthTokenEntity;
 import org.khasanof.auth_service.mapper.auth_token.AuthTokenMapper;
+import org.khasanof.auth_service.repository.auth_token.AuthTokenRedisRepository;
 import org.khasanof.auth_service.repository.auth_token.AuthTokenRepository;
 import org.khasanof.auth_service.service.AbstractService;
 import org.khasanof.auth_service.service.auth_user.AuthUserService;
@@ -33,11 +34,13 @@ public class AuthTokenServiceImpl extends AbstractService<AuthTokenRepository, A
 
     private final AuthUserService userService;
     private final MongoTemplate mongoTemplate;
+    private final AuthTokenRedisRepository redisRepository;
 
-    public AuthTokenServiceImpl(AuthTokenRepository repository, AuthTokenMapper mapper, AuthTokenValidator validator, AuthUserService userService, MongoTemplate mongoTemplate) {
+    public AuthTokenServiceImpl(AuthTokenRepository repository, AuthTokenMapper mapper, AuthTokenValidator validator, AuthUserService userService, MongoTemplate mongoTemplate, AuthTokenRedisRepository redisRepository) {
         super(repository, mapper, validator);
         this.userService = userService;
         this.mongoTemplate = mongoTemplate;
+        this.redisRepository = redisRepository;
     }
 
     @Override
@@ -132,4 +135,28 @@ public class AuthTokenServiceImpl extends AbstractService<AuthTokenRepository, A
         return Instant.now().plusNanos(TimeUnit.MINUTES.toNanos(minTime));
     }
 
+    @Override
+    public void addRedis(AuthTokenCreateDTO dto) {
+
+    }
+
+    @Override
+    public void deleteRedis(String id) {
+
+    }
+
+    @Override
+    public AuthTokenGetDTO getRedis(String id) {
+        return null;
+    }
+
+    @Override
+    public AuthTokenDetailDTO detailRedis(String id) {
+        return null;
+    }
+
+    @Override
+    public List<AuthTokenGetDTO> listRedis() {
+        return null;
+    }
 }

@@ -17,7 +17,7 @@ public class AuthTokenCreateDTO implements BaseDTO {
     @NotBlank
     @MongoIdConstraint
     private String authId;
-    @NotBlank
+    @NotNull
     private AuthTokenType type;
     @NotBlank
     private String token;

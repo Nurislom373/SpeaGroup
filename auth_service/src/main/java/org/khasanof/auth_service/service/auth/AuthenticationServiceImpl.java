@@ -1,7 +1,6 @@
 package org.khasanof.auth_service.service.auth;
 
 import com.auth0.jwt.JWT;
-import com.fasterxml.jackson.core.type.TypeReference;
 import org.khasanof.auth_service.dto.auth.AuthChangeImagePathDTO;
 import org.khasanof.auth_service.dto.auth.AuthChangePasswordDTO;
 import org.khasanof.auth_service.dto.auth.AuthRequestDTO;
@@ -17,7 +16,6 @@ import org.khasanof.auth_service.repository.auth_role.AuthRoleRepository;
 import org.khasanof.auth_service.repository.auth_token.AuthTokenRedisRepository;
 import org.khasanof.auth_service.repository.auth_token.AuthTokenRepository;
 import org.khasanof.auth_service.repository.auth_user.AuthUserRepository;
-import org.khasanof.auth_service.response.Data;
 import org.khasanof.auth_service.service.auth_block.AuthBlockService;
 import org.khasanof.auth_service.service.auth_user.AuthUserService;
 import org.khasanof.auth_service.utils.BaseUtils;

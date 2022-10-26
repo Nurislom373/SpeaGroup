@@ -6,6 +6,7 @@ import org.khasanof.auth_service.criteria.auth_user.AuthUserBetweenCriteria;
 import org.khasanof.auth_service.criteria.auth_user.AuthUserCriteria;
 import org.khasanof.auth_service.criteria.auth_user.AuthUserSearchCriteria;
 import org.khasanof.auth_service.dto.auth_user.AuthUserCreateDTO;
+import org.khasanof.auth_service.dto.auth_user.AuthUserDetailDTO;
 import org.khasanof.auth_service.dto.auth_user.AuthUserGetDTO;
 import org.khasanof.auth_service.dto.auth_user.AuthUserUpdateDTO;
 import org.khasanof.auth_service.response.Data;
@@ -47,6 +48,11 @@ public class AuthUserController extends AbstractController<AuthUserService> {
     @RequestMapping(value = "get/{id}", method = RequestMethod.GET)
     public ResponseEntity<Data<AuthUserGetDTO>> get(@Parameter(description = "id of authUser to be gotten", required = true) @PathVariable String id) {
         return new ResponseEntity<>(new Data<>(service.get(id)), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "detail/{id}", method = RequestMethod.GET)
+    public ResponseEntity<Data<AuthUserDetailDTO>> detail(@Parameter(description = "id of authUser to be gotten", required = true) @PathVariable String id) {
+        return new ResponseEntity<>(new Data<>(service.detail(id)), HttpStatus.OK);
     }
 
     @RequestMapping(value = "list", method = RequestMethod.GET)

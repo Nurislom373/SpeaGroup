@@ -11,7 +11,9 @@ import org.khasanof.auth_service.service.GenericGDLService;
 
 import java.util.List;
 
-public interface AuthTokenService extends GenericGDLService<AuthTokenGetDTO, AuthTokenDetailDTO, String, AuthTokenCriteria>, BaseService {
+public interface AuthTokenService extends GenericGDLService<AuthTokenGetDTO, AuthTokenDetailDTO, String, AuthTokenCriteria>,
+        AuthTokenRedisService,
+        BaseService {
 
     void create(AuthTokenCreateDTO dto);
 

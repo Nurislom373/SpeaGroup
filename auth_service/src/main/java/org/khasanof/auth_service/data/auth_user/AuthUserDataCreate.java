@@ -27,13 +27,10 @@ public class AuthUserDataCreate implements CommandLineRunner {
 
     @Autowired
     private AuthUserRepository userRepository;
-    @Autowired
-    private AuthFollowerService authFollowerService;
 
     @Override
     public void run(String... args) throws Exception {
-        /*
-        ObjectMapper objectMapper = new ObjectMapper();
+        /*ObjectMapper objectMapper = new ObjectMapper();
         TypeReference<List<AuthUserEntity>> reference = new TypeReference<>() {
         };
 
@@ -44,8 +41,7 @@ public class AuthUserDataCreate implements CommandLineRunner {
             userRepository.save(user);
         });
 
-        log.info(">>>>>>> " + list.size() + " Users Saved!");
-        */
+        log.info(">>>>>>> " + list.size() + " Users Saved!");*/
 
         // need to run once!
     }

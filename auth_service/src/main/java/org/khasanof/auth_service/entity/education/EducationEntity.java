@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.khasanof.auth_service.entity.Auditable;
+import org.khasanof.auth_service.entity.BaseEntity;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -14,7 +15,7 @@ import java.util.Date;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class EducationEntity {
+public class EducationEntity implements BaseEntity {
     private String id;
     private String education;
     private Date startYear;
