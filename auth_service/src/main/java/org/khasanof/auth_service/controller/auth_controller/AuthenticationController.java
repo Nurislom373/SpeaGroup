@@ -10,10 +10,7 @@ import org.khasanof.auth_service.service.auth.AuthenticationService;
 import org.khasanof.auth_service.utils.BaseUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
@@ -28,6 +25,12 @@ public class AuthenticationController extends AbstractController<AuthenticationS
     @RequestMapping(value = "login", method = RequestMethod.POST)
     public ResponseEntity<Data<TokenDTO>> login(@Valid @RequestBody AuthRequestDTO dto) {
         return new ResponseEntity<>(new Data<>(service.login(dto)), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "verifiedEmail/{id}", method = RequestMethod.PUT)
+    public ResponseEntity<Data<String>> verifiedEmail(@PathVariable String id) {
+        service.verifiedEmail(id);
+        return new ResponseEntity<>(new Data<>("Successfully Verified Email"), HttpStatus.OK);
     }
 
     @RequestMapping(value = "changePassword", method = RequestMethod.PUT)

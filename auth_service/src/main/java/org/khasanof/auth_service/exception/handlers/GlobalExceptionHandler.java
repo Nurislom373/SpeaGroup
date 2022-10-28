@@ -1,16 +1,14 @@
 package org.khasanof.auth_service.exception.handlers;
 
+import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
 import org.khasanof.auth_service.exception.exceptions.AlreadyCreatedException;
 import org.khasanof.auth_service.exception.exceptions.InvalidValidationException;
 import org.khasanof.auth_service.exception.exceptions.PasswordDoesNotMatchException;
 import org.khasanof.auth_service.response.ApplicationError;
-import org.khasanof.auth_service.response.Data;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.support.WebExchangeBindException;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import org.webjars.NotFoundException;
@@ -19,6 +17,17 @@ import java.time.LocalDateTime;
 
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
+
+    @ExceptionHandler({CallNotPermittedException.class})
+    public ResponseEntity<ApplicationError> handleCallNotPermittedException(CallNotPermittedException exception) {
+        ApplicationError applicationError = new ApplicationError();
+        applicationError.setCode("CallNotPermittedException");
+        applicationError.setMessage(exception.getMessage());
+        applicationError.setStatus(503);
+        applicationError.setCode("503");
+        applicationError.setTime(LocalDateTime.now());
+        return new ResponseEntity<>(applicationError, HttpStatus.SERVICE_UNAVAILABLE);
+    }
 
     @ExceptionHandler(InvalidValidationException.class)
     public ResponseEntity<ApplicationError> InvalidExceptionHandler(InvalidValidationException exception, WebRequest webRequest) {

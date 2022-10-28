@@ -19,17 +19,6 @@ public class AuthUserValidator extends AbstractValidator<AuthUserCreateDTO, Auth
         if (Objects.isNull(authUserCreateDTO)) {
             throw new InvalidValidationException("DTO is null");
         }
-        if (authUserCreateDTO.getUsername().length() < 4 || authUserCreateDTO.getUsername().length() > 50) {
-            throw new InvalidValidationException("Must be Username min size 4 max 50");
-        }
-        if (!LanguageEnums.hasLang(authUserCreateDTO.getLanguage())) {
-            throw new InvalidValidationException("Invalid Language!");
-        }
-        Pattern pattern = Pattern.compile("^(?=.{1,64}@)[A-Za-z0-9_-]+(\\\\.[A-Za-z0-9_-]+)*@\" \n" +
-                                          "+ \"[^-][A-Za-z0-9-]+(\\\\.[A-Za-z0-9-]+)*(\\\\.[A-Za-z]{2,})$");
-        if (!pattern.matcher(authUserCreateDTO.getEmail()).matches()) {
-            throw new InvalidValidationException("Invalid Email!");
-        }
     }
 
     @Override

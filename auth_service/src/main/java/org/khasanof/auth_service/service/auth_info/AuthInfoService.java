@@ -19,4 +19,6 @@ public interface AuthInfoService extends
 
     void changeVisibility(AuthInfoChangeVisibilityDTO dto);
 
+    void deleteByUserId(String id);
+
 }

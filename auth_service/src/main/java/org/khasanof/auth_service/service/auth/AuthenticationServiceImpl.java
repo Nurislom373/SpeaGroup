@@ -10,6 +10,7 @@ import org.khasanof.auth_service.entity.auth_role.AuthRoleEntity;
 import org.khasanof.auth_service.entity.auth_token.AuthTokenEntity;
 import org.khasanof.auth_service.entity.auth_user.AuthUserEntity;
 import org.khasanof.auth_service.enums.auth_token.AuthTokenType;
+import org.khasanof.auth_service.enums.auth_user.AuthUserStatusEnum;
 import org.khasanof.auth_service.exception.exceptions.InvalidValidationException;
 import org.khasanof.auth_service.exception.exceptions.PasswordDoesNotMatchException;
 import org.khasanof.auth_service.repository.auth_role.AuthRoleRepository;
@@ -20,6 +21,7 @@ import org.khasanof.auth_service.service.auth_block.AuthBlockService;
 import org.khasanof.auth_service.service.auth_user.AuthUserService;
 import org.khasanof.auth_service.utils.BaseUtils;
 import org.khasanof.auth_service.utils.jwt.JWTUtils;
+import org.khasanof.auth_service.validator.auth_user.AuthUserValidator;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -43,8 +45,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final AuthTokenRepository authTokenRepository;
     private final AuthRoleRepository roleRepository;
     private final AuthUserRepository authUserRepository;
+    private final AuthUserValidator userValidator;
 
-    public AuthenticationServiceImpl(AuthBlockService authBlockService, @Lazy AuthUserService authUserService, MongoTemplate mongoTemplate, AuthTokenRedisRepository tokenRedisRepository, AuthTokenRepository authTokenRepository, AuthRoleRepository roleRepository, AuthUserRepository authUserRepository) {
+    public AuthenticationServiceImpl(AuthBlockService authBlockService, @Lazy AuthUserService authUserService, MongoTemplate mongoTemplate, AuthTokenRedisRepository tokenRedisRepository, AuthTokenRepository authTokenRepository, AuthRoleRepository roleRepository, AuthUserRepository authUserRepository, AuthUserValidator userValidator) {
         this.authBlockService = authBlockService;
         this.authUserService = authUserService;
         this.mongoTemplate = mongoTemplate;
@@ -52,6 +55,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         this.authTokenRepository = authTokenRepository;
         this.roleRepository = roleRepository;
         this.authUserRepository = authUserRepository;
+        this.userValidator = userValidator;
     }
 
     @Override
@@ -110,6 +114,18 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .build();
+    }
+
+    @Override
+    public void verifiedEmail(String userId) {
+        userValidator.validKey(userId);
+        AuthUserEntity entity = authUserRepository.findById(userId)
+                .orElseThrow(() -> {
+                    throw new NotFoundException("User not found");
+                });
+        entity.setStatus(AuthUserStatusEnum.ACTIVE);
+        entity.setVerified(true);
+        authUserRepository.save(entity);
     }
 
     @Override

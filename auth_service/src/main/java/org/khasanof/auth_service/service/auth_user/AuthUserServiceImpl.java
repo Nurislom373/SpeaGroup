@@ -1,5 +1,6 @@
 package org.khasanof.auth_service.service.auth_user;
 
+import lombok.Value;
 import org.khasanof.auth_service.criteria.auth_user.AuthUserBetweenCriteria;
 import org.khasanof.auth_service.criteria.auth_user.AuthUserCriteria;
 import org.khasanof.auth_service.criteria.auth_user.AuthUserSearchCriteria;
@@ -28,12 +29,17 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
 
+import javax.mail.Message;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 @Service
 public class AuthUserServiceImpl extends AbstractService<
@@ -45,13 +51,15 @@ public class AuthUserServiceImpl extends AbstractService<
     private final MongoTemplate mongoTemplate;
     private final AuthRoleRepository roleRepository;
     private final AuthInfoService authInfoService;
+    private final JavaMailSender mailSender;
 
-    public AuthUserServiceImpl(AuthUserRepository repository, AuthUserMapper mapper, AuthUserValidator validator, AuthUserProducerService userProducerService, MongoTemplate mongoTemplate, AuthRoleRepository roleRepository, @Lazy AuthInfoService authInfoService) {
+    public AuthUserServiceImpl(AuthUserRepository repository, AuthUserMapper mapper, AuthUserValidator validator, AuthUserProducerService userProducerService, MongoTemplate mongoTemplate, AuthRoleRepository roleRepository, @Lazy AuthInfoService authInfoService, JavaMailSender mailSender) {
         super(repository, mapper, validator);
         this.userProducerService = userProducerService;
         this.mongoTemplate = mongoTemplate;
         this.roleRepository = roleRepository;
         this.authInfoService = authInfoService;
+        this.mailSender = mailSender;
     }
 
     @Override
@@ -83,7 +91,7 @@ public class AuthUserServiceImpl extends AbstractService<
             throw new RuntimeException("Invalid Language!");
         }
         AuthUserEntity authUserEntity = mapper.toCreateDTO(createDto);
-        authUserEntity.setStatus(AuthUserStatusEnum.NO_ACTIVE.getValue());
+        authUserEntity.setStatus(AuthUserStatusEnum.NO_ACTIVE);
         authUserEntity.setPassword(BaseUtils.ENCODER.encode(createDto.getPassword()));
         AuthUserEntity entity = repository.insert(authUserEntity);
         roleRepository.insert(new AuthRoleEntity(entity, AuthRoleEnum.USER.getValue()));
@@ -94,6 +102,7 @@ public class AuthUserServiceImpl extends AbstractService<
             authInfoService.create(new AuthInfoCreateDTO(entity.getId(),
                     BaseUtils.DEFAULT_CATEGORIES));
         }
+        sendMessage();
     }
 
     @Override
@@ -114,6 +123,7 @@ public class AuthUserServiceImpl extends AbstractService<
         }
         repository.deleteById(id);
         userProducerService.sendMessage(id);
+        authInfoService.delete(id);
     }
 
     @Override
@@ -181,5 +191,15 @@ public class AuthUserServiceImpl extends AbstractService<
                 mongoTemplate.find(
                         new AuthUserPredicateExecutor.BetweenPredicate(betweenCriteria).betweenQuery(),
                         AuthUserEntity.class));
+    }
+
+    private void sendMessage() {
+        SimpleMailMessage mailMessage
+                = new SimpleMailMessage();
+        mailMessage.setFrom("khasanof373@gmail.com");
+        mailMessage.setTo("noza5037@gmail.com");
+        mailMessage.setText("Boom");
+        mailMessage.setSubject("Boom Guys!");
+        mailSender.send(mailMessage);
     }
 }

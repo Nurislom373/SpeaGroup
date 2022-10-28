@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.khasanof.auth_service.entity.Auditable;
+import org.khasanof.auth_service.enums.auth_user.AuthUserStatusEnum;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -25,7 +26,7 @@ public class AuthUserEntity extends Auditable {
     private String username;
     private String password;
     private String language;
-    private String status;
+    private AuthUserStatusEnum status;
     @Field(name = "last_loin_at")
     private Instant lastLoginAt;
     @Field(name = "image_path")

@@ -301,6 +301,12 @@ public class AuthInfoServiceImpl extends AbstractService<AuthInfoRepository, Aut
             inviteRepository.save(new AuthInviteEntity(authUserService.getEntity(dto.getId())));
     }
 
+    @Override
+    public void deleteByUserId(String id) {
+        validator.validKey(id);
+        repository.deleteByUserId(authUserService.getEntity(id));
+    }
+
     private AuthInfoGetDTO returnToGetDTO(AuthInfoEntity entity) {
         AuthInfoGetDTO authInfoGetDTO = mapper.fromGetDTO(entity);
         authInfoGetDTO.setAuthid(entity.getUserId().getId());

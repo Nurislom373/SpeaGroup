@@ -10,6 +10,8 @@ public interface AuthenticationService extends BaseService {
 
     TokenDTO login(AuthRequestDTO dto);
 
+    void verifiedEmail(String userId);
+
     void changePassword(AuthChangePasswordDTO dto);
 
     void changeImagePath(AuthChangeImagePathDTO dto);

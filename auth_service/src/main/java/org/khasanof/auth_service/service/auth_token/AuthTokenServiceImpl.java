@@ -125,19 +125,9 @@ public class AuthTokenServiceImpl extends AbstractService<AuthTokenRepository, A
         log.info("isDead set token when expiry is end");
     }
 
-    private AuthTokenGetDTO returnToGetDTO(AuthTokenEntity entity) {
-        AuthTokenGetDTO authTokenGetDTO = mapper.fromGetDTO(entity);
-        authTokenGetDTO.setAuthUserId(entity.getUserId().getId());
-        return authTokenGetDTO;
-    }
-
-    private Instant changeIntegerMinToTime(Integer minTime) {
-        return Instant.now().plusNanos(TimeUnit.MINUTES.toNanos(minTime));
-    }
-
     @Override
-    public void addRedis(AuthTokenCreateDTO dto) {
-
+    public void addRedis(AuthTokenEntity entity) {
+        redisRepository.save(entity);
     }
 
     @Override
@@ -158,5 +148,15 @@ public class AuthTokenServiceImpl extends AbstractService<AuthTokenRepository, A
     @Override
     public List<AuthTokenGetDTO> listRedis() {
         return null;
+    }
+
+    private AuthTokenGetDTO returnToGetDTO(AuthTokenEntity entity) {
+        AuthTokenGetDTO authTokenGetDTO = mapper.fromGetDTO(entity);
+        authTokenGetDTO.setAuthUserId(entity.getUserId().getId());
+        return authTokenGetDTO;
+    }
+
+    private Instant changeIntegerMinToTime(Integer minTime) {
+        return Instant.now().plusNanos(TimeUnit.MINUTES.toNanos(minTime));
     }
 }
