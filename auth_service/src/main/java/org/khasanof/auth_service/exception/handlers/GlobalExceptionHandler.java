@@ -1,6 +1,5 @@
 package org.khasanof.auth_service.exception.handlers;
 
-import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
 import org.khasanof.auth_service.exception.exceptions.AlreadyCreatedException;
 import org.khasanof.auth_service.exception.exceptions.InvalidValidationException;
 import org.khasanof.auth_service.exception.exceptions.PasswordDoesNotMatchException;
@@ -17,17 +16,6 @@ import java.time.LocalDateTime;
 
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
-
-    @ExceptionHandler({CallNotPermittedException.class})
-    public ResponseEntity<ApplicationError> handleCallNotPermittedException(CallNotPermittedException exception) {
-        ApplicationError applicationError = new ApplicationError();
-        applicationError.setCode("CallNotPermittedException");
-        applicationError.setMessage(exception.getMessage());
-        applicationError.setStatus(503);
-        applicationError.setCode("503");
-        applicationError.setTime(LocalDateTime.now());
-        return new ResponseEntity<>(applicationError, HttpStatus.SERVICE_UNAVAILABLE);
-    }
 
     @ExceptionHandler(InvalidValidationException.class)
     public ResponseEntity<ApplicationError> InvalidExceptionHandler(InvalidValidationException exception, WebRequest webRequest) {
