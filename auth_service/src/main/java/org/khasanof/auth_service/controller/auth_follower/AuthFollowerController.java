@@ -47,7 +47,7 @@ public class AuthFollowerController extends AbstractController<AuthFollowerServi
     }
 
     @RequestMapping(value = "list", method = RequestMethod.GET)
-    public ResponseEntity<Data<List<AuthFollowerGetDTO>>> get(@Valid @NotNull AuthFollowerCriteria criteria) {
+    public ResponseEntity<Data<List<AuthFollowerGetDTO>>> list(@Valid @NotNull AuthFollowerCriteria criteria) {
         return new ResponseEntity<>(new Data<>(service.list(criteria)), HttpStatus.OK);
     }
 

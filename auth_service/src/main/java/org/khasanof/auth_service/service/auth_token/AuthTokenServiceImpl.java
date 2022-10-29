@@ -115,7 +115,7 @@ public class AuthTokenServiceImpl extends AbstractService<AuthTokenRepository, A
     }
 
     @Override
-    @Scheduled(fixedDelay = 30000)
+//    @Scheduled(fixedDelay = 30000)
     public void autoIsDead() {
         repository.findAll().stream()
                 .filter(token -> token.getDuration()

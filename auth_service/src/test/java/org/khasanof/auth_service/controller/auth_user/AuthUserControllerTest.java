@@ -1,4 +1,4 @@
-package org.khasanof.auth_service.controller;
+package org.khasanof.auth_service.controller.auth_user;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

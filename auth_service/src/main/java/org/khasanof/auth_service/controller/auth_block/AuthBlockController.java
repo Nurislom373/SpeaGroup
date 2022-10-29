@@ -32,7 +32,7 @@ public class AuthBlockController extends AbstractController<AuthBlockService> {
     @RequestMapping(value = "delete/{id}", method = RequestMethod.DELETE)
     public ResponseEntity<Data<String>> delete(@PathVariable String id) {
         service.delete(id);
-        return new ResponseEntity<>(new Data<>("Successfully Deleted - Auth Block"), HttpStatus.OK);
+        return new ResponseEntity<>(new Data<>("Successfully Deleted - Auth Block"), HttpStatus.NO_CONTENT);
     }
 
     @RequestMapping(value = "get/{id}", method = RequestMethod.GET)

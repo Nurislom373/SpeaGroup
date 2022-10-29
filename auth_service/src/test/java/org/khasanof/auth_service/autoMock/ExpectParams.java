@@ -1,4 +1,4 @@
-package org.khasanof.auth_service;
+package org.khasanof.auth_service.autoMock;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

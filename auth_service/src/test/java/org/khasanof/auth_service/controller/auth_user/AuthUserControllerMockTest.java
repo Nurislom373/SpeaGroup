@@ -1,4 +1,4 @@
-package org.khasanof.auth_service.controller;
+package org.khasanof.auth_service.controller.auth_user;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.Matchers;
