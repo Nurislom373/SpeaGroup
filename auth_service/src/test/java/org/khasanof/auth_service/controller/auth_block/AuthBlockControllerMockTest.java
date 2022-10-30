@@ -1,9 +1,8 @@
 package org.khasanof.auth_service.controller.auth_block;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.khasanof.auth_service.autoMock.AutoMockMvcData;
+import org.khasanof.auth_service.autoMock.AutoMockMvc;
 import org.khasanof.auth_service.autoMock.Utils;
 import org.khasanof.auth_service.dto.auth_block.AuthBlockCreateDTO;
 import org.khasanof.auth_service.service.auth_block.AuthBlockServiceImpl;
@@ -23,8 +22,9 @@ public class AuthBlockControllerMockTest {
 
     @MockBean
     private AuthBlockServiceImpl blockService;
+
     @Autowired
-    private AutoMockMvcData mockMvcData;
+    private AutoMockMvc mockMvcData;
 
     @Test
     public void create() throws Exception {

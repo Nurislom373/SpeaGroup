@@ -1,5 +1,6 @@
 package org.khasanof.auth_service.validator.auth_block;
 
+import org.bson.types.ObjectId;
 import org.khasanof.auth_service.dto.GenericDTO;
 import org.khasanof.auth_service.dto.auth_block.AuthBlockCreateDTO;
 import org.khasanof.auth_service.exception.exceptions.InvalidValidationException;
@@ -27,6 +28,9 @@ public class AuthBlockValidator extends AbstractValidator<AuthBlockCreateDTO, Ge
     public void validKey(String s) throws InvalidValidationException {
         if (Objects.isNull(s)) {
             throw new InvalidValidationException("ID is null");
+        }
+        if (!ObjectId.isValid(s)) {
+            throw new InvalidValidationException("Invalid ID!");
         }
     }
 }

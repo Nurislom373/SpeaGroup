@@ -107,6 +107,7 @@ public class AuthBlockServiceImpl extends AbstractService<AuthBlockRepository, A
 
     @Override
     public AuthBlockDetailDTO detail(String id) {
+        validator.validKey(id);
         return mapper.fromDetailDTO(
                 repository.findById(id)
                         .orElseThrow(() -> {

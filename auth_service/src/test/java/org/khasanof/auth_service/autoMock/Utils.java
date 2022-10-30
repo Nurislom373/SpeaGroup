@@ -34,6 +34,8 @@ public abstract class Utils {
                     MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON));
             case NO_CONTENT -> List.of(MockMvcResultMatchers.status().isNoContent(),
                     MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON));
+            case BAD_REQUEST -> List.of(MockMvcResultMatchers.status().isBadRequest(),
+                    MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON));
             case NOT_FOUND -> List.of(MockMvcResultMatchers.status().isNotFound(),
                     MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON));
         };
@@ -50,6 +52,7 @@ public abstract class Utils {
         OK,
         CREATED,
         NO_CONTENT,
+        BAD_REQUEST,
         NOT_FOUND;
     }
 

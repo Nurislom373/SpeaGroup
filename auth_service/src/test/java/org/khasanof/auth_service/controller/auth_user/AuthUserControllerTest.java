@@ -20,6 +20,7 @@ import org.springframework.util.LinkedMultiValueMap;
 @AutoConfigureMockMvc
 @ExtendWith(SpringExtension.class)
 public class AuthUserControllerTest {
+
     @Autowired
     private MockMvc mockMvc;
 
