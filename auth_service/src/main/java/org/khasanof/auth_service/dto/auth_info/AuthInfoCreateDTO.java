@@ -13,6 +13,7 @@ import org.khasanof.auth_service.entity.location.LocationEntity;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Getter
@@ -28,7 +29,7 @@ public class AuthInfoCreateDTO implements BaseDTO {
     private List<EmploymentEntity> employments;
     private String bornYearStr;
     private String phoneNumber;
-    @NotBlank
+    @NotNull
     private List<String> interestsId;
 
     public AuthInfoCreateDTO(String authid, List<String> interestsId) {

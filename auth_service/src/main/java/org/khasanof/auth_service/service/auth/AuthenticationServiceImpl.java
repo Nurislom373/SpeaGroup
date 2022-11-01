@@ -73,7 +73,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             throw new RuntimeException("User not found");
 
         if (atomicInteger.get() == 3) {
-            authBlockService.create(new AuthBlockCreateDTO(userEntity.getId(), "251dyfdty56"));
+            authBlockService.create(new AuthBlockCreateDTO(userEntity.getId(),
+                    "633568fb6f2f9218191858d3"));
         }
 
         if (!BaseUtils.ENCODER.matches(dto.getPassword(), userEntity.getPassword())) {
@@ -105,10 +106,16 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .withExpiresAt(expiryForRefreshToken)
                 .sign(JWTUtils.getAlgorithm());
 
-        AuthTokenEntity tokenEntity = authTokenRepository.save(
+        AuthTokenEntity access = authTokenRepository.save(
                 new AuthTokenEntity(userEntity, AuthTokenType.ACCESS,
                         accessToken, BaseUtils.currentTimeAddMinute(50)));
-        tokenRedisRepository.save(tokenEntity);
+
+        AuthTokenEntity refresh = authTokenRepository.save(
+                new AuthTokenEntity(userEntity, AuthTokenType.REFRESH,
+                        accessToken, BaseUtils.currentTimeAddMinute((3 * 24 * 60))));
+
+        tokenRedisRepository.save(access);
+        tokenRedisRepository.save(refresh);
 
         return TokenDTO.builder()
                 .accessToken(accessToken)

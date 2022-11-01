@@ -13,6 +13,7 @@ import org.khasanof.auth_service.entity.auth_invite.AuthInviteEntity;
 import org.khasanof.auth_service.entity.auth_user.AuthUserEntity;
 import org.khasanof.auth_service.entity.location.LocationEntity;
 import org.khasanof.auth_service.enums.auth_info.AuthInfoVisibilityEnum;
+import org.khasanof.auth_service.exception.exceptions.InvalidValidationException;
 import org.khasanof.auth_service.mapper.auth_info.AuthInfoMapper;
 import org.khasanof.auth_service.predicate.auth_info.AuthInfoPredicateExecutor;
 import org.khasanof.auth_service.repository.auth_info.AuthInfoRepository;
@@ -24,6 +25,8 @@ import org.khasanof.auth_service.validator.auth_info.AuthInfoValidator;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
 
@@ -67,6 +70,7 @@ public class AuthInfoServiceImpl extends AbstractService<AuthInfoRepository, Aut
                 .toList();
         AuthInfoEntity authInfoEntity = mapper.toCreateDTO(dto);
         authInfoEntity.setUserId(userEntity);
+        authInfoEntity.setVisibility(AuthInfoVisibilityEnum.PUBLIC);
         authInfoEntity.setBornYear(Objects.isNull(dto.getBornYearStr()) ? null : strParseToDate(dto.getBornYearStr()));
         authInfoEntity.setInterests(list);
         repository.save(authInfoEntity);
@@ -286,19 +290,31 @@ public class AuthInfoServiceImpl extends AbstractService<AuthInfoRepository, Aut
     }
 
     @Override
+    public AuthInfoEntity getByUserId(String id) {
+        validator.validKey(id);
+        AuthInfoEntity entity = mongoTemplate.findOne(
+                Query.query(new Criteria("userId")
+                        .is(authUserService.getEntity(id))),
+                AuthInfoEntity.class);
+        if (Objects.isNull(entity)) {
+            throw new InvalidValidationException("Auth Info not found");
+        }
+        return entity;
+    }
+
+    @Override
     public void changeVisibility(AuthInfoChangeVisibilityDTO dto) {
         validator.validChangeVisibility(dto);
-        AuthInfoEntity authInfo = repository.findByUserIdEquals(
-                        authUserService.getEntity(dto.getId()))
+        AuthInfoEntity authInfo = repository.findById(dto.getId())
                 .orElseThrow(() -> {
                     throw new NotFoundException("Info not found");
                 });
         authInfo.setVisibility(dto.getVisibility());
         authInfo.setUpdatedAt(Instant.now());
-        authInfo.setUpdatedBy(dto.getId());
+        authInfo.setUpdatedBy(authInfo.getUserId().getId());
         repository.save(authInfo);
         if (AuthInfoVisibilityEnum.PRIVATE.equals(dto.getVisibility()))
-            inviteRepository.save(new AuthInviteEntity(authUserService.getEntity(dto.getId())));
+            inviteRepository.save(new AuthInviteEntity(authUserService.getEntity(authInfo.getUserId().getId())));
     }
 
     @Override
@@ -309,7 +325,7 @@ public class AuthInfoServiceImpl extends AbstractService<AuthInfoRepository, Aut
 
     private AuthInfoGetDTO returnToGetDTO(AuthInfoEntity entity) {
         AuthInfoGetDTO authInfoGetDTO = mapper.fromGetDTO(entity);
-        authInfoGetDTO.setAuthid(entity.getUserId().getId());
+        authInfoGetDTO.setAuthId(entity.getUserId().getId());
         return authInfoGetDTO;
     }
 

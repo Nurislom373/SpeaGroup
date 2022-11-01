@@ -17,7 +17,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AuthInfoGetDTO extends GenericDTO {
-    private String authid;
+    private String authId;
     private LocationEntity location;
     private List<EducationEntity> educations;
     private List<EmploymentEntity> employments;

@@ -18,7 +18,7 @@ import java.util.LinkedList;
 @Document(collection = "auth_invite")
 public class AuthInviteEntity extends Auditable {
     @DocumentReference
-    @Field(name = "post_id")
+    @Field(name = "user_id")
     private AuthUserEntity userId;
     private LinkedList<InviteEntity> invites;
 

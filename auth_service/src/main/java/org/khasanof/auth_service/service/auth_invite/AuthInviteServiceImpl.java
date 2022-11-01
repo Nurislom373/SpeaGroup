@@ -5,13 +5,17 @@ import org.khasanof.auth_service.dto.auth_invite.AuthInviteChangeStatusDTO;
 import org.khasanof.auth_service.dto.auth_invite.AuthInviteCreateDTO;
 import org.khasanof.auth_service.dto.auth_invite.AuthInviteDetailDTO;
 import org.khasanof.auth_service.dto.auth_invite.AuthInviteGetDTO;
+import org.khasanof.auth_service.entity.auth_info.AuthInfoEntity;
 import org.khasanof.auth_service.entity.auth_invite.AuthInviteEntity;
 import org.khasanof.auth_service.entity.invite.InviteEntity;
+import org.khasanof.auth_service.enums.auth_info.AuthInfoVisibilityEnum;
 import org.khasanof.auth_service.enums.auth_invite.AuthInviteStatusEnum;
 import org.khasanof.auth_service.exception.exceptions.NotFoundException;
 import org.khasanof.auth_service.mapper.auth_invite.AuthInviteMapper;
 import org.khasanof.auth_service.repository.auth_invite.AuthInviteRepository;
 import org.khasanof.auth_service.service.AbstractService;
+import org.khasanof.auth_service.service.auth_info.AuthInfoService;
+import org.khasanof.auth_service.service.auth_user.AuthUserService;
 import org.khasanof.auth_service.validator.auth_invite.AuthInviteValidator;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -24,15 +28,23 @@ import java.util.Objects;
 @Service
 public class AuthInviteServiceImpl extends AbstractService<AuthInviteRepository, AuthInviteMapper, AuthInviteValidator> implements AuthInviteService {
 
+    private final AuthInfoService authInfoService;
+    private final AuthUserService userService;
 
-    public AuthInviteServiceImpl(AuthInviteRepository repository, AuthInviteMapper mapper, AuthInviteValidator validator) {
+    public AuthInviteServiceImpl(AuthInviteRepository repository, AuthInviteMapper mapper, AuthInviteValidator validator, AuthInfoService authInfoService, AuthUserService userService) {
         super(repository, mapper, validator);
+        this.authInfoService = authInfoService;
+        this.userService = userService;
     }
 
     @Override
     public void create(AuthInviteCreateDTO dto) {
         validator.validCreateDTO(dto);
-        AuthInviteEntity authInvite = repository.findById(dto.getRequestUserId())
+        AuthInfoEntity infoEntity = authInfoService.getByUserId(dto.getInviteUserId());
+        if (!AuthInfoVisibilityEnum.PRIVATE.equals(infoEntity.getVisibility())) {
+            throw new RuntimeException("User Visibility is not PRIVATE!");
+        }
+        AuthInviteEntity authInvite = repository.findByUserIdEquals(infoEntity.getUserId())
                 .orElseThrow(() -> new NotFoundException("User Invites not found"));
         LinkedList<InviteEntity> invites = authInvite.getInvites();
         if (Objects.isNull(invites)) {
