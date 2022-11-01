@@ -42,38 +42,13 @@ public class AuthFollowerServiceImpl extends AbstractService<AuthFollowerReposit
     @Override
     public void create(AuthFollowerCreateDTO dto) {
         validator.validCreateDTO(dto);
+        AuthUserEntity user = userService.getEntity(dto.getAuthId());
         AuthFollowerEntity followerEntity = mongoTemplate.findOne(
                 Query.query(new Criteria("userId")
-                        .is(userService.getEntity(dto.getAuthId()))),
+                        .is(user)),
                 AuthFollowerEntity.class);
         if (Objects.nonNull(followerEntity)) {
-            List<String> followerId = dto.getFollowerId();
-            List<AuthUserEntity> followers = followerEntity.getFollowers();
-            List<String> alreadyFollowers = new ArrayList<>();
-            followerId.forEach((fol) -> {
-                alreadyFollowers.add(
-                        followers.stream()
-                                .filter(f -> f.getId().equals(fol))
-                                .map(this::getId)
-                                .findFirst()
-                                .orElse(null)
-                );
-            });
-            if (alreadyFollowers.size() != 0) {
-                followerId.removeAll(alreadyFollowers);
-            }
-            if (followerId.size() != 0) {
-                List<AuthUserEntity> followers1 = followerEntity.getFollowers();
-                List<AuthUserEntity> userEntities = followerId.stream()
-                        .map(userRepository::findById)
-                        .map(Optional::orElseThrow)
-                        .toList();
-                followers1.addAll(userEntities);
-                followerEntity.setFollowers(followers);
-                followerEntity.setUpdatedAt(Instant.now());
-                followerEntity.setUpdatedBy(dto.getAuthId());
-                repository.save(followerEntity);
-            }
+            presentUser(dto, followerEntity);
         } else {
             List<AuthUserEntity> list = new ArrayList<>();
             dto.getFollowerId().forEach((following) -> {
@@ -83,9 +58,41 @@ public class AuthFollowerServiceImpl extends AbstractService<AuthFollowerReposit
                         }));
             });
             repository.save(AuthFollowerEntity.builder()
-                    .userId(userService.getEntity(dto.getAuthId()))
+                    .userId(user)
                     .followers(list)
                     .build());
+        }
+    }
+
+    private void presentUser(AuthFollowerCreateDTO dto, AuthFollowerEntity followerEntity) {
+        List<String> followerId = dto.getFollowerId();
+        List<AuthUserEntity> followers = followerEntity.getFollowers();
+        List<String> alreadyFollowers = new ArrayList<>();
+        followerId.forEach((fol) -> {
+            alreadyFollowers.add(
+                    followers.stream()
+                            .filter(f -> f.getId().equals(fol))
+                            .map(this::getId)
+                            .findFirst()
+                            .orElse(null)
+            );
+        });
+        if (alreadyFollowers.size() != 0) {
+            followerId.removeIf(f -> f.equals(followerEntity.getUserId().getId()));
+            followerId.removeAll(alreadyFollowers);
+        }
+        if (followerId.size() != 0) {
+            List<AuthUserEntity> followers1 = followerEntity.getFollowers();
+            List<AuthUserEntity> userEntities = followerId.stream()
+                    .map(userRepository::findById)
+                    .map((obj) -> obj.orElseThrow(
+                            () -> new NotFoundException("User not found")))
+                    .toList();
+            followers1.addAll(userEntities);
+            followerEntity.setFollowers(followers);
+            followerEntity.setUpdatedAt(Instant.now());
+            followerEntity.setUpdatedBy(dto.getAuthId());
+            repository.save(followerEntity);
         }
     }
 

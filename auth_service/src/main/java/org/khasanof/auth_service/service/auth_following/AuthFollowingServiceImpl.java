@@ -10,6 +10,7 @@ import org.khasanof.auth_service.mapper.auth_following.AuthFollowingMapper;
 import org.khasanof.auth_service.repository.auth_following.AuthFollowingRepository;
 import org.khasanof.auth_service.repository.auth_user.AuthUserRepository;
 import org.khasanof.auth_service.service.AbstractService;
+import org.khasanof.auth_service.service.auth_user.AuthUserService;
 import org.khasanof.auth_service.validator.auth_following.AuthFollowingValidator;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -22,58 +23,30 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 @Service
 public class AuthFollowingServiceImpl extends AbstractService<AuthFollowingRepository, AuthFollowingMapper, AuthFollowingValidator> implements AuthFollowingService {
 
     private final AuthUserRepository userRepository;
     private final MongoTemplate mongoTemplate;
+    private final AuthUserService userService;
 
-    public AuthFollowingServiceImpl(AuthFollowingRepository repository, AuthFollowingMapper mapper, AuthFollowingValidator validator, AuthUserRepository userRepository, MongoTemplate mongoTemplate) {
+    public AuthFollowingServiceImpl(AuthFollowingRepository repository, AuthFollowingMapper mapper, AuthFollowingValidator validator, AuthUserRepository userRepository, MongoTemplate mongoTemplate, AuthUserService userService) {
         super(repository, mapper, validator);
         this.userRepository = userRepository;
         this.mongoTemplate = mongoTemplate;
+        this.userService = userService;
     }
 
     @Override
     public void create(AuthFollowingCreateDTO dto) {
         validator.validCreateDTO(dto);
-        AuthUserEntity user = userRepository.findById(dto.getAuthId())
-                .orElseThrow(() -> {
-                    throw new NotFoundException("User not found");
-                });
+        AuthUserEntity user = userService.getEntity(dto.getAuthId());
         AuthFollowingEntity followingEntity = mongoTemplate.findOne(
                 Query.query(new Criteria("userId").is(user)),
                 AuthFollowingEntity.class);
         if (Objects.nonNull(followingEntity)) {
-            List<String> newFollowingsId = dto.getFollowingsId();
-            List<AuthUserEntity> followers = followingEntity.getFollowers();
-            List<String> alreadyFollowings = new ArrayList<>();
-            for (String newFol : newFollowingsId) {
-                alreadyFollowings.add(
-                        followers.stream()
-                                .filter(f -> f.getId().equals(newFol))
-                                .map(this::getId)
-                                .findFirst()
-                                .orElse(null)
-                );
-            }
-            if (alreadyFollowings.size() != 0) {
-                newFollowingsId.removeAll(alreadyFollowings);
-            }
-            if (newFollowingsId.size() != 0) {
-                List<AuthUserEntity> followers1 = followingEntity.getFollowers();
-                List<AuthUserEntity> userEntities = newFollowingsId.stream()
-                        .map(userRepository::findById)
-                        .map(Optional::orElseThrow)
-                        .toList();
-                followers1.addAll(userEntities);
-                followingEntity.setFollowers(followers);
-                followingEntity.setUpdatedAt(Instant.now());
-                followingEntity.setUpdatedBy(dto.getAuthId());
-                repository.save(followingEntity);
-            }
+            presentUser(dto, followingEntity);
         } else {
             List<AuthUserEntity> list = new ArrayList<>();
             dto.getFollowingsId().forEach((following) -> {
@@ -86,6 +59,38 @@ public class AuthFollowingServiceImpl extends AbstractService<AuthFollowingRepos
                     .userId(user)
                     .followers(list)
                     .build());
+        }
+    }
+
+    private void presentUser(AuthFollowingCreateDTO dto, AuthFollowingEntity followingEntity) {
+        List<String> newFollowingsId = dto.getFollowingsId();
+        List<AuthUserEntity> followers = followingEntity.getFollowers();
+        List<String> alreadyFollowings = new ArrayList<>();
+        for (String newFol : newFollowingsId) {
+            alreadyFollowings.add(
+                    followers.stream()
+                            .filter(f -> f.getId().equals(newFol))
+                            .map(this::getId)
+                            .findFirst()
+                            .orElse(null)
+            );
+        }
+        if (alreadyFollowings.size() != 0) {
+            newFollowingsId.removeIf(f -> f.equals(followingEntity.getUserId().getId()));
+            newFollowingsId.removeAll(alreadyFollowings);
+        }
+        if (newFollowingsId.size() != 0) {
+            List<AuthUserEntity> followers1 = followingEntity.getFollowers();
+            List<AuthUserEntity> userEntities = newFollowingsId.stream()
+                    .map(userRepository::findById)
+                    .map((obj) -> obj.orElseThrow(
+                            () -> new NotFoundException("User not found")))
+                    .toList();
+            followers1.addAll(userEntities);
+            followingEntity.setFollowers(followers);
+            followingEntity.setUpdatedAt(Instant.now());
+            followingEntity.setUpdatedBy(dto.getAuthId());
+            repository.save(followingEntity);
         }
     }
 

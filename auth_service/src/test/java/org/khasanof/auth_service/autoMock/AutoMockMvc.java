@@ -16,6 +16,8 @@ public interface AutoMockMvc {
 
     void obsessiveDelete(String path, List<ResultMatcher> matchers, ResultHandler handler) throws Exception;
 
+    void obsessiveDelete(String path, Object variable, List<ResultMatcher> matchers, ResultHandler handler) throws Exception;
+
     void obsessivePost(String path, Object value, List<ResultMatcher> matchers, ResultHandler handler) throws Exception;
 
 }
