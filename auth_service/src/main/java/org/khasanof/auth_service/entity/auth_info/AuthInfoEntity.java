@@ -30,7 +30,7 @@ public class AuthInfoEntity extends Auditable {
     private List<EducationEntity> educations;
     private List<EmploymentEntity> employments;
     @Field(name = "born_year")
-    private Date bornYear;
+    private String bornYear;
     @Field(name = "phone_number")
     private String phoneNumber;
     private AuthInfoVisibilityEnum visibility;

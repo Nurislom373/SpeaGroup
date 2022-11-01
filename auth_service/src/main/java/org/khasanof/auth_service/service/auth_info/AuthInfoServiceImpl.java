@@ -4,8 +4,7 @@ import org.khasanof.auth_service.criteria.auth_info.AuthInfoBetweenCriteria;
 import org.khasanof.auth_service.criteria.auth_info.AuthInfoCriteria;
 import org.khasanof.auth_service.criteria.auth_info.AuthInfoSearchCriteria;
 import org.khasanof.auth_service.dto.auth_info.*;
-import org.khasanof.auth_service.dto.category.CategoryFindAllRequestDTO;
-import org.khasanof.auth_service.dto.category.CategoryGetDTO;
+import org.khasanof.auth_service.dto.category.*;
 import org.khasanof.auth_service.dto.location.LocationCreateDTO;
 import org.khasanof.auth_service.dto.location.LocationUpdateDTO;
 import org.khasanof.auth_service.entity.auth_info.AuthInfoEntity;
@@ -71,7 +70,7 @@ public class AuthInfoServiceImpl extends AbstractService<AuthInfoRepository, Aut
         AuthInfoEntity authInfoEntity = mapper.toCreateDTO(dto);
         authInfoEntity.setUserId(userEntity);
         authInfoEntity.setVisibility(AuthInfoVisibilityEnum.PUBLIC);
-        authInfoEntity.setBornYear(Objects.isNull(dto.getBornYearStr()) ? null : strParseToDate(dto.getBornYearStr()));
+        authInfoEntity.setBornYear(dto.getBornYearStr());
         authInfoEntity.setInterests(list);
         repository.save(authInfoEntity);
     }
@@ -197,28 +196,28 @@ public class AuthInfoServiceImpl extends AbstractService<AuthInfoRepository, Aut
     }
 
     @Override
-    public void addCategory(String infoId, String categoryId) {
-        validator.validKey(infoId);
-        validator.validKey(categoryId);
-        AuthInfoEntity entity = repository.findById(infoId)
+    public void addCategory(CategoryAddDTO dto) {
+        validator.validKey(dto.getInfoId());
+        validator.validKey(dto.getCategoryId());
+        AuthInfoEntity entity = repository.findById(dto.getInfoId())
                 .orElseThrow(() -> {
                     throw new NotFoundException("Info not found");
                 });
-        CategoryGetDTO data = categoryFeignClient.get(categoryId).getData();
+        CategoryGetDTO data = categoryFeignClient.get(dto.getCategoryId()).getData();
         entity.getInterests().add(data.getId());
         repository.save(entity);
     }
 
     @Override
-    public void addAllCategory(String infoId, List<String> categoryIds) {
-        validator.validKey(infoId);
-        validator.validKeys(categoryIds);
-        AuthInfoEntity entity = repository.findById(infoId)
+    public void addAllCategory(CategoryAddAllDTO dto) {
+        validator.validKey(dto.getInfoId());
+        validator.validKeys(dto.getCategories());
+        AuthInfoEntity entity = repository.findById(dto.getInfoId())
                 .orElseThrow(() -> {
                     throw new NotFoundException("Info not found");
                 });
         List<CategoryGetDTO> data = categoryFeignClient.findAllById(
-                        new CategoryFindAllRequestDTO(categoryIds))
+                        new CategoryFindAllRequestDTO(dto.getCategories()))
                 .getData();
         List<String> ids = data.stream().map(CategoryGetDTO::getId).toList();
         entity.setInterests(ids);
@@ -226,29 +225,29 @@ public class AuthInfoServiceImpl extends AbstractService<AuthInfoRepository, Aut
     }
 
     @Override
-    public void deleteCategory(String infoId, String categoryId) {
-        validator.validKey(infoId);
-        validator.validKey(categoryId);
-        AuthInfoEntity entity = repository.findById(infoId)
+    public void deleteCategory(CategoryDeleteDTO dto) {
+        validator.validKey(dto.getInfoId());
+        validator.validKey(dto.getCategoryId());
+        AuthInfoEntity entity = repository.findById(dto.getInfoId())
                 .orElseThrow(() -> {
                     throw new NotFoundException("Info not found");
                 });
         boolean removeIf = entity.getInterests()
-                .removeIf(obj -> obj.equals(categoryId));
+                .removeIf(obj -> obj.equals(dto.getCategoryId()));
         if (!removeIf)
             throw new RuntimeException("Category not found");
         repository.save(entity);
     }
 
     @Override
-    public void deleteAllCategory(String infoId, List<String> categoryIds) {
-        validator.validKey(infoId);
-        validator.validKeys(categoryIds);
-        AuthInfoEntity entity = repository.findById(infoId)
+    public void deleteAllCategory(CategoryDeleteAllDTO dto) {
+        validator.validKey(dto.getInfoId());
+        validator.validKeys(dto.getCategories());
+        AuthInfoEntity entity = repository.findById(dto.getInfoId())
                 .orElseThrow(() -> {
                     throw new NotFoundException("Info not found");
                 });
-        categoryIds.forEach((id) -> {
+        dto.getCategories().forEach((id) -> {
             entity.getInterests()
                     .removeIf(obj -> obj.equals(id));
         });
@@ -280,7 +279,7 @@ public class AuthInfoServiceImpl extends AbstractService<AuthInfoRepository, Aut
     }
 
     @Override
-    public int count(String infoId) {
+    public int categoriesCount(String infoId) {
         validator.validKey(infoId);
         return repository.findById(infoId)
                 .orElseThrow(() -> {

@@ -1,23 +1,23 @@
 package org.khasanof.auth_service.service.auth_info;
 
-import org.khasanof.auth_service.dto.category.CategoryGetDTO;
+import org.khasanof.auth_service.dto.category.*;
 
 import java.util.List;
 
 public interface CategoryADGLCService {
 
-    void addCategory(String infoId, String categoryId);
+    void addCategory(CategoryAddDTO dto);
 
-    void addAllCategory(String infoId, List<String> categoryIds);
+    void addAllCategory(CategoryAddAllDTO dto);
 
-    void deleteCategory(String infoId, String categoryId);
+    void deleteCategory(CategoryDeleteDTO dto);
 
-    void deleteAllCategory(String infoId, List<String> categoryIds);
+    void deleteAllCategory(CategoryDeleteAllDTO dto);
 
     CategoryGetDTO getCategory(String infoId, String categoryId);
 
     List<CategoryGetDTO> listCategory(String infoId);
 
-    int count(String infoId);
+    int categoriesCount(String infoId);
 
 }

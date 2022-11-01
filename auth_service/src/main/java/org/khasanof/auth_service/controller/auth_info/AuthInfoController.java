@@ -5,6 +5,12 @@ import org.khasanof.auth_service.criteria.auth_info.AuthInfoBetweenCriteria;
 import org.khasanof.auth_service.criteria.auth_info.AuthInfoCriteria;
 import org.khasanof.auth_service.criteria.auth_info.AuthInfoSearchCriteria;
 import org.khasanof.auth_service.dto.auth_info.*;
+import org.khasanof.auth_service.dto.category.CategoryAddAllDTO;
+import org.khasanof.auth_service.dto.category.CategoryAddDTO;
+import org.khasanof.auth_service.dto.category.CategoryDeleteAllDTO;
+import org.khasanof.auth_service.dto.category.CategoryDeleteDTO;
+import org.khasanof.auth_service.dto.location.LocationCreateDTO;
+import org.khasanof.auth_service.dto.location.LocationUpdateDTO;
 import org.khasanof.auth_service.response.Data;
 import org.khasanof.auth_service.service.auth_info.AuthInfoService;
 import org.khasanof.auth_service.utils.BaseUtils;
@@ -33,6 +39,48 @@ public class AuthInfoController extends AbstractController<AuthInfoService> {
     public ResponseEntity<Data<String>> update(@Valid @RequestBody AuthInfoUpdateDTO dto) {
         service.update(dto);
         return new ResponseEntity<>(new Data<>("Successfully Updated - Info"), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "addLocation", method = RequestMethod.PUT)
+    public ResponseEntity<Data<String>> addLocation(@Valid @RequestBody LocationCreateDTO dto) {
+        service.addLocation(dto);
+        return new ResponseEntity<>(new Data<>("Successfully Added Location - Info"), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "updateLocation", method = RequestMethod.PUT)
+    public ResponseEntity<Data<String>> updateLocation(@Valid @RequestBody LocationUpdateDTO dto) {
+        service.updateLocation(dto);
+        return new ResponseEntity<>(new Data<>("Successfully Updated Location - Info"), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "deleteLocation/{id}", method = RequestMethod.DELETE)
+    public ResponseEntity<Data<String>> deleteLocation(@PathVariable String id) {
+        service.deleteLocation(id);
+        return new ResponseEntity<>(new Data<>("Successfully Deleted Location - Info"), HttpStatus.NO_CONTENT);
+    }
+
+    @RequestMapping(value = "addCategory", method = RequestMethod.PUT)
+    public ResponseEntity<Data<String>> addCategory(@Valid @RequestBody CategoryAddDTO dto) {
+        service.addCategory(dto);
+        return new ResponseEntity<>(new Data<>("Successfully Added Category - Info"), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "addAllCategory", method = RequestMethod.PUT)
+    public ResponseEntity<Data<String>> addCategory(@Valid @RequestBody CategoryAddAllDTO dto) {
+        service.addAllCategory(dto);
+        return new ResponseEntity<>(new Data<>("Successfully Added All Category - Info"), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "deleteCategory",method = RequestMethod.DELETE)
+    public ResponseEntity<Data<String>> deleteCategory(@Valid @RequestBody CategoryDeleteDTO dto) {
+        service.deleteCategory(dto);
+        return new ResponseEntity<>(new Data<>("Successfully Deleted Category - Info"), HttpStatus.NO_CONTENT);
+    }
+
+    @RequestMapping(value = "deleteAllCategory",method = RequestMethod.DELETE)
+    public ResponseEntity<Data<String>> deleteCategory(@Valid @RequestBody CategoryDeleteAllDTO dto) {
+        service.deleteAllCategory(dto);
+        return new ResponseEntity<>(new Data<>("Successfully Deleted All Category - Info"), HttpStatus.NO_CONTENT);
     }
 
     @RequestMapping(value = "delete/{id}", method = RequestMethod.DELETE)

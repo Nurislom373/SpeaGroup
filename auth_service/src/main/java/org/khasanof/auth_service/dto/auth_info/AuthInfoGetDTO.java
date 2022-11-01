@@ -21,8 +21,7 @@ public class AuthInfoGetDTO extends GenericDTO {
     private LocationEntity location;
     private List<EducationEntity> educations;
     private List<EmploymentEntity> employments;
-    private Short age;
-    private Date bornYear;
+    private String bornYear;
     private String phoneNumber;
     private List<String> interests;
 }
