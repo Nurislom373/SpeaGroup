@@ -10,8 +10,6 @@ import org.khasanof.auth_service.entity.education.EducationEntity;
 import org.khasanof.auth_service.entity.employment.EmploymentEntity;
 import org.khasanof.auth_service.entity.location.LocationEntity;
 
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.List;
@@ -23,17 +21,7 @@ import java.util.List;
 public class AuthInfoCreateDTO implements BaseDTO {
     @NotBlank
     @MongoIdConstraint
-    private String authid;
-    private LocationEntity location;
-    private List<EducationEntity> educations;
-    private List<EmploymentEntity> employments;
-    private String bornYearStr;
-    private String phoneNumber;
+    private String authId;
     @NotNull
     private List<String> interestsId;
-
-    public AuthInfoCreateDTO(String authid, List<String> interestsId) {
-        this.authid = authid;
-        this.interestsId = interestsId;
-    }
 }

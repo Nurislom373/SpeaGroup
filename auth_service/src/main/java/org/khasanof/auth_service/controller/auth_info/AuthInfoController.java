@@ -5,10 +5,7 @@ import org.khasanof.auth_service.criteria.auth_info.AuthInfoBetweenCriteria;
 import org.khasanof.auth_service.criteria.auth_info.AuthInfoCriteria;
 import org.khasanof.auth_service.criteria.auth_info.AuthInfoSearchCriteria;
 import org.khasanof.auth_service.dto.auth_info.*;
-import org.khasanof.auth_service.dto.category.CategoryAddAllDTO;
-import org.khasanof.auth_service.dto.category.CategoryAddDTO;
-import org.khasanof.auth_service.dto.category.CategoryDeleteAllDTO;
-import org.khasanof.auth_service.dto.category.CategoryDeleteDTO;
+import org.khasanof.auth_service.dto.category.*;
 import org.khasanof.auth_service.dto.location.LocationCreateDTO;
 import org.khasanof.auth_service.dto.location.LocationUpdateDTO;
 import org.khasanof.auth_service.response.Data;
@@ -81,6 +78,11 @@ public class AuthInfoController extends AbstractController<AuthInfoService> {
     public ResponseEntity<Data<String>> deleteCategory(@Valid @RequestBody CategoryDeleteAllDTO dto) {
         service.deleteAllCategory(dto);
         return new ResponseEntity<>(new Data<>("Successfully Deleted All Category - Info"), HttpStatus.NO_CONTENT);
+    }
+
+    @RequestMapping(value = "getCategoryList/{id}", method = RequestMethod.GET)
+    public ResponseEntity<Data<List<CategoryDetailDTO>>> getCategoryList(@PathVariable String id) {
+        return new ResponseEntity<>(new Data<>(service.listCategory(id)), HttpStatus.OK);
     }
 
     @RequestMapping(value = "delete/{id}", method = RequestMethod.DELETE)

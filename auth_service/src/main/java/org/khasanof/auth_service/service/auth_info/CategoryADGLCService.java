@@ -14,9 +14,9 @@ public interface CategoryADGLCService {
 
     void deleteAllCategory(CategoryDeleteAllDTO dto);
 
-    CategoryGetDTO getCategory(String infoId, String categoryId);
+    CategoryDetailDTO getCategory(String infoId, String categoryId);
 
-    List<CategoryGetDTO> listCategory(String infoId);
+    List<CategoryDetailDTO> listCategory(String infoId);
 
     int categoriesCount(String infoId);
 

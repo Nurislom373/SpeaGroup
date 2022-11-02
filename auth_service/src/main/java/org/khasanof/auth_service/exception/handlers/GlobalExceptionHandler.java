@@ -42,9 +42,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         ApplicationError applicationError = new ApplicationError();
         applicationError.setCode("AlreadyCreatedException");
         applicationError.setMessage(exception.getMessage());
-        applicationError.setStatus(401);
+        applicationError.setStatus(406);
         applicationError.setTime(LocalDateTime.now());
-        return new ResponseEntity<>(applicationError, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(applicationError, HttpStatus.NOT_ACCEPTABLE);
     }
 
     @ExceptionHandler(PasswordDoesNotMatchException.class)

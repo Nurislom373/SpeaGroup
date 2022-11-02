@@ -10,7 +10,7 @@ import org.khasanof.auth_service.dto.GenericDTO;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CategoryGetDTO extends GenericDTO {
+public class CategoryDetailDTO extends GenericDTO {
     private String name;
     private String code;
 }

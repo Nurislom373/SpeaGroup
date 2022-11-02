@@ -15,6 +15,8 @@ public interface AuthInfoRepository extends MongoRepository<AuthInfoEntity, Stri
 
     Optional<AuthInfoEntity> findByUserIdEquals(AuthUserEntity userId);
 
+    boolean existsByUserIdEquals(AuthUserEntity userId);
+
     void deleteByUserId(AuthUserEntity userId);
 
     @Query("db.auth_info.find({_id: ?1}, {_id:0})")

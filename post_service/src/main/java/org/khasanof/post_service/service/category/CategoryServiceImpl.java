@@ -109,13 +109,13 @@ public class CategoryServiceImpl extends AbstractService<CategoryRepository, Cat
     }
 
     @Override
-    public List<CategoryGetDTO> findAllById(List<String> ids) {
-        return mapper.fromGetListDTO(
-                ids.stream()
-                        .map(repository::findById)
-                        .map(Optional::orElseThrow)
-                        .toList()
-        );
+    public List<CategoryDetailDTO> findAllById(List<String> ids) {
+        validator.validKeys(ids);
+        return ids.stream()
+                .map(repository::findById)
+                .map(Optional::orElseThrow)
+                .map(mapper::fromDetailDTO)
+                .toList();
     }
 
     @Override

@@ -65,6 +65,16 @@ public class AutoMockMvcAction implements AutoMockMvc {
         matchersAction(resultActions, matchers);
     }
 
+    @Override
+    public void obsessivePut(String path, Object value, List<ResultMatcher> matchers, ResultHandler handler) throws Exception {
+        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.put(path)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding("utf-8")
+                        .content(objectMapper.writeValueAsString(value)))
+                .andDo(handler);
+        matchersAction(resultActions, matchers);
+    }
+
     private void matchersAction(ResultActions actions, List<ResultMatcher> matchers) throws Exception {
         ExceptionCollector exceptionCollector = new ExceptionCollector();
         matchers.forEach(match -> {

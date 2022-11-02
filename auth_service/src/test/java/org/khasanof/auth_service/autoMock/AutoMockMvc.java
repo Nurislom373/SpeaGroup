@@ -20,4 +20,6 @@ public interface AutoMockMvc {
 
     void obsessivePost(String path, Object value, List<ResultMatcher> matchers, ResultHandler handler) throws Exception;
 
+    void obsessivePut(String path, Object value, List<ResultMatcher> matchers, ResultHandler handler) throws Exception;
+
 }

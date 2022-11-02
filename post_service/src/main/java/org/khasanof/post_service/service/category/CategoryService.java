@@ -20,7 +20,7 @@ public interface CategoryService extends GenericCUDService<CategoryCreateDTO, Ca
 
     List<CategoryEntity> getAllEntity(List<String> ids);
 
-    List<CategoryGetDTO> findAllById(List<String> ids);
+    List<CategoryDetailDTO> findAllById(List<String> ids);
 
     long count();
 }

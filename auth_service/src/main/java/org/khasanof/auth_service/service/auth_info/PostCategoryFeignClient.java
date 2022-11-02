@@ -1,7 +1,7 @@
 package org.khasanof.auth_service.service.auth_info;
 
 import org.khasanof.auth_service.dto.category.CategoryFindAllRequestDTO;
-import org.khasanof.auth_service.dto.category.CategoryGetDTO;
+import org.khasanof.auth_service.dto.category.CategoryDetailDTO;
 import org.khasanof.auth_service.response.Data;
 import org.khasanof.auth_service.utils.BaseUtils;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -16,9 +16,9 @@ import java.util.List;
 public interface PostCategoryFeignClient {
 
     @PostMapping("/findAllById")
-    Data<List<CategoryGetDTO>> findAllById(@RequestBody CategoryFindAllRequestDTO dto);
+    Data<List<CategoryDetailDTO>> findAllById(@RequestBody CategoryFindAllRequestDTO dto);
 
     @GetMapping("/get/{id}")
-    Data<CategoryGetDTO> get(@PathVariable String id);
+    Data<CategoryDetailDTO> get(@PathVariable String id);
 
 }

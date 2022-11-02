@@ -12,6 +12,7 @@ import org.khasanof.auth_service.entity.auth_invite.AuthInviteEntity;
 import org.khasanof.auth_service.entity.auth_user.AuthUserEntity;
 import org.khasanof.auth_service.entity.location.LocationEntity;
 import org.khasanof.auth_service.enums.auth_info.AuthInfoVisibilityEnum;
+import org.khasanof.auth_service.exception.exceptions.AlreadyCreatedException;
 import org.khasanof.auth_service.exception.exceptions.InvalidValidationException;
 import org.khasanof.auth_service.mapper.auth_info.AuthInfoMapper;
 import org.khasanof.auth_service.predicate.auth_info.AuthInfoPredicateExecutor;
@@ -57,20 +58,19 @@ public class AuthInfoServiceImpl extends AbstractService<AuthInfoRepository, Aut
     @Override
     public void create(AuthInfoCreateDTO dto) {
         validator.validCreateDTO(dto);
-        AuthUserEntity userEntity = userRepository.findById(dto.getAuthid())
-                .orElseThrow(() -> {
-                    throw new NotFoundException("User not found");
-                });
-        List<CategoryGetDTO> dtoList = categoryFeignClient.findAllById(
+        AuthUserEntity entity = authUserService.getEntity(dto.getAuthId());
+        if (repository.existsByUserIdEquals(entity)) {
+            throw new AlreadyCreatedException("User Info Already Created!");
+        }
+        List<CategoryDetailDTO> dtoList = categoryFeignClient.findAllById(
                         new CategoryFindAllRequestDTO(dto.getInterestsId()))
                 .getData();
         List<String> list = dtoList.stream()
-                .map(CategoryGetDTO::getId)
+                .map(CategoryDetailDTO::getId)
                 .toList();
         AuthInfoEntity authInfoEntity = mapper.toCreateDTO(dto);
-        authInfoEntity.setUserId(userEntity);
+        authInfoEntity.setUserId(entity);
         authInfoEntity.setVisibility(AuthInfoVisibilityEnum.PUBLIC);
-        authInfoEntity.setBornYear(dto.getBornYearStr());
         authInfoEntity.setInterests(list);
         repository.save(authInfoEntity);
     }
@@ -82,15 +82,8 @@ public class AuthInfoServiceImpl extends AbstractService<AuthInfoRepository, Aut
                 .orElseThrow(() -> {
                     throw new NotFoundException("Info not found");
                 });
-        if (Objects.nonNull(dto.getInterestsId())) {
-            List<CategoryGetDTO> list = categoryFeignClient.findAllById(
-                            new CategoryFindAllRequestDTO(dto.getInterestsId()))
-                    .getData();
-            List<String> ids = list.stream()
-                    .map(CategoryGetDTO::getId)
-                    .toList();
-            entity.setInterests(ids);
-        }
+        entity.setUpdatedAt(Instant.now());
+        entity.setUpdatedBy(entity.getUserId().getId());
         BeanUtils.copyProperties(dto, entity);
         repository.save(entity);
     }
@@ -203,7 +196,7 @@ public class AuthInfoServiceImpl extends AbstractService<AuthInfoRepository, Aut
                 .orElseThrow(() -> {
                     throw new NotFoundException("Info not found");
                 });
-        CategoryGetDTO data = categoryFeignClient.get(dto.getCategoryId()).getData();
+        CategoryDetailDTO data = categoryFeignClient.get(dto.getCategoryId()).getData();
         entity.getInterests().add(data.getId());
         repository.save(entity);
     }
@@ -216,10 +209,10 @@ public class AuthInfoServiceImpl extends AbstractService<AuthInfoRepository, Aut
                 .orElseThrow(() -> {
                     throw new NotFoundException("Info not found");
                 });
-        List<CategoryGetDTO> data = categoryFeignClient.findAllById(
+        List<CategoryDetailDTO> data = categoryFeignClient.findAllById(
                         new CategoryFindAllRequestDTO(dto.getCategories()))
                 .getData();
-        List<String> ids = data.stream().map(CategoryGetDTO::getId).toList();
+        List<String> ids = data.stream().map(CategoryDetailDTO::getId).toList();
         entity.setInterests(ids);
         repository.save(entity);
     }
@@ -255,7 +248,7 @@ public class AuthInfoServiceImpl extends AbstractService<AuthInfoRepository, Aut
     }
 
     @Override
-    public CategoryGetDTO getCategory(String infoId, String categoryId) {
+    public CategoryDetailDTO getCategory(String infoId, String categoryId) {
         validator.validKey(infoId);
         validator.validKey(categoryId);
         return categoryFeignClient.get(
@@ -267,7 +260,7 @@ public class AuthInfoServiceImpl extends AbstractService<AuthInfoRepository, Aut
     }
 
     @Override
-    public List<CategoryGetDTO> listCategory(String infoId) {
+    public List<CategoryDetailDTO> listCategory(String infoId) {
         validator.validKey(infoId);
         return categoryFeignClient.findAllById(
                 new CategoryFindAllRequestDTO(

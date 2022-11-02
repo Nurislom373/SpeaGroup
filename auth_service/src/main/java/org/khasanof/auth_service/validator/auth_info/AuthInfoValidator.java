@@ -1,6 +1,5 @@
 package org.khasanof.auth_service.validator.auth_info;
 
-import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.khasanof.auth_service.dto.auth_info.AuthInfoChangeVisibilityDTO;
 import org.khasanof.auth_service.dto.auth_info.AuthInfoCreateDTO;
@@ -13,8 +12,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @Component
 public class AuthInfoValidator extends AbstractValidator<AuthInfoCreateDTO, AuthInfoUpdateDTO, String> {
@@ -23,7 +20,7 @@ public class AuthInfoValidator extends AbstractValidator<AuthInfoCreateDTO, Auth
         if (Objects.isNull(authInfoCreateDTO)) {
             throw new InvalidValidationException("DTO is null");
         }
-        if (!ObjectId.isValid(authInfoCreateDTO.getAuthid())) {
+        if (!ObjectId.isValid(authInfoCreateDTO.getAuthId())) {
             throw new InvalidValidationException("Invalid ID!");
         }
     }

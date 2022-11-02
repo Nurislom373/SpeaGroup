@@ -1,22 +1,24 @@
 package org.khasanof.auth_service.dto.auth_info;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.khasanof.auth_service.dto.GenericDTO;
-import org.khasanof.auth_service.entity.education.EducationEntity;
-import org.khasanof.auth_service.entity.employment.EmploymentEntity;
-import org.khasanof.auth_service.entity.location.LocationEntity;
 
+import javax.validation.constraints.NotBlank;
 import java.util.List;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 public class AuthInfoUpdateDTO extends GenericDTO {
-    private String bornYearStr;
+
+    private String bornYear;
     private String phoneNumber;
-    private List<String> interestsId;
+
+    public AuthInfoUpdateDTO(String id, String bornYear, String phoneNumber) {
+        super(id);
+        this.bornYear = bornYear;
+        this.phoneNumber = phoneNumber;
+    }
 }
