@@ -49,12 +49,18 @@ public class AuthInfoValidator extends AbstractValidator<AuthInfoCreateDTO, Auth
         if (Objects.isNull(dto)) {
             throw new InvalidValidationException("DTO is null");
         }
+        if (!ObjectId.isValid(dto.getId())) {
+            throw new InvalidValidationException("Invalid ID!");
+        }
     }
 
     public void validKeys(List<String> ids) {
         ids.forEach((obj) -> {
             if (Objects.isNull(obj))
                 throw new InvalidValidationException("ID is null");
+            if (!ObjectId.isValid(obj)) {
+                throw new InvalidValidationException("Invalid ID!");
+            }
         });
     }
 

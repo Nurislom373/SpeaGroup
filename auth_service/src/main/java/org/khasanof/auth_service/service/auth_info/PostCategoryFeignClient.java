@@ -16,9 +16,9 @@ import java.util.List;
 public interface PostCategoryFeignClient {
 
     @PostMapping("/findAllById")
-    Data<List<CategoryDetailDTO>> findAllById(@RequestBody CategoryFindAllRequestDTO dto);
+    Data<List<CategoryDetailDTO>> findAllById(@RequestBody CategoryFindAllRequestDTO dto) throws Exception;
 
     @GetMapping("/get/{id}")
-    Data<CategoryDetailDTO> get(@PathVariable String id);
+    Data<CategoryDetailDTO> get(@PathVariable String id) throws Exception;
 
 }

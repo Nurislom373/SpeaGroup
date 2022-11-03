@@ -63,19 +63,19 @@ public class AuthInfoController extends AbstractController<AuthInfoService> {
     }
 
     @RequestMapping(value = "addAllCategory", method = RequestMethod.PUT)
-    public ResponseEntity<Data<String>> addCategory(@Valid @RequestBody CategoryAddAllDTO dto) {
+    public ResponseEntity<Data<String>> addAllCategory(@Valid @RequestBody CategoryAddAllDTO dto) {
         service.addAllCategory(dto);
         return new ResponseEntity<>(new Data<>("Successfully Added All Category - Info"), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "deleteCategory",method = RequestMethod.DELETE)
+    @RequestMapping(value = "deleteCategory", method = RequestMethod.DELETE)
     public ResponseEntity<Data<String>> deleteCategory(@Valid @RequestBody CategoryDeleteDTO dto) {
         service.deleteCategory(dto);
         return new ResponseEntity<>(new Data<>("Successfully Deleted Category - Info"), HttpStatus.NO_CONTENT);
     }
 
-    @RequestMapping(value = "deleteAllCategory",method = RequestMethod.DELETE)
-    public ResponseEntity<Data<String>> deleteCategory(@Valid @RequestBody CategoryDeleteAllDTO dto) {
+    @RequestMapping(value = "deleteAllCategory", method = RequestMethod.DELETE)
+    public ResponseEntity<Data<String>> deleteAllCategory(@Valid @RequestBody CategoryDeleteAllDTO dto) {
         service.deleteAllCategory(dto);
         return new ResponseEntity<>(new Data<>("Successfully Deleted All Category - Info"), HttpStatus.NO_CONTENT);
     }
@@ -85,14 +85,16 @@ public class AuthInfoController extends AbstractController<AuthInfoService> {
         return new ResponseEntity<>(new Data<>(service.listCategory(id)), HttpStatus.OK);
     }
 
+
     @RequestMapping(value = "delete/{id}", method = RequestMethod.DELETE)
     public ResponseEntity<Data<String>> delete(@PathVariable String id) {
         service.delete(id);
-        return new ResponseEntity<>(new Data<>("Successfully Deleted - Info"), HttpStatus.OK);
+        return new ResponseEntity<>(new Data<>("Successfully Deleted - Info"), HttpStatus.NO_CONTENT);
     }
 
+    // TODO not test
     @RequestMapping(value = "changeVisibility", method = RequestMethod.PUT)
-    public ResponseEntity<Data<String>> changeVisibility(@RequestBody AuthInfoChangeVisibilityDTO dto) {
+    public ResponseEntity<Data<String>> changeVisibility(@Valid @RequestBody AuthInfoChangeVisibilityDTO dto) {
         service.changeVisibility(dto);
         return new ResponseEntity<>(new Data<>("Successfully Status Changed - Info"), HttpStatus.OK);
     }

@@ -13,6 +13,7 @@ import org.khasanof.auth_service.entity.auth_user.AuthUserEntity;
 import org.khasanof.auth_service.entity.location.LocationEntity;
 import org.khasanof.auth_service.enums.auth_info.AuthInfoVisibilityEnum;
 import org.khasanof.auth_service.exception.exceptions.AlreadyCreatedException;
+import org.khasanof.auth_service.exception.exceptions.ClientResponseException;
 import org.khasanof.auth_service.exception.exceptions.InvalidValidationException;
 import org.khasanof.auth_service.mapper.auth_info.AuthInfoMapper;
 import org.khasanof.auth_service.predicate.auth_info.AuthInfoPredicateExecutor;
@@ -33,22 +34,17 @@ import org.webjars.NotFoundException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 public class AuthInfoServiceImpl extends AbstractService<AuthInfoRepository, AuthInfoMapper, AuthInfoValidator> implements AuthInfoService {
-
-    private final AuthUserRepository userRepository;
     private final AuthUserService authUserService;
     private final AuthInviteRepository inviteRepository;
     private final PostCategoryFeignClient categoryFeignClient;
     private final MongoTemplate mongoTemplate;
 
-    public AuthInfoServiceImpl(AuthInfoRepository repository, AuthInfoMapper mapper, AuthInfoValidator validator, AuthUserRepository userRepository, AuthUserService authUserService, AuthInviteRepository inviteRepository, PostCategoryFeignClient categoryFeignClient, MongoTemplate mongoTemplate) {
+    public AuthInfoServiceImpl(AuthInfoRepository repository, AuthInfoMapper mapper, AuthInfoValidator validator, AuthUserService authUserService, AuthInviteRepository inviteRepository, PostCategoryFeignClient categoryFeignClient, MongoTemplate mongoTemplate) {
         super(repository, mapper, validator);
-        this.userRepository = userRepository;
         this.authUserService = authUserService;
         this.inviteRepository = inviteRepository;
         this.categoryFeignClient = categoryFeignClient;
@@ -62,17 +58,21 @@ public class AuthInfoServiceImpl extends AbstractService<AuthInfoRepository, Aut
         if (repository.existsByUserIdEquals(entity)) {
             throw new AlreadyCreatedException("User Info Already Created!");
         }
-        List<CategoryDetailDTO> dtoList = categoryFeignClient.findAllById(
-                        new CategoryFindAllRequestDTO(dto.getInterestsId()))
-                .getData();
-        List<String> list = dtoList.stream()
-                .map(CategoryDetailDTO::getId)
-                .toList();
-        AuthInfoEntity authInfoEntity = mapper.toCreateDTO(dto);
-        authInfoEntity.setUserId(entity);
-        authInfoEntity.setVisibility(AuthInfoVisibilityEnum.PUBLIC);
-        authInfoEntity.setInterests(list);
-        repository.save(authInfoEntity);
+        try {
+            List<CategoryDetailDTO> dtoList = categoryFeignClient.findAllById(
+                            new CategoryFindAllRequestDTO(dto.getInterestsId()))
+                    .getData();
+            List<String> list = dtoList.stream()
+                    .map(CategoryDetailDTO::getId)
+                    .toList();
+            AuthInfoEntity authInfoEntity = mapper.toCreateDTO(dto);
+            authInfoEntity.setUserId(entity);
+            authInfoEntity.setVisibility(AuthInfoVisibilityEnum.PUBLIC);
+            authInfoEntity.setInterests(list);
+            repository.save(authInfoEntity);
+        } catch (Exception e) {
+            throw new ClientResponseException("Client Response Exception!");
+        }
     }
 
     @Override
@@ -158,9 +158,14 @@ public class AuthInfoServiceImpl extends AbstractService<AuthInfoRepository, Aut
                 .orElseThrow(() -> {
                     throw new NotFoundException("Info not found");
                 });
+        if (Objects.nonNull(info.getLocation())) {
+            throw new AlreadyCreatedException("Location is Already Created!");
+        }
         LocationEntity location = new LocationEntity();
         BeanUtils.copyProperties(dto, location);
         info.setLocation(location);
+        info.setUpdatedBy(info.getUserId().getId());
+        info.setUpdatedAt(Instant.now());
         repository.save(info);
     }
 
@@ -173,7 +178,11 @@ public class AuthInfoServiceImpl extends AbstractService<AuthInfoRepository, Aut
                 });
         LocationEntity location = new LocationEntity();
         BeanUtils.copyProperties(dto, location);
+        location.setUpdatedAt(Instant.now());
+        location.setUpdatedBy(info.getUserId().getId());
         info.setLocation(location);
+        info.setUpdatedAt(Instant.now());
+        info.setUpdatedBy(info.getUserId().getId());
         repository.save(info);
     }
 
@@ -185,6 +194,8 @@ public class AuthInfoServiceImpl extends AbstractService<AuthInfoRepository, Aut
                     throw new NotFoundException("Info not found");
                 });
         info.setLocation(null);
+        info.setUpdatedAt(Instant.now());
+        info.setUpdatedBy(info.getUserId().getId());
         repository.save(info);
     }
 
@@ -196,9 +207,18 @@ public class AuthInfoServiceImpl extends AbstractService<AuthInfoRepository, Aut
                 .orElseThrow(() -> {
                     throw new NotFoundException("Info not found");
                 });
-        CategoryDetailDTO data = categoryFeignClient.get(dto.getCategoryId()).getData();
-        entity.getInterests().add(data.getId());
-        repository.save(entity);
+        List<String> interests = entity.getInterests();
+        boolean anyMatch = interests.stream()
+                .anyMatch(any -> any.equals(dto.getCategoryId()));
+        if (!anyMatch) {
+            try {
+                CategoryDetailDTO data = categoryFeignClient.get(dto.getCategoryId()).getData();
+                entity.getInterests().add(data.getId());
+                repository.save(entity);
+            } catch (Exception e) {
+                throw new ClientResponseException("Client Response Exception!");
+            }
+        }
     }
 
     @Override
@@ -209,11 +229,38 @@ public class AuthInfoServiceImpl extends AbstractService<AuthInfoRepository, Aut
                 .orElseThrow(() -> {
                     throw new NotFoundException("Info not found");
                 });
+        List<String> interests = entity.getInterests();
+        List<String> removes = new ArrayList<>();
+        List<String> dtoCategories = new ArrayList<>(new HashSet<>(dto.getCategories()));
+        dtoCategories.forEach((elem) -> {
+            boolean anyMatch = interests.stream()
+                    .anyMatch(any -> any.equals(elem));
+            if (anyMatch) {
+                removes.add(elem);
+            }
+        });
+        if (removes.size() >= 1) {
+            dtoCategories.removeAll(removes);
+        }
+        if (dtoCategories.size() >= 1) {
+            try {
+                findAndAdd(dto, entity);
+            } catch (Exception e) {
+                throw new ClientResponseException("Client Respone Exception!");
+            }
+        }
+    }
+
+    private void findAndAdd(CategoryAddAllDTO dto, AuthInfoEntity entity) throws Exception {
         List<CategoryDetailDTO> data = categoryFeignClient.findAllById(
                         new CategoryFindAllRequestDTO(dto.getCategories()))
                 .getData();
-        List<String> ids = data.stream().map(CategoryDetailDTO::getId).toList();
-        entity.setInterests(ids);
+        List<String> ids = data.stream()
+                .map(CategoryDetailDTO::getId)
+                .toList();
+        entity.getInterests().addAll(ids);
+        entity.setUpdatedAt(Instant.now());
+        entity.setUpdatedBy(entity.getUserId().getId());
         repository.save(entity);
     }
 
@@ -229,6 +276,8 @@ public class AuthInfoServiceImpl extends AbstractService<AuthInfoRepository, Aut
                 .removeIf(obj -> obj.equals(dto.getCategoryId()));
         if (!removeIf)
             throw new RuntimeException("Category not found");
+        entity.setUpdatedAt(Instant.now());
+        entity.setUpdatedBy(entity.getUserId().getId());
         repository.save(entity);
     }
 
@@ -240,10 +289,13 @@ public class AuthInfoServiceImpl extends AbstractService<AuthInfoRepository, Aut
                 .orElseThrow(() -> {
                     throw new NotFoundException("Info not found");
                 });
-        dto.getCategories().forEach((id) -> {
+        List<String> ctgs = new ArrayList<>(new HashSet<>(dto.getCategories()));
+        ctgs.forEach((id) -> {
             entity.getInterests()
                     .removeIf(obj -> obj.equals(id));
         });
+        entity.setUpdatedAt(Instant.now());
+        entity.setUpdatedBy(entity.getUserId().getId());
         repository.save(entity);
     }
 
@@ -251,24 +303,32 @@ public class AuthInfoServiceImpl extends AbstractService<AuthInfoRepository, Aut
     public CategoryDetailDTO getCategory(String infoId, String categoryId) {
         validator.validKey(infoId);
         validator.validKey(categoryId);
-        return categoryFeignClient.get(
-                        repository.findById(infoId)
-                                .orElseThrow(() -> {
-                                    throw new NotFoundException("Info not found");
-                                }).getId())
-                .getData();
+        try {
+            return categoryFeignClient.get(
+                            repository.findById(infoId)
+                                    .orElseThrow(() -> {
+                                        throw new NotFoundException("Info not found");
+                                    }).getId())
+                    .getData();
+        } catch (Exception e) {
+            throw new ClientResponseException(e.getMessage());
+        }
     }
 
     @Override
     public List<CategoryDetailDTO> listCategory(String infoId) {
         validator.validKey(infoId);
-        return categoryFeignClient.findAllById(
-                new CategoryFindAllRequestDTO(
-                        repository.findById(infoId)
-                                .orElseThrow(() -> {
-                                    throw new NotFoundException("Info not found");
-                                }).getInterests())
-        ).getData();
+        try {
+            return categoryFeignClient.findAllById(
+                    new CategoryFindAllRequestDTO(
+                            repository.findById(infoId)
+                                    .orElseThrow(() -> {
+                                        throw new NotFoundException("Info not found");
+                                    }).getInterests())
+            ).getData();
+        } catch (Exception e) {
+            throw new ClientResponseException("Client Response Exception");
+        }
     }
 
     @Override

@@ -1,13 +1,16 @@
 package org.khasanof.auth_service.exception.handlers;
 
 import org.khasanof.auth_service.exception.exceptions.AlreadyCreatedException;
+import org.khasanof.auth_service.exception.exceptions.ClientResponseException;
 import org.khasanof.auth_service.exception.exceptions.InvalidValidationException;
 import org.khasanof.auth_service.exception.exceptions.PasswordDoesNotMatchException;
 import org.khasanof.auth_service.response.ApplicationError;
+import org.springframework.beans.TypeMismatchException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.support.WebExchangeBindException;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import org.webjars.NotFoundException;
@@ -52,7 +55,17 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         ApplicationError applicationError = new ApplicationError();
         applicationError.setCode("PasswordDoesNotMatchException");
         applicationError.setMessage(exception.getMessage());
-        applicationError.setStatus(401);
+        applicationError.setStatus(400);
+        applicationError.setTime(LocalDateTime.now());
+        return new ResponseEntity<>(applicationError, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(ClientResponseException.class)
+    public ResponseEntity<ApplicationError> passwordDoesNotMatchHandler(ClientResponseException exception, WebRequest request) {
+        ApplicationError applicationError = new ApplicationError();
+        applicationError.setCode("ClientResponseException");
+        applicationError.setMessage(exception.getMessage());
+        applicationError.setStatus(400);
         applicationError.setTime(LocalDateTime.now());
         return new ResponseEntity<>(applicationError, HttpStatus.BAD_REQUEST);
     }

@@ -56,6 +56,16 @@ public class AutoMockMvcAction implements AutoMockMvc {
     }
 
     @Override
+    public void obsessiveDeleteObj(String path, Object value, List<ResultMatcher> matchers, ResultHandler handler) throws Exception {
+        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.delete(path)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding("utf-8")
+                        .content(objectMapper.writeValueAsString(value)))
+                .andDo(handler);
+        matchersAction(resultActions, matchers);
+    }
+
+    @Override
     public void obsessivePost(String path, Object value, List<ResultMatcher> matchers, ResultHandler handler) throws Exception {
         ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.post(path)
                         .contentType(MediaType.APPLICATION_JSON)
