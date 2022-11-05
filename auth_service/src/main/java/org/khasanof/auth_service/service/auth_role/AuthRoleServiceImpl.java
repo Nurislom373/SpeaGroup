@@ -5,6 +5,7 @@ import org.khasanof.auth_service.dto.auth_role.AuthRoleCreateDTO;
 import org.khasanof.auth_service.dto.auth_role.AuthRoleDetailDTO;
 import org.khasanof.auth_service.dto.auth_role.AuthRoleGetDTO;
 import org.khasanof.auth_service.entity.auth_role.AuthRoleEntity;
+import org.khasanof.auth_service.exception.exceptions.AlreadyCreatedException;
 import org.khasanof.auth_service.mapper.auth_role.AuthRoleMapper;
 import org.khasanof.auth_service.repository.auth_role.AuthRoleRepository;
 import org.khasanof.auth_service.service.AbstractService;
@@ -22,6 +23,7 @@ import java.util.Objects;
 
 @Service
 public class AuthRoleServiceImpl extends AbstractService<AuthRoleRepository, AuthRoleMapper, AuthRoleValidator> implements AuthRoleService {
+
     private final AuthUserService userService;
     private final MongoTemplate mongoTemplate;
 
@@ -38,8 +40,9 @@ public class AuthRoleServiceImpl extends AbstractService<AuthRoleRepository, Aut
                 Query.query(new Criteria("userId")
                         .is(userService.getEntity(dto.getAuthId()))),
                 AuthRoleEntity.class);
+        System.out.println("entity = " + entity);
         if (Objects.nonNull(entity)) {
-            throw new RuntimeException("User Role Already Created!");
+            throw new AlreadyCreatedException("User Role Already Created!");
         }
         AuthRoleEntity authRoleEntity = mapper.toCreateDTO(dto);
         authRoleEntity.setUserId(userService.getEntity(dto.getAuthId()));
