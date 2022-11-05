@@ -4,7 +4,6 @@ import org.khasanof.auth_service.controller.AbstractController;
 import org.khasanof.auth_service.dto.auth.AuthChangeImagePathDTO;
 import org.khasanof.auth_service.dto.auth.AuthChangePasswordDTO;
 import org.khasanof.auth_service.dto.auth.AuthRequestDTO;
-import org.khasanof.auth_service.dto.token.TokenDTO;
 import org.khasanof.auth_service.response.Data;
 import org.khasanof.auth_service.service.auth.AuthenticationService;
 import org.khasanof.auth_service.utils.BaseUtils;
@@ -13,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.Map;
 
 @RestController
 @RequestMapping(value = BaseUtils.PATH + "/auth/*")
@@ -23,7 +23,7 @@ public class AuthenticationController extends AbstractController<AuthenticationS
     }
 
     @RequestMapping(value = "login", method = RequestMethod.POST)
-    public ResponseEntity<Data<TokenDTO>> login(@Valid @RequestBody AuthRequestDTO dto) {
+    public ResponseEntity<Data<Map<String, String>>> login(@Valid @RequestBody AuthRequestDTO dto) {
         return new ResponseEntity<>(new Data<>(service.login(dto)), HttpStatus.OK);
     }
 

@@ -84,7 +84,7 @@ public class AuthBlockServiceImpl extends AbstractService<AuthBlockRepository, A
     }
 
     @Override
-    @Scheduled(fixedDelay = 30000)
+//    @Scheduled(fixedDelay = 30000)
     public void autoDeleteTimeOut() {
         BaseUtils.EXECUTOR_SERVICE.execute(() -> repository.findAll()
                 .parallelStream()

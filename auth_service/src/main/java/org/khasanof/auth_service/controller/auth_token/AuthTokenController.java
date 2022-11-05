@@ -17,7 +17,7 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = BaseUtils.PATH + "/token/*")
+@RequestMapping(value = BaseUtils.PATH + "/auth_token/*")
 public class AuthTokenController extends AbstractController<AuthTokenService> {
 
     public AuthTokenController(AuthTokenService service) {
@@ -33,7 +33,7 @@ public class AuthTokenController extends AbstractController<AuthTokenService> {
     @RequestMapping(value = "delete/{id}", method = RequestMethod.DELETE)
     public ResponseEntity<Data<String>> delete(@PathVariable String id) {
         service.delete(id);
-        return new ResponseEntity<>(new Data<>("Successfully Deleted - Token"), HttpStatus.OK);
+        return new ResponseEntity<>(new Data<>("Successfully Deleted - Token"), HttpStatus.NO_CONTENT);
     }
 
     @RequestMapping(value = "get/{id}", method = RequestMethod.GET)

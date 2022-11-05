@@ -7,6 +7,7 @@ import org.khasanof.auth_service.dto.auth_token.AuthTokenCreateDTO;
 import org.khasanof.auth_service.dto.auth_token.AuthTokenDetailDTO;
 import org.khasanof.auth_service.dto.auth_token.AuthTokenGetDTO;
 import org.khasanof.auth_service.entity.auth_token.AuthTokenEntity;
+import org.khasanof.auth_service.entity.auth_user.AuthUserEntity;
 import org.khasanof.auth_service.mapper.auth_token.AuthTokenMapper;
 import org.khasanof.auth_service.repository.auth_token.AuthTokenRedisRepository;
 import org.khasanof.auth_service.repository.auth_token.AuthTokenRepository;
@@ -18,7 +19,6 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
 
@@ -46,9 +46,10 @@ public class AuthTokenServiceImpl extends AbstractService<AuthTokenRepository, A
     @Override
     public void create(AuthTokenCreateDTO dto) {
         validator.validCreateDTO(dto);
+        AuthUserEntity entity = userService.getEntity(dto.getAuthId());
         AuthTokenEntity tokenEntity = mongoTemplate.findOne(
                 Query.query(Criteria.where("userId")
-                        .is(userService.getEntity(dto.getAuthId()))
+                        .is(entity)
                         .orOperator(Criteria.where("type")
                                 .is(dto.getType()))), AuthTokenEntity.class);
         if (Objects.nonNull(tokenEntity)) {
@@ -59,7 +60,7 @@ public class AuthTokenServiceImpl extends AbstractService<AuthTokenRepository, A
             repository.save(tokenEntity);
         } else {
             AuthTokenEntity authTokenEntity = mapper.toCreateDTO(dto);
-            authTokenEntity.setUserId(userService.getEntity(dto.getAuthId()));
+            authTokenEntity.setUserId(entity);
             authTokenEntity.setDuration(changeIntegerMinToTime(dto.getMinTime()));
             repository.save(authTokenEntity);
         }
@@ -80,7 +81,9 @@ public class AuthTokenServiceImpl extends AbstractService<AuthTokenRepository, A
                         Query.query(Criteria.where("type")
                                 .is(criteria.getType())).with(PageRequest.of(criteria.getPage(),
                                 criteria.getSize())), AuthTokenEntity.class)
-                .stream().map(this::returnToGetDTO).toList();
+                .stream()
+                .map(this::returnToGetDTO)
+                .toList();
     }
 
     @Override

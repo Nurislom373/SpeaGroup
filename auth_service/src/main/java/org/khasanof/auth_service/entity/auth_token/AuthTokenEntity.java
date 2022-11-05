@@ -10,7 +10,6 @@ import org.khasanof.auth_service.enums.auth_token.AuthTokenType;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DocumentReference;
 import org.springframework.data.mongodb.core.mapping.Field;
-import org.springframework.data.redis.core.RedisHash;
 
 import java.time.Instant;
 
@@ -19,7 +18,6 @@ import java.time.Instant;
 @AllArgsConstructor
 @NoArgsConstructor
 @Document(collection = "auth_token")
-@RedisHash("Token")
 public class AuthTokenEntity extends Auditable {
     @Field(name = "user_id")
     @DocumentReference

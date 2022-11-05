@@ -5,7 +5,6 @@ import org.khasanof.auth_service.dto.auth.AuthChangeImagePathDTO;
 import org.khasanof.auth_service.dto.auth.AuthChangePasswordDTO;
 import org.khasanof.auth_service.dto.auth.AuthRequestDTO;
 import org.khasanof.auth_service.dto.auth_block.AuthBlockCreateDTO;
-import org.khasanof.auth_service.dto.token.TokenDTO;
 import org.khasanof.auth_service.entity.auth_role.AuthRoleEntity;
 import org.khasanof.auth_service.entity.auth_token.AuthTokenEntity;
 import org.khasanof.auth_service.entity.auth_user.AuthUserEntity;
@@ -32,6 +31,8 @@ import org.webjars.NotFoundException;
 
 import java.time.Instant;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -40,17 +41,15 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     private final AuthBlockService authBlockService;
     private final AuthUserService authUserService;
-    private final MongoTemplate mongoTemplate;
     private final AuthTokenRedisRepository tokenRedisRepository;
     private final AuthTokenRepository authTokenRepository;
     private final AuthRoleRepository roleRepository;
     private final AuthUserRepository authUserRepository;
     private final AuthUserValidator userValidator;
 
-    public AuthenticationServiceImpl(AuthBlockService authBlockService, @Lazy AuthUserService authUserService, MongoTemplate mongoTemplate, AuthTokenRedisRepository tokenRedisRepository, AuthTokenRepository authTokenRepository, AuthRoleRepository roleRepository, AuthUserRepository authUserRepository, AuthUserValidator userValidator) {
+    public AuthenticationServiceImpl(AuthBlockService authBlockService, @Lazy AuthUserService authUserService, AuthTokenRedisRepository tokenRedisRepository, AuthTokenRepository authTokenRepository, AuthRoleRepository roleRepository, AuthUserRepository authUserRepository, AuthUserValidator userValidator) {
         this.authBlockService = authBlockService;
         this.authUserService = authUserService;
-        this.mongoTemplate = mongoTemplate;
         this.tokenRedisRepository = tokenRedisRepository;
         this.authTokenRepository = authTokenRepository;
         this.roleRepository = roleRepository;
@@ -59,15 +58,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public TokenDTO login(AuthRequestDTO dto) {
+    public Map<String, String> login(AuthRequestDTO dto) {
         Assert.notNull(dto, "DTO is must be not null!");
         AtomicInteger atomicInteger = new AtomicInteger(0);
-        AuthUserEntity userEntity = mongoTemplate.findOne(
-                Query.query(Criteria.where("email")
-                        .is(dto.getEmailOrUsername())
-                        .orOperator(Criteria.where("username")
-                                .is(dto.getEmailOrUsername()))),
-                AuthUserEntity.class);
+
+        AuthUserEntity userEntity = authUserRepository.findByEmailOrUsername(dto.getEmailOrUsername(),
+                dto.getEmailOrUsername());
 
         if (Objects.isNull(userEntity))
             throw new RuntimeException("User not found");
@@ -85,7 +81,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         Date expiryForAccessToken = JWTUtils.getExpiry();
         Date expiryForRefreshToken = JWTUtils.getExpiryForRefreshToken();
 
-        AuthRoleEntity roleEntity = roleRepository.findById(userEntity.getId())
+        AuthRoleEntity roleEntity = roleRepository.findByUserIdEquals(userEntity)
                 .orElseThrow(() -> {
                     throw new NotFoundException("Role not found");
                 });
@@ -106,21 +102,25 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .withExpiresAt(expiryForRefreshToken)
                 .sign(JWTUtils.getAlgorithm());
 
-        AuthTokenEntity access = authTokenRepository.save(
+        authTokenRepository.save(
                 new AuthTokenEntity(userEntity, AuthTokenType.ACCESS,
                         accessToken, BaseUtils.currentTimeAddMinute(50)));
 
-        AuthTokenEntity refresh = authTokenRepository.save(
+        authTokenRepository.save(
                 new AuthTokenEntity(userEntity, AuthTokenType.REFRESH,
                         accessToken, BaseUtils.currentTimeAddMinute((3 * 24 * 60))));
 
+        // disabled until test mode is completed!
+        /*
         tokenRedisRepository.save(access);
         tokenRedisRepository.save(refresh);
+        */
 
-        return TokenDTO.builder()
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .build();
+        HashMap<String, String> map = new HashMap<>();
+        map.put("access", accessToken);
+        map.put("refresh", refreshToken);
+
+        return map;
     }
 
     @Override

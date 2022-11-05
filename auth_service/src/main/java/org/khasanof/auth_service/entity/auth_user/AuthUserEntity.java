@@ -1,9 +1,6 @@
 package org.khasanof.auth_service.entity.auth_user;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.khasanof.auth_service.entity.Auditable;
 import org.khasanof.auth_service.enums.auth_user.AuthUserStatusEnum;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -16,6 +13,7 @@ import java.time.Instant;
 @AllArgsConstructor
 @NoArgsConstructor
 @Document(collection = "auth_user")
+@ToString
 public class AuthUserEntity extends Auditable {
     @Field(name = "first_name")
     private String firstName;
