@@ -38,6 +38,7 @@ import java.util.*;
 
 @Service
 public class AuthInfoServiceImpl extends AbstractService<AuthInfoRepository, AuthInfoMapper, AuthInfoValidator> implements AuthInfoService {
+
     private final AuthUserService authUserService;
     private final AuthInviteRepository inviteRepository;
     private final PostCategoryFeignClient categoryFeignClient;
@@ -59,8 +60,9 @@ public class AuthInfoServiceImpl extends AbstractService<AuthInfoRepository, Aut
             throw new AlreadyCreatedException("User Info Already Created!");
         }
         try {
+            List<String> ids = new ArrayList<>(new HashSet<>(dto.getInterestsId()));
             List<CategoryDetailDTO> dtoList = categoryFeignClient.findAllById(
-                            new CategoryFindAllRequestDTO(dto.getInterestsId()))
+                            new CategoryFindAllRequestDTO(ids))
                     .getData();
             List<String> list = dtoList.stream()
                     .map(CategoryDetailDTO::getId)

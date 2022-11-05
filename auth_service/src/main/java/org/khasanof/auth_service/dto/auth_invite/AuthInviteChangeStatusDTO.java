@@ -19,4 +19,10 @@ public class AuthInviteChangeStatusDTO extends GenericDTO {
     private String requestUserId;
     @NotNull
     private AuthInviteStatusEnum status;
+
+    public AuthInviteChangeStatusDTO(String id, String requestUserId, AuthInviteStatusEnum status) {
+        super(id);
+        this.requestUserId = requestUserId;
+        this.status = status;
+    }
 }

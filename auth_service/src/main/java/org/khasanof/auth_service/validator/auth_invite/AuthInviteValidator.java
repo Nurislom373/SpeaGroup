@@ -19,6 +19,9 @@ public class AuthInviteValidator extends AbstractValidator<AuthInviteCreateDTO, 
         if (Objects.isNull(authInviteCreateDTO)) {
             throw new InvalidValidationException("DTO is null");
         }
+        if (authInviteCreateDTO.getInviteUserId().equals(authInviteCreateDTO.getRequestUserId())) {
+            throw new InvalidValidationException("You cannot invite yourself!");
+        }
     }
 
     @Override
@@ -29,6 +32,9 @@ public class AuthInviteValidator extends AbstractValidator<AuthInviteCreateDTO, 
     public void validChangeStatusDTO(AuthInviteChangeStatusDTO dto) throws InvalidValidationException {
         if (Objects.isNull(dto)) {
             throw new InvalidValidationException("DTO is null");
+        }
+        if (!ObjectId.isValid(dto.getId())) {
+            throw new InvalidValidationException("Invalid ID!");
         }
     }
 

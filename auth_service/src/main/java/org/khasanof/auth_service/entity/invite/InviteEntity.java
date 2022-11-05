@@ -16,8 +16,9 @@ public class InviteEntity {
     private AuthInviteStatusEnum status;
     private Instant acceptTime;
 
-    public InviteEntity(String userId) {
+    public InviteEntity(String userId, AuthInviteStatusEnum status) {
         this.userId = userId;
+        this.status = status;
         this.requestTime = Instant.now();
     }
 }

@@ -10,7 +10,7 @@ import org.khasanof.auth_service.entity.auth_invite.AuthInviteEntity;
 import org.khasanof.auth_service.entity.invite.InviteEntity;
 import org.khasanof.auth_service.enums.auth_info.AuthInfoVisibilityEnum;
 import org.khasanof.auth_service.enums.auth_invite.AuthInviteStatusEnum;
-import org.khasanof.auth_service.exception.exceptions.NotFoundException;
+import org.khasanof.auth_service.exception.exceptions.InvalidValidationException;
 import org.khasanof.auth_service.mapper.auth_invite.AuthInviteMapper;
 import org.khasanof.auth_service.repository.auth_invite.AuthInviteRepository;
 import org.khasanof.auth_service.service.AbstractService;
@@ -19,6 +19,7 @@ import org.khasanof.auth_service.service.auth_user.AuthUserService;
 import org.khasanof.auth_service.validator.auth_invite.AuthInviteValidator;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.webjars.NotFoundException;
 
 import java.time.Instant;
 import java.util.LinkedList;
@@ -42,7 +43,7 @@ public class AuthInviteServiceImpl extends AbstractService<AuthInviteRepository,
         validator.validCreateDTO(dto);
         AuthInfoEntity infoEntity = authInfoService.getByUserId(dto.getInviteUserId());
         if (!AuthInfoVisibilityEnum.PRIVATE.equals(infoEntity.getVisibility())) {
-            throw new RuntimeException("User Visibility is not PRIVATE!");
+            throw new InvalidValidationException("User Visibility is not PRIVATE!");
         }
         AuthInviteEntity authInvite = repository.findByUserIdEquals(infoEntity.getUserId())
                 .orElseThrow(() -> new NotFoundException("User Invites not found"));
@@ -50,12 +51,16 @@ public class AuthInviteServiceImpl extends AbstractService<AuthInviteRepository,
         if (Objects.isNull(invites)) {
             invites = new LinkedList<>();
         }
-        boolean anyMatch = invites.stream()
-                .anyMatch(any -> any.getUserId().equals(dto.getInviteUserId()));
+        boolean anyMatch = false;
+        if (invites.size() >= 1) {
+            anyMatch = invites.stream()
+                    .anyMatch(any -> any.getUserId().equals(dto.getRequestUserId()));
+        }
         if (!anyMatch) {
-            invites.add(new InviteEntity(dto.getInviteUserId()));
+            invites.add(new InviteEntity(dto.getRequestUserId(), AuthInviteStatusEnum.PENDING));
             authInvite.setInvites(invites);
             authInvite.setUpdatedAt(Instant.now());
+            authInvite.setUpdatedBy("-1");
             repository.save(authInvite);
         }
     }

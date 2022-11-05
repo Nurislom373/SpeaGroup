@@ -36,7 +36,7 @@ public class AuthInviteController extends AbstractController<AuthInviteService> 
         return new ResponseEntity<>(new Data<>("Successfully Deleted - Auth Invite"), HttpStatus.NO_CONTENT);
     }
 
-    @RequestMapping(value = "deleteInvite/id={id}&inviteUserId={inviteUserId}", method = RequestMethod.POST)
+    @RequestMapping(value = "deleteInvite/id={id}&inviteUserId={inviteUserId}", method = RequestMethod.DELETE)
     public ResponseEntity<Data<String>> deleteInvite(@PathVariable String id, @PathVariable String inviteUserId) {
         service.deleteRequest(id, inviteUserId);
         return new ResponseEntity<>(new Data<>("Successfully Deleted - Auth Invite"), HttpStatus.NO_CONTENT);
