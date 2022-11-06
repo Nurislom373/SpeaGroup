@@ -1,9 +1,6 @@
 package org.khasanof.auth_service.dto.education;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.khasanof.auth_service.annotation.DateConstraint;
 import org.khasanof.auth_service.annotation.MongoIdConstraint;
 import org.khasanof.auth_service.dto.BaseDTO;
@@ -15,6 +12,7 @@ import javax.validation.constraints.Size;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 public class EducationCreateDTO implements BaseDTO {
     @NotBlank
     @MongoIdConstraint

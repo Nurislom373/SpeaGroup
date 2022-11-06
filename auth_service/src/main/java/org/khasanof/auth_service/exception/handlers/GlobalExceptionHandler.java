@@ -1,9 +1,6 @@
 package org.khasanof.auth_service.exception.handlers;
 
-import org.khasanof.auth_service.exception.exceptions.AlreadyCreatedException;
-import org.khasanof.auth_service.exception.exceptions.ClientResponseException;
-import org.khasanof.auth_service.exception.exceptions.InvalidValidationException;
-import org.khasanof.auth_service.exception.exceptions.PasswordDoesNotMatchException;
+import org.khasanof.auth_service.exception.exceptions.*;
 import org.khasanof.auth_service.response.ApplicationError;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -25,6 +22,16 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         ApplicationError applicationError = new ApplicationError();
         applicationError.setCode("MethodArgumentNotValidException");
         applicationError.setMessage(ex.getMessage());
+        applicationError.setStatus(400);
+        applicationError.setTime(LocalDateTime.now());
+        return new ResponseEntity<>(applicationError, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(ListIsNullException.class)
+    public ResponseEntity<ApplicationError> invalidExceptionHandler(ListIsNullException exception, WebRequest webRequest) {
+        ApplicationError applicationError = new ApplicationError();
+        applicationError.setCode("ListIsNullException");
+        applicationError.setMessage(exception.getMessage());
         applicationError.setStatus(400);
         applicationError.setTime(LocalDateTime.now());
         return new ResponseEntity<>(applicationError, HttpStatus.BAD_REQUEST);

@@ -46,16 +46,14 @@ public class EducationController extends AbstractController<EducationService> {
         return new ResponseEntity<>(new Data<>("Successfully Updated - Education"), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "delete/", method = RequestMethod.DELETE)
-    public ResponseEntity<Data<String>> delete(@RequestParam String infoId,
-                                               @RequestParam String id) {
+    @RequestMapping(value = "delete/infoId={infoId}&id={id}", method = RequestMethod.DELETE)
+    public ResponseEntity<Data<String>> delete(@PathVariable String infoId, @PathVariable String id) {
         service.delete(infoId, id);
-        return new ResponseEntity<>(new Data<>("Successfully Deleted - Education"), HttpStatus.OK);
+        return new ResponseEntity<>(new Data<>("Successfully Deleted - Education"), HttpStatus.NO_CONTENT);
     }
 
-    @RequestMapping(value = "get/", method = RequestMethod.GET)
-    public ResponseEntity<Data<EducationGetDTO>> get(@RequestParam String infoId,
-                                                     @RequestParam String id) {
+    @RequestMapping(value = "get/infoId={infoId}&id={id}", method = RequestMethod.GET)
+    public ResponseEntity<Data<EducationGetDTO>> get(@PathVariable String infoId, @PathVariable String id) {
         return new ResponseEntity<>(new Data<>(service.getEducation(infoId, id)), HttpStatus.OK);
     }
 

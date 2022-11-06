@@ -1,5 +1,6 @@
 package org.khasanof.auth_service.annotation;
 
+import org.khasanof.auth_service.exception.exceptions.InvalidValidationException;
 import org.khasanof.auth_service.utils.DateValidator;
 
 import javax.validation.ConstraintValidator;
@@ -17,7 +18,7 @@ public class DateConstraintValidator implements ConstraintValidator<DateConstrai
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
         if (!validator.isValid(value)) {
-            throw new RuntimeException("Invalid Date!");
+            throw new InvalidValidationException("Invalid Date!");
         }
         return true;
     }

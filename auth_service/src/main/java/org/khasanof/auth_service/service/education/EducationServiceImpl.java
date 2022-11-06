@@ -5,6 +5,7 @@ import org.khasanof.auth_service.dto.education.EducationGetDTO;
 import org.khasanof.auth_service.dto.education.EducationUpdateDTO;
 import org.khasanof.auth_service.entity.auth_info.AuthInfoEntity;
 import org.khasanof.auth_service.entity.education.EducationEntity;
+import org.khasanof.auth_service.exception.exceptions.ListIsNullException;
 import org.khasanof.auth_service.mapper.education.EducationMapper;
 import org.khasanof.auth_service.repository.auth_info.AuthInfoRepository;
 import org.khasanof.auth_service.service.AbstractService;
@@ -19,6 +20,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class EducationServiceImpl extends AbstractService<AuthInfoRepository, EducationMapper, EducationValidator> implements EducationService {
@@ -35,7 +37,7 @@ public class EducationServiceImpl extends AbstractService<AuthInfoRepository, Ed
                     throw new NotFoundException("Info not found");
                 });
         List<EducationEntity> list;
-        if (entity.getEducations().size() < 1) {
+        if (Objects.isNull(entity.getEducations())) {
             list = new ArrayList<>();
             list.add(new EducationEntity(dto.getEducation(), strParseToDate(dto.getStartYearStr()),
                     strParseToDate(dto.getEndYearStr()), dto.getPrimaryMajor(), dto.getSecondaryMajor()));
@@ -66,8 +68,8 @@ public class EducationServiceImpl extends AbstractService<AuthInfoRepository, Ed
                     throw new NotFoundException("Info not found");
                 });
         List<EducationEntity> educations = entity.getEducations();
-        if (educations.isEmpty()) {
-            throw new RuntimeException("Education is null!");
+        if (Objects.isNull(educations)) {
+            throw new ListIsNullException("Education is null!");
         }
         EducationEntity education = educations.stream()
                 .filter(f -> f.getId().equals(dto.getEducationId()))
@@ -89,14 +91,13 @@ public class EducationServiceImpl extends AbstractService<AuthInfoRepository, Ed
     @Override
     public void delete(String infoId, String id) {
         validator.validKey(infoId);
-        validator.validKey(id);
         AuthInfoEntity entity = repository.findById(infoId)
                 .orElseThrow(() -> {
                     throw new NotFoundException("Info not found");
                 });
         List<EducationEntity> educations = entity.getEducations();
         if (educations.isEmpty()) {
-            throw new RuntimeException("Education is null!");
+            throw new ListIsNullException("Education is null!");
         }
         if (!educations.removeIf(f -> f.getId().equals(id))) {
             throw new NotFoundException("Education not found");
@@ -110,7 +111,6 @@ public class EducationServiceImpl extends AbstractService<AuthInfoRepository, Ed
     @Override
     public EducationGetDTO getEducation(String infoId, String id) {
         validator.validKey(infoId);
-        validator.validKey(id);
         AuthInfoEntity entity = repository.findById(infoId)
                 .orElseThrow(() -> new NotFoundException("Info not found"));
         return mapper.fromGetDTO(entity.getEducations()
@@ -122,6 +122,7 @@ public class EducationServiceImpl extends AbstractService<AuthInfoRepository, Ed
 
     @Override
     public List<EducationGetDTO> listEducations(String infoId) {
+        validator.validKey(infoId);
         return mapper.fromGetListDTO(
                 repository.findById(infoId)
                         .orElseThrow(() -> new NotFoundException("Info not found"))
@@ -131,6 +132,7 @@ public class EducationServiceImpl extends AbstractService<AuthInfoRepository, Ed
 
     @Override
     public long countEducation(String infoId) {
+        validator.validKey(infoId);
         return repository.findById(infoId)
                 .orElseThrow(() -> new NotFoundException("Info not found"))
                 .getEducations()
