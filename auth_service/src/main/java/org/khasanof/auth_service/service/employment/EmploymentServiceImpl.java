@@ -5,6 +5,7 @@ import org.khasanof.auth_service.dto.employment.EmploymentGetDTO;
 import org.khasanof.auth_service.dto.employment.EmploymentUpdateDTO;
 import org.khasanof.auth_service.entity.auth_info.AuthInfoEntity;
 import org.khasanof.auth_service.entity.employment.EmploymentEntity;
+import org.khasanof.auth_service.exception.exceptions.ListIsNullException;
 import org.khasanof.auth_service.mapper.employment.EmploymentMapper;
 import org.khasanof.auth_service.repository.auth_info.AuthInfoRepository;
 import org.khasanof.auth_service.service.AbstractService;
@@ -35,7 +36,7 @@ public class EmploymentServiceImpl extends AbstractService<AuthInfoRepository, E
                     throw new NotFoundException("Info not found");
                 });
         List<EmploymentEntity> list;
-        if (entity.getEmployments().size() < 1) {
+        if (Objects.isNull(entity.getEmployments())) {
             list = new ArrayList<>();
             list.add(new EmploymentEntity(dto.getCompany(), dto.getPosition(),
                     strParseToDate(dto.getStartYearStr()), strParseToDate(dto.getEndYearStr()),
@@ -68,7 +69,7 @@ public class EmploymentServiceImpl extends AbstractService<AuthInfoRepository, E
                 });
         List<EmploymentEntity> employments = entity.getEmployments();
         if (Objects.isNull(employments)) {
-            throw new RuntimeException("Employment is null!");
+            throw new ListIsNullException("Employment is null!");
         }
         EmploymentEntity employment = employments.stream()
                 .filter(f -> f.getId().equals(dto.getEmploymentId()))
@@ -90,14 +91,13 @@ public class EmploymentServiceImpl extends AbstractService<AuthInfoRepository, E
     @Override
     public void delete(String infoId, String id) {
         validator.validKey(infoId);
-        validator.validKey(id);
         AuthInfoEntity entity = repository.findById(infoId)
                 .orElseThrow(() -> {
                     throw new NotFoundException("Info not found");
                 });
         List<EmploymentEntity> employments = entity.getEmployments();
         if (employments.isEmpty()) {
-            throw new RuntimeException("Employments is null");
+            throw new ListIsNullException("Employments is null");
         }
         if (!employments.removeIf(f -> f.getId().equals(id))) {
             throw new NotFoundException("Employment not found");
@@ -111,7 +111,6 @@ public class EmploymentServiceImpl extends AbstractService<AuthInfoRepository, E
     @Override
     public EmploymentGetDTO getEmployment(String infoId, String id) {
         validator.validKey(infoId);
-        validator.validKey(id);
         return mapper.fromGetDTO(
                 repository.findById(infoId)
                         .orElseThrow(() -> {
@@ -125,6 +124,7 @@ public class EmploymentServiceImpl extends AbstractService<AuthInfoRepository, E
 
     @Override
     public List<EmploymentGetDTO> listEmployments(String infoId) {
+        validator.validKey(infoId);
         return mapper.fromGetListDTO(
                 repository.findById(infoId)
                         .orElseThrow(() -> {

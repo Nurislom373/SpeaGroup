@@ -46,16 +46,14 @@ public class EmploymentController extends AbstractController<EmploymentService> 
         return new ResponseEntity<>(new Data<>("Successfully Updated - Employment"), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "delete/", method = RequestMethod.DELETE)
-    public ResponseEntity<Data<String>> delete(@RequestParam String infoId,
-                                               @RequestParam String id) {
+    @RequestMapping(value = "delete/infoId={infoId}&id={id}", method = RequestMethod.DELETE)
+    public ResponseEntity<Data<String>> delete(@PathVariable String infoId, @PathVariable String id) {
         service.delete(infoId, id);
-        return new ResponseEntity<>(new Data<>("Successfully Deleted - Employment"), HttpStatus.OK);
+        return new ResponseEntity<>(new Data<>("Successfully Deleted - Employment"), HttpStatus.NO_CONTENT);
     }
 
-    @RequestMapping(value = "get/", method = RequestMethod.GET)
-    public ResponseEntity<Data<EmploymentGetDTO>> get(@RequestParam String infoId,
-                                                      @RequestParam String id) {
+    @RequestMapping(value = "get/infoId={infoId}&id={id}", method = RequestMethod.GET)
+    public ResponseEntity<Data<EmploymentGetDTO>> get(@PathVariable String infoId, @PathVariable String id) {
         return new ResponseEntity<>(new Data<>(service.getEmployment(infoId, id)), HttpStatus.OK);
     }
 
