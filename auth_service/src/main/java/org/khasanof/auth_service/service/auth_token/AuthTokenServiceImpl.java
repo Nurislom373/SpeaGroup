@@ -1,5 +1,6 @@
 package org.khasanof.auth_service.service.auth_token;
 
+import com.auth0.jwt.interfaces.DecodedJWT;
 import lombok.extern.slf4j.Slf4j;
 import org.khasanof.auth_service.criteria.auth_token.AuthTokenCriteria;
 import org.khasanof.auth_service.criteria.auth_token.AuthTokenTypeCriteria;
@@ -13,6 +14,7 @@ import org.khasanof.auth_service.repository.auth_token.AuthTokenRedisRepository;
 import org.khasanof.auth_service.repository.auth_token.AuthTokenRepository;
 import org.khasanof.auth_service.service.AbstractService;
 import org.khasanof.auth_service.service.auth_user.AuthUserService;
+import org.khasanof.auth_service.utils.jwt.JWTUtils;
 import org.khasanof.auth_service.validator.auth_token.AuthTokenValidator;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.mongodb.core.MongoTemplate;

@@ -1,5 +1,6 @@
 package org.khasanof.auth_service.validator.blocked_for;
 
+import org.bson.types.ObjectId;
 import org.khasanof.auth_service.dto.blocked_for.BlockedForCreateDTO;
 import org.khasanof.auth_service.dto.blocked_for.BlockedForUpdateDTO;
 import org.khasanof.auth_service.exception.exceptions.InvalidValidationException;
@@ -22,12 +23,18 @@ public class BlockedForValidator extends AbstractValidator<BlockedForCreateDTO, 
         if (Objects.isNull(blockedForUpdateDTO)) {
             throw new InvalidValidationException("DTO is null");
         }
+        if (!ObjectId.isValid(blockedForUpdateDTO.getId())) {
+            throw new InvalidValidationException("Invalid ID!");
+        }
     }
 
     @Override
     public void validKey(String s) throws InvalidValidationException {
         if (Objects.isNull(s)) {
             throw new InvalidValidationException("ID is null");
+        }
+        if (!ObjectId.isValid(s)) {
+            throw new InvalidValidationException("Invalid ID!");
         }
     }
 }

@@ -25,4 +25,11 @@ public class BlockedForUpdateDTO extends GenericDTO {
     @NotNull
     @Min(1)
     private Integer time;
+
+    public BlockedForUpdateDTO(String id, String name, String code, Integer time) {
+        super(id);
+        this.name = name;
+        this.code = code;
+        this.time = time;
+    }
 }

@@ -5,6 +5,7 @@ import org.khasanof.auth_service.dto.blocked_for.BlockedForCreateDTO;
 import org.khasanof.auth_service.dto.blocked_for.BlockedForGetDTO;
 import org.khasanof.auth_service.dto.blocked_for.BlockedForUpdateDTO;
 import org.khasanof.auth_service.entity.blocked_for.BlockedForEntity;
+import org.khasanof.auth_service.exception.exceptions.AlreadyCreatedException;
 import org.khasanof.auth_service.mapper.blocked_for.BlockedForMapper;
 import org.khasanof.auth_service.repository.blocked_for.BlockedForRepository;
 import org.khasanof.auth_service.service.AbstractService;
@@ -30,7 +31,7 @@ public class BlockedForServiceImpl
     public void create(BlockedForCreateDTO dto) {
         validator.validCreateDTO(dto);
         if (repository.existsByCode(dto.getCode()))
-            throw new RuntimeException("Blocked For Already Created Exception!");
+            throw new AlreadyCreatedException("Blocked For Already Created Exception!");
         repository.save(mapper.toCreateDTO(dto));
     }
 
@@ -58,6 +59,7 @@ public class BlockedForServiceImpl
 
     @Override
     public BlockedForGetDTO get(String id) {
+        validator.validKey(id);
         return mapper.fromGetDTO(
                 repository.findById(id)
                         .orElseThrow(() -> {

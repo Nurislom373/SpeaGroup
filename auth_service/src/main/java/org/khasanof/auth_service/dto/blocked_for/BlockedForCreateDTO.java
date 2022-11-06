@@ -23,6 +23,6 @@ public class BlockedForCreateDTO implements BaseDTO {
     @Size(min = 3, max = 120, message = "BlockedForCreateDTO code field min size 3 max size 120")
     private String code;
     @NotNull
-    @Min(value = 1)
+    @Min(1)
     private Integer time;
 }
