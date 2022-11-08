@@ -60,7 +60,11 @@ public class AuthInfoPredicateExecutor {
         }
 
         public Query betweenQuery() {
-            return new Query().addCriteria(Criteria.where(criteria.getKey()).lte(criteria.getFrom()).gte(criteria.getTo()));
+            if (criteria.getKey().equals("bornYear")) {
+                return new Query().addCriteria(Criteria.where(criteria.getKey()).lte(criteria.getFrom()).gte(criteria.getTo()));
+            } else {
+                throw new RuntimeException("only bornYear");
+            }
         }
     }
 }

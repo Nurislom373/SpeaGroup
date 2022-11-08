@@ -132,7 +132,7 @@ public class AuthUserServiceImpl extends AbstractService<
         return mapper.fromGetDTO(
                 repository.findById(id)
                         .orElseThrow(() -> {
-                            throw new NotFoundException("User not found by id %s".formatted(id));
+                            throw new NotFoundException("User not found by id: %s".formatted(id));
                         })
         );
     }

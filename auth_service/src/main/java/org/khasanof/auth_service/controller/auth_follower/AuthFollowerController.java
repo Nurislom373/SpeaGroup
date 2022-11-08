@@ -33,7 +33,7 @@ public class AuthFollowerController extends AbstractController<AuthFollowerServi
     @RequestMapping(value = "delete/{id}", method = RequestMethod.DELETE)
     public ResponseEntity<Data<String>> delete(@PathVariable String id) {
         service.delete(id);
-        return new ResponseEntity<>(new Data<>("Successfully Deleted - Auth Follower"), HttpStatus.OK);
+        return new ResponseEntity<>(new Data<>("Successfully Deleted - Auth Follower"), HttpStatus.NO_CONTENT);
     }
 
     @RequestMapping(value = "get/{id}", method = RequestMethod.GET)

@@ -79,9 +79,9 @@ public class AuthFollowingControllerTest {
     }
 
     @Test
-    public void detailMethodIsOkTest() throws Exception {
+    public void detailMethodIsNoContentTest() throws Exception {
         autoMockMvc.obsessiveGet("/api/v1/auth_following/detail/634975aae4d30c6c6b066de5",
-                Utils.matchers(Utils.StatusChoice.OK), MockMvcResultHandlers.print());
+                Utils.matchers(Utils.StatusChoice.NO_CONTENT), MockMvcResultHandlers.print());
     }
 
     @Test

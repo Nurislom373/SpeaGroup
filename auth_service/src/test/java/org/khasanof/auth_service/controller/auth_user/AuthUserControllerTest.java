@@ -3,6 +3,8 @@ package org.khasanof.auth_service.controller.auth_user;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.khasanof.auth_service.autoMock.AutoMockMvc;
+import org.khasanof.auth_service.autoMock.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,6 +18,8 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.util.LinkedMultiValueMap;
 
+import java.util.List;
+
 @SpringBootTest
 @AutoConfigureMockMvc
 @ExtendWith(SpringExtension.class)
@@ -23,6 +27,10 @@ public class AuthUserControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    private AutoMockMvc autoMockMvc;
+
 
     @Test
     public void getMethodTest() throws Exception {
@@ -42,6 +50,32 @@ public class AuthUserControllerTest {
     }
 
     @Test
+    public void getMethodIsBadRequestTest() {
+        var list = List.of("fyegwui", "fdsiufgs", " ", "yufgdsyu");
+        list.forEach((var) -> {
+            try {
+                autoMockMvc.obsessiveGet("/api/v1/auth_user/get/{id}", var,
+                        Utils.matchers(Utils.StatusChoice.BAD_REQUEST), MockMvcResultHandlers.print());
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
+
+    @Test
+    public void getMethodIsNotFoundTest() {
+        var list = List.of("6320c3daef1ded597035d898", "6320c3daef1ded597035d897", "6320c3daef1ded597035d896");
+        list.forEach((var) -> {
+            try {
+                autoMockMvc.obsessiveGet("/api/v1/auth_user/get/{id}", var,
+                        Utils.matchers(Utils.StatusChoice.NOT_FOUND), MockMvcResultHandlers.print());
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
+
+    @Test
     public void detailMethodTest() throws Exception {
         mockMvc.perform(
                         MockMvcRequestBuilders.get("/api/v1/auth_user/detail/{id}",
@@ -49,6 +83,33 @@ public class AuthUserControllerTest {
                 .andExpect(MockMvcResultMatchers.status().is2xxSuccessful())
                 .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print());
+    }
+
+
+    @Test
+    public void detailMethodIsBadRequestTest() {
+        var list = List.of("fyegwui", "fdsiufgs", " ", "yufgdsyu");
+        list.forEach((var) -> {
+            try {
+                autoMockMvc.obsessiveGet("/api/v1/auth_user/detail/{id}", var,
+                        Utils.matchers(Utils.StatusChoice.BAD_REQUEST), MockMvcResultHandlers.print());
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
+
+    @Test
+    public void detailMethodIsNotFoundTest() {
+        var list = List.of("6320c3daef1ded597035d898", "6320c3daef1ded597035d897", "6320c3daef1ded597035d896");
+        list.forEach((var) -> {
+            try {
+                autoMockMvc.obsessiveGet("/api/v1/auth_user/detail/{id}", var,
+                        Utils.matchers(Utils.StatusChoice.NOT_FOUND), MockMvcResultHandlers.print());
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     @Test
