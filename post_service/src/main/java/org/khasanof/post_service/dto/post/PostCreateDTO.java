@@ -16,7 +16,7 @@ import java.util.List;
 public class PostCreateDTO implements BaseDTO {
     @NotBlank
     @Size(min = 5, max = 50)
-    private String postUserId;
+    private String userId;
     @NotBlank
     @Size(min = 5, max = 250)
     private String title;

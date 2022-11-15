@@ -101,8 +101,7 @@ public class CategoryServiceImpl extends AbstractService<CategoryRepository, Cat
     @Override
     public List<CategoryEntity> getAllEntity(List<String> ids) {
         Assert.notNull(ids, "List must be not null!");
-        return
-                ids.stream()
+        return ids.stream()
                         .map(repository::findById)
                         .map(Optional::orElseThrow)
                         .toList();

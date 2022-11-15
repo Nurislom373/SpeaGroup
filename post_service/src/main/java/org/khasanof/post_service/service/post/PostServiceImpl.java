@@ -17,7 +17,6 @@ import org.khasanof.post_service.dto.post_category.PostCategoryAddAllDTO;
 import org.khasanof.post_service.dto.post_comment.PostCommentDetailDTO;
 import org.khasanof.post_service.dto.post_rating.PostRatingCreateDTO;
 import org.khasanof.post_service.dto.post_rating.PostRatingGetDTO;
-import org.khasanof.post_service.entity.auth_user.AuthUserEntity;
 import org.khasanof.post_service.entity.post.PostEntity;
 import org.khasanof.post_service.entity.post_category.PostCategoryEntity;
 import org.khasanof.post_service.entity.post_rating.PostRatingEntity;
@@ -40,6 +39,7 @@ import org.khasanof.post_service.validator.post.PostValidator;
 import org.springframework.beans.BeanUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -47,8 +47,6 @@ import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
@@ -83,10 +81,7 @@ public class PostServiceImpl extends AbstractService<PostRepository, PostMapper,
         validator.validCreateDTO(dto);
         dto.setVisibility(dto.getVisibility().toUpperCase(Locale.ROOT));
         PostEntity postEntity = mapper.toCreateDTO(dto);
-        AuthUserEntity userEntity = new AuthUserEntity();
-        BeanUtils.copyProperties(getAuthUserDTO(dto.getPostUserId()), userEntity);
-        postEntity.setUserId(userEntity);
-        postEntity.setCreatedBy(userEntity.getId());
+        postEntity.setCreatedBy(dto.getUserId());
         postEntity.setStatus(PostStatusEnum.ACTIVE.getValue());
         PostEntity entity = repository.save(postEntity);
         postCategoryService.addAllCategory(new PostCategoryAddAllDTO(entity.getId(), dto.getCategoriesIds()));
@@ -116,7 +111,7 @@ public class PostServiceImpl extends AbstractService<PostRepository, PostMapper,
     @Override
     public PostGetDTO get(String id) {
         validator.validKey(id);
-        return entityParseDTO(
+        return mapper.fromGetDTO(
                 repository.findById(id)
                         .orElseThrow(() -> {
                             throw new NotFoundException("Post not found");
@@ -147,7 +142,7 @@ public class PostServiceImpl extends AbstractService<PostRepository, PostMapper,
                                 criteria.getDirection(),
                                 criteria.getFieldsEnum().getValue()
                         )).stream()
-                .map(this::entityParseDTO)
+                .map(mapper::fromGetDTO)
                 .toList();
     }
 
@@ -155,7 +150,7 @@ public class PostServiceImpl extends AbstractService<PostRepository, PostMapper,
     public List<PostGetDTO> getAllWithCreatedBy(String userId) {
         return repository.findAllByCreatedBy(userId)
                 .stream()
-                .map(this::entityParseDTO)
+                .map(mapper::fromGetDTO)
                 .toList();
     }
 
@@ -170,7 +165,7 @@ public class PostServiceImpl extends AbstractService<PostRepository, PostMapper,
         return categories
                 .stream()
                 .map(PostCategoryEntity::getPostId)
-                .map(this::entityParseDTO)
+                .map(mapper::fromGetDTO)
                 .toList();
     }
 
@@ -184,25 +179,19 @@ public class PostServiceImpl extends AbstractService<PostRepository, PostMapper,
                                     .is(RatingTypeEnum.RECOMMENDED.getValue())
                                     .orOperator(new Criteria("ratingType")
                                             .is(RatingTypeEnum.POPULAR.getValue())))
-                            .with(PageRequest.of(criteria.getPage(), criteria.getSize(), criteria.getDirection(),
-                                    criteria.getFieldsEnum().getValue())),
+                            .with(PageRequest.of(criteria.getPage(), criteria.getSize(),
+                                    Sort.Direction.DESC, "created_at")),
                     PostRatingEntity.class);
             return entities.stream()
                     .map(PostRatingEntity::getPostId)
-                    .map(this::entityParseDTO)
+                    .map(mapper::fromGetDTO)
                     .toList();
         }
-        List<String> ids = authFollowingGetDTO.getFollowingsId();
-        List<PostEntity> entityList = ids.stream()
-                .map(repository::findAllByCreatedByOrderByCreatedAtAsc)
-                .flatMap(Collection::stream)
-                .sorted(Comparator.comparing(PostEntity::getCreatedAt).reversed())
-                .toList();
-        entityList.forEach(System.out::println);
-        if (entityList.size() > criteria.getSize()) {
-
-        }
-        return null;
+        return mongoTemplate.find(Query.query(new Criteria("userId")
+                        .in(authFollowingGetDTO.getFollowingsId()))
+                .with(PageRequest.of(criteria.getPage(), criteria.getSize(),
+                        Sort.Direction.DESC, "created_at")), PostEntity.class)
+                .stream().map(mapper::fromGetDTO).toList();
     }
 
     @Override
@@ -217,7 +206,7 @@ public class PostServiceImpl extends AbstractService<PostRepository, PostMapper,
         return list
                 .stream()
                 .map(PostRatingEntity::getPostId)
-                .map(this::entityParseDTO)
+                .map(mapper::fromGetDTO)
                 .toList();
     }
 
@@ -268,12 +257,6 @@ public class PostServiceImpl extends AbstractService<PostRepository, PostMapper,
                             throw new NotFoundException("Post not found");
                         })
                         .getStatus());
-    }
-
-    private PostGetDTO entityParseDTO(PostEntity entity) {
-        PostGetDTO dto = mapper.fromGetDTO(entity);
-        dto.setPostUserId(entity.getUserId().getId());
-        return dto;
     }
 
     private PostRatingGetDTO returnToGetDTO(PostRatingEntity entity) {

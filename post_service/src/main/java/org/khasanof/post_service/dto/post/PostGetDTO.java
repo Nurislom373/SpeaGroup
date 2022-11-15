@@ -11,7 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 @ToString
 public class PostGetDTO extends GenericDTO {
-    private String postUserId;
+    private String userId;
     private String title;
     private String description;
     private List<String> mediaPaths;
