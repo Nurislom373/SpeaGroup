@@ -31,6 +31,37 @@ public class AuthUserControllerTest {
     @Autowired
     private AutoMockMvc autoMockMvc;
 
+    @Test
+    public void deleteMethodIsNoContentTest() throws Exception {
+        autoMockMvc.obsessiveDelete("/api/v1/auth_user/delete/632dac2cc6a9af3c205d7f1f",
+                Utils.matchers(Utils.StatusChoice.NO_CONTENT), MockMvcResultHandlers.print());
+    }
+
+    @Test
+    public void deleteMethodIsBadRequestTest() {
+        var list = List.of("fyegwui", "fdsiufgs", " ", "yufgdsyu");
+        list.forEach((var) -> {
+            try {
+                autoMockMvc.obsessiveDelete("/api/v1/auth_user/delete/{id}", var,
+                        Utils.matchers(Utils.StatusChoice.BAD_REQUEST), MockMvcResultHandlers.print());
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
+
+    @Test
+    public void deleteMethodIsNotFoundTest() {
+        var list = List.of("6320c3daef1ded597035d898", "6320c3daef1ded597035d897", "6320c3daef1ded597035d896");
+        list.forEach((var) -> {
+            try {
+                autoMockMvc.obsessiveDelete("/api/v1/auth_user/delete/{id}", var,
+                        Utils.matchers(Utils.StatusChoice.NOT_FOUND), MockMvcResultHandlers.print());
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
 
     @Test
     public void getMethodTest() throws Exception {

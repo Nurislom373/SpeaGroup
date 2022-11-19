@@ -42,7 +42,7 @@ public class AuthUserController extends AbstractController<AuthUserService> {
     @RequestMapping(value = "delete/{id}", method = RequestMethod.DELETE)
     public ResponseEntity<Data<String>> delete(@Parameter(description = "id of authUser to be deleted", required = true) @PathVariable String id) {
         service.delete(id);
-        return new ResponseEntity<>(new Data<>("Successfully Deleted - User"), HttpStatus.OK);
+        return new ResponseEntity<>(new Data<>("Successfully Deleted - User"), HttpStatus.NO_CONTENT);
     }
 
     @RequestMapping(value = "get/{id}", method = RequestMethod.GET)
