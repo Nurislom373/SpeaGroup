@@ -29,9 +29,6 @@ public class AuthUserValidator extends AbstractValidator<AuthUserCreateDTO, Auth
         if (!ObjectId.isValid(authUserUpdateDTO.getId())) {
             throw new InvalidValidationException("Invalid ID!");
         }
-        if (!LanguageEnums.hasLang(authUserUpdateDTO.getLanguage())) {
-            throw new InvalidValidationException("Invalid Language!");
-        }
         Pattern pattern = Pattern.compile("^(?=.{1,64}@)[A-Za-z0-9_-]+(\\\\.[A-Za-z0-9_-]+)*@\" \n" +
                                           "+ \"[^-][A-Za-z0-9-]+(\\\\.[A-Za-z0-9-]+)*(\\\\.[A-Za-z]{2,})$");
         if (!pattern.matcher(authUserUpdateDTO.getEmail()).matches()) {

@@ -3,6 +3,7 @@ package org.khasanof.auth_service.entity.auth_user;
 import lombok.*;
 import org.khasanof.auth_service.entity.Auditable;
 import org.khasanof.auth_service.enums.auth_user.AuthUserStatusEnum;
+import org.khasanof.auth_service.enums.language.LanguageEnums;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -23,7 +24,7 @@ public class AuthUserEntity extends Auditable {
     private String description;
     private String username;
     private String password;
-    private String language;
+    private LanguageEnums language;
     private AuthUserStatusEnum status;
     @Field(name = "last_loin_at")
     private Instant lastLoginAt;

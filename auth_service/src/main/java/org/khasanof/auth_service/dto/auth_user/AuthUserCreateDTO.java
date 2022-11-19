@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.khasanof.auth_service.dto.BaseDTO;
+import org.khasanof.auth_service.enums.language.LanguageEnums;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -36,7 +37,7 @@ public class AuthUserCreateDTO implements BaseDTO {
     private String password;
     @NotBlank(message = "language is mandatory")
     @Size(min = 2, max = 2)
-    private String language;
+    private LanguageEnums language;
     @NotBlank(message = "imagePath is mandatory")
     private String imagePath;
     private List<String> categoryIds;

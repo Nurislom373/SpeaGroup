@@ -1,6 +1,5 @@
 package org.khasanof.auth_service.service.auth_user;
 
-import lombok.Value;
 import org.khasanof.auth_service.criteria.auth_user.AuthUserBetweenCriteria;
 import org.khasanof.auth_service.criteria.auth_user.AuthUserCriteria;
 import org.khasanof.auth_service.criteria.auth_user.AuthUserSearchCriteria;
@@ -13,7 +12,6 @@ import org.khasanof.auth_service.entity.auth_role.AuthRoleEntity;
 import org.khasanof.auth_service.entity.auth_user.AuthUserEntity;
 import org.khasanof.auth_service.enums.auth_role.AuthRoleEnum;
 import org.khasanof.auth_service.enums.auth_user.AuthUserStatusEnum;
-import org.khasanof.auth_service.enums.language.LanguageEnums;
 import org.khasanof.auth_service.exception.exceptions.AlreadyCreatedException;
 import org.khasanof.auth_service.mapper.auth_user.AuthUserMapper;
 import org.khasanof.auth_service.predicate.auth_user.AuthUserPredicateExecutor;
@@ -34,10 +32,6 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
 
-import javax.mail.Message;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -86,9 +80,6 @@ public class AuthUserServiceImpl extends AbstractService<
             } else if (equalsCount == 3) {
                 throw new AlreadyCreatedException("This email and username already used!");
             }
-        }
-        if (!LanguageEnums.hasLang(createDto.getLanguage())) {
-            throw new RuntimeException("Invalid Language!");
         }
         AuthUserEntity authUserEntity = mapper.toCreateDTO(createDto);
         authUserEntity.setStatus(AuthUserStatusEnum.NO_ACTIVE);

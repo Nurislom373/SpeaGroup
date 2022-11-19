@@ -5,6 +5,7 @@ import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.khasanof.auth_service.dto.auth_user.AuthUserCreateDTO;
+import org.khasanof.auth_service.enums.language.LanguageEnums;
 import org.khasanof.auth_service.service.auth_user.AuthUserService;
 import org.khasanof.auth_service.service.auth_user.AuthUserServiceImpl;
 import org.mockito.ArgumentMatchers;
@@ -43,7 +44,7 @@ public class AuthUserControllerMockTest {
         dto.setImagePath("ftydshfdgfgds.jpg");
         dto.setLastName("tygfhujd");
         dto.setFirstName("tfyguhij");
-        dto.setLanguage("uz");
+        dto.setLanguage(LanguageEnums.UZBEK);
 
         AuthUserService mockito = Mockito.mock(AuthUserServiceImpl.class);
         Mockito.doCallRealMethod().when(mockito).create(ArgumentMatchers.any(AuthUserCreateDTO.class));

@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.khasanof.auth_service.autoMock.AutoMockMvc;
 import org.khasanof.auth_service.autoMock.Utils;
+import org.khasanof.auth_service.dto.auth_user.AuthUserUpdateDTO;
+import org.khasanof.auth_service.enums.language.LanguageEnums;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -30,6 +32,56 @@ public class AuthUserControllerTest {
 
     @Autowired
     private AutoMockMvc autoMockMvc;
+
+    @Test
+    public void updateMethodIsOkTest() throws Exception {
+        AuthUserUpdateDTO dto = new AuthUserUpdateDTO("635920993c40830fe14b0cc0","Joeann", "Corhard", "jcorhard0@nsw.gov.au",
+                "Hypertensive retinopathy, unspecified eye", "jcorhard0", LanguageEnums.ENGLISH);
+
+        autoMockMvc.obsessivePut("/api/v1/auth_user/update", dto,
+                Utils.matchers(Utils.StatusChoice.OK), MockMvcResultHandlers.print());
+    }
+
+    @Test
+    public void updateMethodIsBadRequestTest() {
+        var list = List.of(
+                new AuthUserUpdateDTO("635920993c40830fe14b0cc0","Jo", "Corhard", "jcorhard0@nsw.gov.au",
+                "Hypertensive retinopathy, unspecified eye", "jcorhard0", LanguageEnums.ENGLISH),
+                new AuthUserUpdateDTO("635920993c40830fe14b0cc0","Joeann", "Co", "jcorhard0@nsw.gov.au",
+                "Hypertensive retinopathy, unspecified eye", "jcorhard0", LanguageEnums.ENGLISH),
+                new AuthUserUpdateDTO("635920993c40830fe14b0cc0","Joeann", "Corhard", "jcor",
+                        "Hypertensive retinopathy, unspecified eye", "jcorhard0", LanguageEnums.ENGLISH),
+                new AuthUserUpdateDTO("635920993c40830fe14b0cc0","Joeann", "Corhard", "jcorhard0@nsw.gov.au",
+                        "Hypertensive retinopathy, unspecified eye", "jc", LanguageEnums.ENGLISH));
+        list.forEach((var) -> {
+            try {
+                autoMockMvc.obsessivePut("/api/v1/auth_user/update", var,
+                        Utils.matchers(Utils.StatusChoice.BAD_REQUEST), MockMvcResultHandlers.print());
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
+
+    @Test
+    public void updateMethodIsNotFoundTest() {
+        var list = List.of(new AuthUserUpdateDTO("635920993c40830fe14b0cd0","Jovuvfguvgdu", "Corhard", "jcorhard0@nsw.gov.au",
+                        "Hypertensive retinopathy, unspecified eye", "jcorhard0", LanguageEnums.ENGLISH),
+                new AuthUserUpdateDTO("635920993c40830fe14b0cd1","Joeann", "Cfdfdgdgfdgo", "jcorhard0@nsw.gov.au",
+                        "Hypertensive retinopathy, unspecified eye", "jcorhard0", LanguageEnums.ENGLISH),
+                new AuthUserUpdateDTO("635920993c40830fe14b0cd2","Joeann", "Corhard", "jcorhard0@nsw.gov.au",
+                        "Hypertensive retinopathy, unspecified eye", "jcorhard0", LanguageEnums.ENGLISH),
+                new AuthUserUpdateDTO("635920993c40830fe14b0cd3","Joeann", "Corhard", "jcorhard0@nsw.gov.au",
+                        "Hypertensive retinopathy, unspecified eye", "jcgfdgfdgf", LanguageEnums.ENGLISH));
+        list.forEach((var) -> {
+            try {
+                autoMockMvc.obsessivePut("/api/v1/auth_user/update", var,
+                        Utils.matchers(Utils.StatusChoice.NOT_FOUND), MockMvcResultHandlers.print());
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
 
     @Test
     public void deleteMethodIsNoContentTest() throws Exception {
