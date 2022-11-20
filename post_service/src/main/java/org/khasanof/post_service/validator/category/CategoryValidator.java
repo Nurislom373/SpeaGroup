@@ -31,6 +31,9 @@ public class CategoryValidator extends AbstractValidator<CategoryCreateDTO, Cate
         if (Objects.isNull(s)) {
             throw new InvalidValidationException("ID is null");
         }
+        if (!ObjectId.isValid(s)) {
+            throw new InvalidValidationException("Invalid ID!");
+        }
     }
 
     public void validKeys(List<String> ids) throws InvalidValidationException {
