@@ -7,9 +7,12 @@ import org.khasanof.post_service.dto.post_view.PostViewGetDTO;
 import org.khasanof.post_service.service.BaseService;
 import org.khasanof.post_service.service.GenericGDLService;
 
-public interface PostViewService extends GenericGDLService<PostViewGetDTO, PostViewDetailDTO, String, PostViewCriteria>, BaseService {
+public interface PostViewService extends GenericGDLService<PostViewGetDTO, PostViewDetailDTO, String, PostViewCriteria>,
+        BaseService {
 
-    void create(PostViewCreateDTO dto);
+    void create(String postId);
+
+    void addView(PostViewCreateDTO dto);
 
     void delete(String id);
 

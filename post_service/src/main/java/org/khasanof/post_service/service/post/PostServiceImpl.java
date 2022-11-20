@@ -48,7 +48,6 @@ import org.webjars.NotFoundException;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Locale;
 
 @Service
 public class PostServiceImpl extends AbstractService<PostRepository, PostMapper, PostValidator> implements PostService {
@@ -62,6 +61,7 @@ public class PostServiceImpl extends AbstractService<PostRepository, PostMapper,
     private final PostRatingService postRatingService;
     private final PostRatingMapper postRatingMapper;
     private final MongoTemplate mongoTemplate;
+
 
     public PostServiceImpl(PostRepository repository, PostMapper mapper, PostValidator validator, @Lazy PostViewService viewService, @Lazy PostSaveService saveService, @Lazy PostLikeService likeService, @Lazy PostCommentService commentService, @Lazy PostCategoryService postCategoryService, CategoryService categoryService, @Lazy PostRatingService postRatingService, PostRatingMapper postRatingMapper, MongoTemplate mongoTemplate) {
         super(repository, mapper, validator);
@@ -79,14 +79,16 @@ public class PostServiceImpl extends AbstractService<PostRepository, PostMapper,
     @Override
     public void create(PostCreateDTO dto) {
         validator.validCreateDTO(dto);
-        dto.setVisibility(dto.getVisibility().toUpperCase(Locale.ROOT));
         PostEntity postEntity = mapper.toCreateDTO(dto);
         postEntity.setCreatedBy(dto.getUserId());
-        postEntity.setStatus(PostStatusEnum.ACTIVE.getValue());
+        postEntity.setStatus(PostStatusEnum.ACTIVE);
         PostEntity entity = repository.save(postEntity);
         postCategoryService.addAllCategory(new PostCategoryAddAllDTO(entity.getId(), dto.getCategoriesIds()));
         postRatingService.create(new PostRatingCreateDTO(entity.getId()));
+        commentService.create(entity.getId());
+        viewService.create(entity.getId());
     }
+
 
     @Override
     public void update(PostUpdateDTO dto) {

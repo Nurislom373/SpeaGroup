@@ -2,6 +2,7 @@ package org.khasanof.post_service.dto.post;
 
 import lombok.*;
 import org.khasanof.post_service.dto.BaseDTO;
+import org.khasanof.post_service.enums.post.PostVisibilityEnum;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -26,7 +27,7 @@ public class PostCreateDTO implements BaseDTO {
     @NotNull
     private List<String> mediaPaths;
     @NotBlank
-    private String visibility;
+    private PostVisibilityEnum visibility;
     @NotNull
     private List<String> categoriesIds;
 }

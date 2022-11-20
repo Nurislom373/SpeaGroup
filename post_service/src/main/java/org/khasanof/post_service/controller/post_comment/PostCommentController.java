@@ -21,12 +21,6 @@ public class PostCommentController extends AbstractController<PostCommentService
         super(service);
     }
 
-    @RequestMapping(value = "create", method = RequestMethod.POST)
-    public ResponseEntity<Data<String>> create(@RequestBody PostCommentCreateDTO dto) {
-        service.create(dto);
-        return new ResponseEntity<>(new Data<>("Successfully Created - Post Comment"), HttpStatus.CREATED);
-    }
-
     @RequestMapping(value = "addComment", method = RequestMethod.POST)
     public ResponseEntity<Data<String>> addComment(@RequestBody PostCommentCreateDTO dto) {
         service.addComment(dto);

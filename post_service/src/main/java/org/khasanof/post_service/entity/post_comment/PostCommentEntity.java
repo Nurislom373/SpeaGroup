@@ -4,6 +4,7 @@ import lombok.*;
 import org.khasanof.post_service.entity.Auditable;
 import org.khasanof.post_service.entity.comment.CommentEntity;
 import org.khasanof.post_service.entity.post.PostEntity;
+import org.khasanof.post_service.enums.comment.CommentLastUpdateType;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DocumentReference;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -21,5 +22,9 @@ public class PostCommentEntity extends Auditable {
     @Field(name = "post_id")
     private PostEntity postId;
     private LinkedList<CommentEntity> comments;
-    private String lastUpdateType;
+    private CommentLastUpdateType lastUpdateType;
+
+    public PostCommentEntity(PostEntity postId) {
+        this.postId = postId;
+    }
 }

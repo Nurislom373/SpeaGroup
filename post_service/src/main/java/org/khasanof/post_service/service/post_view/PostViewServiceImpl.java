@@ -4,6 +4,7 @@ import org.khasanof.post_service.criteria.post_view.PostViewCriteria;
 import org.khasanof.post_service.dto.post_view.PostViewCreateDTO;
 import org.khasanof.post_service.dto.post_view.PostViewDetailDTO;
 import org.khasanof.post_service.dto.post_view.PostViewGetDTO;
+import org.khasanof.post_service.entity.post.PostEntity;
 import org.khasanof.post_service.entity.post_view.PostViewEntity;
 import org.khasanof.post_service.entity.view.ViewEntity;
 import org.khasanof.post_service.enums.rating.RatingPointEnum;
@@ -42,39 +43,41 @@ public class PostViewServiceImpl extends AbstractService<PostViewRepository, Pos
     }
 
     @Override
-    public void create(PostViewCreateDTO dto) {
-        validator.validCreateDTO(dto);
+    public void create(String postId) {
+        validator.validKey(postId);
+        PostEntity entity = postService.getEntity(postId);
         PostViewEntity viewEntity = mongoTemplate.findOne(
                 Query.query(new Criteria("postId")
-                        .is(postService.getEntity(dto.getViewPostId()))),
-                PostViewEntity.class);
+                        .is(entity)), PostViewEntity.class);
+        if (Objects.isNull(viewEntity)) {
+            PostViewEntity view = new PostViewEntity(entity, new LinkedList<>());
+            repository.save(view);
+        } else {
+            throw new RuntimeException("PostView already created!");
+        }
+    }
+
+    @Override
+    public void addView(PostViewCreateDTO dto) {
+        validator.validCreateDTO(dto);
+        PostEntity entity = postService.getEntity(dto.getViewPostId());
+        PostViewEntity viewEntity = mongoTemplate.findOne(
+                Query.query(new Criteria("postId")
+                        .is(entity)), PostViewEntity.class);
         if (Objects.nonNull(viewEntity)) {
             LinkedList<ViewEntity> views = viewEntity.getViews();
             boolean anyMatch = views.stream()
-                    .anyMatch(f -> f.getUserId().equals(dto.getUserId()));
+                    .anyMatch(any -> any.getUserId().equals(dto.getUserId()));
             if (!anyMatch) {
                 views.add(new ViewEntity(dto.getUserId()));
                 viewEntity.setViews(views);
-                viewEntity.setUpdatedAt(Instant.now());
-                viewEntity.setUpdatedBy("-1");
                 repository.save(viewEntity);
                 BaseUtils.EXECUTOR_SERVICE.execute(() ->
                         postRatingService.updateRatingCount(dto.getViewPostId(),
                                 RatingPointEnum.VIEW, false));
             }
         } else {
-            if (postService.existByIdAndCheckBlocked(dto.getViewPostId())) {
-                throw new RuntimeException("This Post is block");
-            }
-            PostViewEntity postViewEntity = mapper.toCreateDTO(dto);
-            postViewEntity.setPostId(postService.getEntity(dto.getViewPostId()));
-            LinkedList<ViewEntity> views = new LinkedList<>();
-            views.add(new ViewEntity(dto.getUserId()));
-            postViewEntity.setViews(views);
-            repository.save(postViewEntity);
-            BaseUtils.EXECUTOR_SERVICE.execute(() ->
-                    postRatingService.updateRatingCount(dto.getViewPostId(),
-                            RatingPointEnum.VIEW, false));
+            throw new RuntimeException("PostView not found");
         }
     }
 

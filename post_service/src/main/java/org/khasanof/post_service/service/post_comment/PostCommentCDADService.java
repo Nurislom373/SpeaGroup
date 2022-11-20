@@ -4,7 +4,7 @@ import org.khasanof.post_service.dto.post_comment.*;
 
 public interface PostCommentCDADService {
 
-    void create(PostCommentCreateDTO dto);
+    void create(String postId);
 
     void addComment(PostCommentCreateDTO dto);
 
