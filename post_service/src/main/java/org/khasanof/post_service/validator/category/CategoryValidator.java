@@ -12,6 +12,7 @@ import java.util.Objects;
 
 @Component
 public class CategoryValidator extends AbstractValidator<CategoryCreateDTO, CategoryUpdateDTO, String> {
+
     @Override
     public void validCreateDTO(CategoryCreateDTO categoryCreateDTO) throws InvalidValidationException {
         if (Objects.isNull(categoryCreateDTO)) {

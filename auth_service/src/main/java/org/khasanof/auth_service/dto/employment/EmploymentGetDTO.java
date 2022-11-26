@@ -8,6 +8,7 @@ import org.khasanof.auth_service.dto.GenericDTO;
 import org.khasanof.auth_service.entity.location.LocationEntity;
 import org.khasanof.auth_service.enums.employment.EmploymentTypeEnum;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Getter

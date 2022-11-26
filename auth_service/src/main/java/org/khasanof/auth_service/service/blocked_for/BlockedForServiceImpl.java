@@ -19,8 +19,7 @@ import java.time.Instant;
 import java.util.List;
 
 @Service
-public class BlockedForServiceImpl
-        extends AbstractService<BlockedForRepository, BlockedForMapper, BlockedForValidator>
+public class BlockedForServiceImpl extends AbstractService<BlockedForRepository, BlockedForMapper, BlockedForValidator>
         implements BlockedForService {
 
     public BlockedForServiceImpl(BlockedForRepository repository, BlockedForMapper mapper, BlockedForValidator validator) {
