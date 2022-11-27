@@ -6,6 +6,7 @@ import org.khasanof.auth_service.dto.blocked_for.BlockedForGetDTO;
 import org.khasanof.auth_service.dto.blocked_for.BlockedForUpdateDTO;
 import org.khasanof.auth_service.entity.blocked_for.BlockedForEntity;
 import org.khasanof.auth_service.exception.exceptions.AlreadyCreatedException;
+import org.khasanof.auth_service.exception.exceptions.NotFoundException;
 import org.khasanof.auth_service.mapper.blocked_for.BlockedForMapper;
 import org.khasanof.auth_service.repository.blocked_for.BlockedForRepository;
 import org.khasanof.auth_service.service.AbstractService;
@@ -13,7 +14,6 @@ import org.khasanof.auth_service.validator.blocked_for.BlockedForValidator;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import org.webjars.NotFoundException;
 
 import java.time.Instant;
 import java.util.List;

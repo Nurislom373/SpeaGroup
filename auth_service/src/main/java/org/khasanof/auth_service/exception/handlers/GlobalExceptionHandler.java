@@ -57,6 +57,16 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(applicationError, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(org.khasanof.auth_service.exception.exceptions.NotFoundException.class)
+    public ResponseEntity<ApplicationError> notFoundExceptionHandler(org.khasanof.auth_service.exception.exceptions.NotFoundException exception, WebRequest request) {
+        ApplicationError applicationError = new ApplicationError();
+        applicationError.setCode("NotFoundException");
+        applicationError.setMessage(exception.getMessage());
+        applicationError.setStatus(404);
+        applicationError.setTime(LocalDateTime.now());
+        return new ResponseEntity<>(applicationError, HttpStatus.NOT_FOUND);
+    }
+
     @ExceptionHandler(AlreadyCreatedException.class)
     public ResponseEntity<ApplicationError> alreadyCreatedHandler(AlreadyCreatedException exception, WebRequest request) {
         ApplicationError applicationError = new ApplicationError();

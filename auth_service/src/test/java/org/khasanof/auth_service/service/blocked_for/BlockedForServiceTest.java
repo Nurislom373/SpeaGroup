@@ -5,8 +5,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.khasanof.auth_service.criteria.blocked_for.BlockedForCriteria;
+import org.khasanof.auth_service.dto.blocked_for.BlockedForCreateDTO;
 import org.khasanof.auth_service.dto.blocked_for.BlockedForGetDTO;
+import org.khasanof.auth_service.dto.blocked_for.BlockedForUpdateDTO;
 import org.khasanof.auth_service.entity.blocked_for.BlockedForEntity;
+import org.khasanof.auth_service.exception.exceptions.AlreadyCreatedException;
 import org.khasanof.auth_service.exception.exceptions.InvalidValidationException;
 import org.khasanof.auth_service.exception.exceptions.NotFoundException;
 import org.khasanof.auth_service.mapper.blocked_for.BlockedForMapper;
@@ -19,6 +22,7 @@ import org.mockito.Mockito;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.util.List;
 import java.util.Optional;
@@ -45,9 +49,18 @@ public class BlockedForServiceTest {
     }
 
     @Test
+    public void createMethodAlreadyCreatedExceptionTest() {
+        var dto1 = new BlockedForCreateDTO("Boom", "BOOM", 56);
+
+        Assertions.assertThrows(AlreadyCreatedException.class,
+                () -> service.create(dto1));
+    }
+
+    @Test
     public void getMethodIsOkTest() {
         BlockedForEntity entity = new BlockedForEntity("BOOM", "Boom", 12);
-        Mockito.when(repository.findById(ArgumentMatchers.any())).thenReturn(Optional.of(entity));
+        Mockito.when(repository.findById(ArgumentMatchers.any()))
+                .thenReturn(Optional.of(entity));
 
         BlockedForGetDTO blockedForGetDTO = service.get("63343ac6f2da927b960fb2bd");
         System.out.println("blockedForGetDTO = " + blockedForGetDTO);
@@ -55,20 +68,57 @@ public class BlockedForServiceTest {
     }
 
     @Test
-    public void getMethodIsNotFoundTest() {
+    public void getMethodNotFoundExceptionTest() {
         Mockito.when(repository.findById(ArgumentMatchers.any()))
-                .thenThrow(new NotFoundException("Blocked For not found"));
+                .thenReturn(Optional.empty());
 
         Assertions.assertThrows(NotFoundException.class,
                 () -> service.get("6320c3dbef1ded597035d8a7"));
     }
 
     @Test
-    public void getMethodIsInvalidValidationTest() {
-        BlockedForEntity entity = new BlockedForEntity("BOOM", "Boom", 12);
-        Mockito.when(repository.findById(ArgumentMatchers.any()))
-                .thenReturn(Optional.of(entity));
+    public void deleteMethodNotFoundExceptionTest() {
+        Mockito.when(repository.existsById(ArgumentMatchers.any()))
+                .thenReturn(false);
 
+        Assertions.assertThrows(NotFoundException.class,
+                () -> service.delete("6320c3dbef1ded597035d8a7"));
+    }
+
+    @Test
+    public void deleteMethodIsInvalidValidationExceptionTest() {
+        Assertions.assertThrows(InvalidValidationException.class,
+                () -> service.delete("6320c3dbef1ded597035d8a"));
+
+        Assertions.assertThrows(InvalidValidationException.class,
+                () -> service.delete(null));
+    }
+
+    @Test
+    public void updateMethodIsNotFoundExceptionTest() {
+        var dto = new BlockedForUpdateDTO("6320c3dbef1ded597035d8a7", "YFG", "yfg", 15);
+
+        Mockito.when(repository.findById(ArgumentMatchers.any()))
+                .thenReturn(Optional.empty());
+
+        Assertions.assertThrows(NotFoundException.class,
+                () -> service.update(dto));
+    }
+
+    @Test
+    public void updateMethodIsInvalidValidationExceptionTest() {
+        var dto = new BlockedForUpdateDTO("6320c3dbef1ded597035d8a",
+                "YFG", "yfg", 15);
+
+        Assertions.assertThrows(InvalidValidationException.class,
+                () -> service.update(dto));
+
+        Assertions.assertThrows(InvalidValidationException.class,
+                () -> service.update(null));
+    }
+
+    @Test
+    public void getMethodIsInvalidValidationTest() {
         Assertions.assertThrows(InvalidValidationException.class,
                 () -> service.get("6320c3dbef1ded597035d8a"));
     }
@@ -86,8 +136,6 @@ public class BlockedForServiceTest {
         List<BlockedForGetDTO> dtoList = service.list(new BlockedForCriteria());
         Assertions.assertEquals(list.size(), dtoList.size());
     }
-
-
 
 
 }
