@@ -25,7 +25,7 @@ public class PostViewController extends AbstractController<PostViewService> {
 
     @RequestMapping(value = "create", method = RequestMethod.POST)
     public ResponseEntity<Data<String>> create(@RequestBody PostViewCreateDTO dto) {
-        service.create(dto);
+        service.addView(dto);
         return new ResponseEntity<>(new Data<>("Successfully Created - Post View"), HttpStatus.CREATED);
     }
 

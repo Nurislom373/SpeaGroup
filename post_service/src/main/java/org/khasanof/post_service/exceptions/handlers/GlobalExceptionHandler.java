@@ -49,15 +49,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         applicationError.setTime(LocalDateTime.now());
         return new ResponseEntity<>(applicationError, HttpStatus.BAD_REQUEST);
     }
-    @ExceptionHandler(InvalidValidationException.class)
-    public ResponseEntity<ApplicationError> InvalidExceptionHandler(InvalidValidationException exception, WebRequest webRequest) {
-        ApplicationError applicationError = new ApplicationError();
-        applicationError.setCode("InvalidException");
-        applicationError.setMessage(exception.getMessage());
-        applicationError.setStatus(400);
-        applicationError.setTime(LocalDateTime.now());
-        return new ResponseEntity<>(applicationError, HttpStatus.BAD_REQUEST);
-    }
 
     @ExceptionHandler(AlreadyCreatedException.class)
     public ResponseEntity<ApplicationError> alreadyCreatedHandler(AlreadyCreatedException exception, WebRequest request) {

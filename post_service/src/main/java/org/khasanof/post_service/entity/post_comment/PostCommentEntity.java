@@ -24,7 +24,8 @@ public class PostCommentEntity extends Auditable {
     private LinkedList<CommentEntity> comments;
     private CommentLastUpdateType lastUpdateType;
 
-    public PostCommentEntity(PostEntity postId) {
+    public PostCommentEntity(PostEntity postId, LinkedList<CommentEntity> list) {
         this.postId = postId;
+        this.comments = list;
     }
 }

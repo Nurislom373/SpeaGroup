@@ -25,7 +25,7 @@ public class PostShareController extends AbstractController<PostShareService> {
 
     @RequestMapping(value = "create", method = RequestMethod.POST)
     public ResponseEntity<Data<String>> create(@RequestBody PostShareCreateDTO dto) {
-        service.create(dto);
+        service.addShare(dto);
         return new ResponseEntity<>(new Data<>("Successfully Created - Post Share"), HttpStatus.CREATED);
     }
 

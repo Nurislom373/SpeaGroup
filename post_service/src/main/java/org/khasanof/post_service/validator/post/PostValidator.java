@@ -12,13 +12,11 @@ import java.util.Objects;
 
 @Component
 public class PostValidator extends AbstractValidator<PostCreateDTO, PostUpdateDTO, String> {
+
     @Override
     public void validCreateDTO(PostCreateDTO postCreateDTO) throws InvalidValidationException {
         if (Objects.isNull(postCreateDTO)) {
             throw new InvalidValidationException("DTO is null");
-        }
-        if (!PostVisibilityEnum.hasVisibility(postCreateDTO.getVisibility())) {
-            throw new RuntimeException("Visibility Invalid!");
         }
     }
 
@@ -26,9 +24,6 @@ public class PostValidator extends AbstractValidator<PostCreateDTO, PostUpdateDT
     public void validUpdateDTO(PostUpdateDTO postUpdateDTO) throws InvalidValidationException {
         if (Objects.isNull(postUpdateDTO)) {
             throw new InvalidValidationException("DTO is null");
-        }
-        if (!PostVisibilityEnum.hasVisibility(postUpdateDTO.getVisibility())) {
-            throw new RuntimeException("Visibility Invalid!");
         }
     }
 

@@ -26,7 +26,7 @@ public class PostSaveController extends AbstractController<PostSaveService> {
 
     @RequestMapping(value = "create", method = RequestMethod.POST)
     public ResponseEntity<Data<String>> create(@RequestBody PostSaveCreateDTO dto) {
-        service.create(dto);
+        service.addSave(dto);
         return new ResponseEntity<>(new Data<>("Successfully Created - Post Save"), HttpStatus.CREATED);
     }
 

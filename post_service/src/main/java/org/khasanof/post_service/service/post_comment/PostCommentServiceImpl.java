@@ -42,21 +42,13 @@ public class PostCommentServiceImpl extends AbstractService<PostCommentRepositor
     }
 
     @Override
-    public void create(String commentId) {
-        validator.validKey(commentId);
-        PostEntity entity = postService.getEntity(commentId);
+    public void create(PostEntity entity) {
         PostCommentEntity commentEntity = mongoTemplate.findOne(
                 Query.query(new Criteria("postId")
                         .is(entity)),
                 PostCommentEntity.class);
         if (Objects.isNull(commentEntity)) {
-            if (postService.existByIdAndCheckBlocked(commentId)) {
-                throw new RuntimeException("Post is Blocked");
-            }
-            PostCommentEntity postCommentEntity = new PostCommentEntity();
-            LinkedList<CommentEntity> comments = new LinkedList<>();
-            postCommentEntity.setPostId(entity);
-            postCommentEntity.setComments(comments);
+            PostCommentEntity postCommentEntity = new PostCommentEntity(entity, new LinkedList<>());
             repository.save(postCommentEntity);
         } else {
             throw new RuntimeException("Already Created Post Comment!");

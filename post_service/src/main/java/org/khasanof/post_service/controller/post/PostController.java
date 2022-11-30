@@ -59,7 +59,7 @@ public class PostController extends AbstractController<PostService> {
 
     @RequestMapping(value = "list", method = RequestMethod.GET)
     public ResponseEntity<Data<List<PostGetDTO>>> list(@Valid PostCriteria criteria) {
-        return new ResponseEntity<>(new Data<>(service.list(criteria)), HttpStatus.OK);
+        return new ResponseEntity<>(new Data<>(service.list(criteria), criteria.getSize()), HttpStatus.OK);
     }
 
     @RequestMapping(value = "listWithCategory", method = RequestMethod.GET)

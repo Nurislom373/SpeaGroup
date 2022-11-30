@@ -1,10 +1,11 @@
 package org.khasanof.post_service.service.post_comment;
 
 import org.khasanof.post_service.dto.post_comment.*;
+import org.khasanof.post_service.entity.post.PostEntity;
 
 public interface PostCommentCDADService {
 
-    void create(String postId);
+    void create(PostEntity entity);
 
     void addComment(PostCommentCreateDTO dto);
 

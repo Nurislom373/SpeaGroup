@@ -9,6 +9,7 @@ import org.khasanof.post_service.entity.post_save.PostSaveEntity;
 import org.khasanof.post_service.entity.post_share.PostShareEntity;
 import org.khasanof.post_service.entity.share.ShareEntity;
 import org.khasanof.post_service.enums.rating.RatingPointEnum;
+import org.khasanof.post_service.exceptions.exceptions.AlreadyCreatedException;
 import org.khasanof.post_service.mapper.post.PostMapper;
 import org.khasanof.post_service.mapper.post_share.PostShareMapper;
 import org.khasanof.post_service.repository.post_share.PostShareRepository;
@@ -45,7 +46,20 @@ public class PostShareServiceImpl extends AbstractService<PostShareRepository, P
     }
 
     @Override
-    public void create(PostShareCreateDTO dto) {
+    public void create(PostEntity entity) {
+        PostShareEntity share = mongoTemplate.findOne(
+                Query.query(new Criteria("postId")
+                        .is(entity)), PostShareEntity.class);
+        if (Objects.isNull(share)) {
+            var saveEntity = new PostShareEntity(entity, new LinkedList<>());
+            repository.save(saveEntity);
+        } else {
+            throw new AlreadyCreatedException("PostShare already created!");
+        }
+    }
+
+    @Override
+    public void addShare(PostShareCreateDTO dto) {
         validator.validCreateDTO(dto);
         PostShareEntity shareEntity = mongoTemplate.findOne(
                 Query.query(new Criteria("postId")

@@ -3,9 +3,11 @@ package org.khasanof.post_service.service.post_like;
 import org.khasanof.post_service.criteria.post_like.PostLikeCriteria;
 import org.khasanof.post_service.dto.post_like.*;
 import org.khasanof.post_service.entity.like.LikeEntity;
+import org.khasanof.post_service.entity.post.PostEntity;
 import org.khasanof.post_service.entity.post_like.PostLikeEntity;
 import org.khasanof.post_service.enums.like.LikeTypeEnum;
 import org.khasanof.post_service.enums.rating.RatingPointEnum;
+import org.khasanof.post_service.exceptions.exceptions.AlreadyCreatedException;
 import org.khasanof.post_service.mapper.post_like.PostLikeMapper;
 import org.khasanof.post_service.repository.post_like.PostLikeRepository;
 import org.khasanof.post_service.service.AbstractService;
@@ -41,49 +43,70 @@ public class PostLikeServiceImpl extends AbstractService<PostLikeRepository, Pos
     }
 
     @Override
-    public void create(PostLikeCreateDTO dto) {
+    public void create(PostEntity entity) {
+        PostLikeEntity like = mongoTemplate.findOne(
+                Query.query(new Criteria("postId")
+                        .is(entity)), PostLikeEntity.class);
+        if (Objects.isNull(like)) {
+            var likeEntity = new PostLikeEntity(entity, new LinkedList<>());
+            repository.save(likeEntity);
+        } else {
+            throw new AlreadyCreatedException("Already created Post Like!");
+        }
+    }
+
+    @Override
+    public void addLike(PostLikeCreateDTO dto) {
         validator.validCreateDTO(dto);
         PostLikeEntity postLike = mongoTemplate.findOne(
                 Query.query(new Criteria("postId")
                         .is(postService.getEntity(dto.getLikePostId()))),
                 PostLikeEntity.class);
         if (Objects.isNull(postLike)) {
-            if (postService.existByIdAndCheckBlocked(dto.getLikePostId())) {
-                throw new NotFoundException("Post is blocked!");
-            }
-            PostLikeEntity postLikeEntity = mapper.toCreateDTO(dto);
-            LinkedList<LikeEntity> likes = new LinkedList<>();
-            likes.add(new LikeEntity(dto.getUserId(), dto.getType()));
-            postLikeEntity.setPostId(postService.getEntity(dto.getLikePostId()));
-            postLikeEntity.setLikes(likes);
-            repository.save(postLikeEntity);
+            addIsNull(dto);
         } else {
-            LinkedList<LikeEntity> likes = postLike.getLikes();
-            LikeEntity entity = likes.stream()
-                    .filter(a -> a.getUserId()
-                            .equals(dto.getUserId()))
-                    .findFirst().orElse(null);
-            if (Objects.isNull(entity)) {
-                likes.add(new LikeEntity(dto.getUserId(), dto.getType()));
-                postLike.setLikes(likes);
-                postLike.setUpdatedAt(Instant.now());
-                postLike.setUpdatedBy(dto.getUserId());
-                repository.save(postLike);
-            } else {
-                if (!entity.getType().equalsIgnoreCase(dto.getType())) {
-                    likes.remove(entity);
-                    entity.setType(dto.getType());
-                    likes.add(entity);
-                    postLike.setLikes(likes);
-                    postLike.setUpdatedAt(Instant.now());
-                    postLike.setUpdatedBy(dto.getUserId());
-                    repository.save(postLike);
-                }
-            }
+            addNonNull(dto, postLike);
         }
         BaseUtils.EXECUTOR_SERVICE
                 .execute(() -> postRatingService.updateRatingCount(dto.getLikePostId(),
                         RatingPointEnum.LIKE, false));
+    }
+
+    private void addNonNull(PostLikeCreateDTO dto, PostLikeEntity postLike) {
+        LinkedList<LikeEntity> likes = postLike.getLikes();
+        LikeEntity entity = likes.stream()
+                .filter(a -> a.getUserId()
+                        .equals(dto.getUserId()))
+                .findFirst().orElse(null);
+        if (Objects.isNull(entity)) {
+            likes.add(new LikeEntity(dto.getUserId(), dto.getType()));
+            postLike.setLikes(likes);
+            postLike.setUpdatedAt(Instant.now());
+            postLike.setUpdatedBy(dto.getUserId());
+            repository.save(postLike);
+        } else {
+            if (!entity.getType().equalsIgnoreCase(dto.getType())) {
+                likes.remove(entity);
+                entity.setType(dto.getType());
+                likes.add(entity);
+                postLike.setLikes(likes);
+                postLike.setUpdatedAt(Instant.now());
+                postLike.setUpdatedBy(dto.getUserId());
+                repository.save(postLike);
+            }
+        }
+    }
+
+    private void addIsNull(PostLikeCreateDTO dto) {
+        if (postService.existByIdAndCheckBlocked(dto.getLikePostId())) {
+            throw new NotFoundException("Post is blocked!");
+        }
+        PostLikeEntity postLikeEntity = mapper.toCreateDTO(dto);
+        LinkedList<LikeEntity> likes = new LinkedList<>();
+        likes.add(new LikeEntity(dto.getUserId(), dto.getType()));
+        postLikeEntity.setPostId(postService.getEntity(dto.getLikePostId()));
+        postLikeEntity.setLikes(likes);
+        repository.save(postLikeEntity);
     }
 
     @Override

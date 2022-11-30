@@ -2,7 +2,6 @@ package org.khasanof.post_service.dto.post;
 
 import lombok.*;
 import org.khasanof.post_service.dto.GenericDTO;
-import org.khasanof.post_service.entity.auth_user.AuthUserEntity;
 import org.khasanof.post_service.entity.comment.CommentEntity;
 
 import java.time.Instant;
@@ -14,7 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @ToString
 public class PostDetWComDTO extends GenericDTO {
-    private AuthUserEntity userId;
+    private String userId;
     private String title;
     private String description;
     private String status;

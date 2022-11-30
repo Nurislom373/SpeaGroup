@@ -4,13 +4,14 @@ import org.khasanof.post_service.criteria.post_view.PostViewCriteria;
 import org.khasanof.post_service.dto.post_view.PostViewCreateDTO;
 import org.khasanof.post_service.dto.post_view.PostViewDetailDTO;
 import org.khasanof.post_service.dto.post_view.PostViewGetDTO;
+import org.khasanof.post_service.entity.post.PostEntity;
 import org.khasanof.post_service.service.BaseService;
 import org.khasanof.post_service.service.GenericGDLService;
 
 public interface PostViewService extends GenericGDLService<PostViewGetDTO, PostViewDetailDTO, String, PostViewCriteria>,
         BaseService {
 
-    void create(String postId);
+    void create(PostEntity entity);
 
     void addView(PostViewCreateDTO dto);
 

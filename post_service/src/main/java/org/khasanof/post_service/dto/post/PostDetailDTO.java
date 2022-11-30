@@ -2,7 +2,6 @@ package org.khasanof.post_service.dto.post;
 
 import lombok.*;
 import org.khasanof.post_service.dto.GenericDTO;
-import org.khasanof.post_service.entity.auth_user.AuthUserEntity;
 
 import java.time.Instant;
 import java.util.List;
@@ -13,7 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @ToString
 public class PostDetailDTO extends GenericDTO {
-    private AuthUserEntity userId;
+    private String userId;
     private String title;
     private String description;
     private String status;

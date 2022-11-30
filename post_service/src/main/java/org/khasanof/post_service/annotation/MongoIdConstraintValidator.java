@@ -1,7 +1,7 @@
 package org.khasanof.post_service.annotation;
 
 import org.bson.types.ObjectId;
-import org.khasanof.auth_service.exception.exceptions.InvalidValidationException;
+import org.khasanof.post_service.exceptions.exceptions.InvalidValidationException;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;

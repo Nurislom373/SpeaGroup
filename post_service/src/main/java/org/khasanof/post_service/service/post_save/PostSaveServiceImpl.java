@@ -6,9 +6,11 @@ import org.khasanof.post_service.dto.post_save.PostSaveDeleteDTO;
 import org.khasanof.post_service.dto.post_save.PostSaveDetailDTO;
 import org.khasanof.post_service.dto.post_save.PostSaveGetDTO;
 import org.khasanof.post_service.entity.post.PostEntity;
+import org.khasanof.post_service.entity.post_like.PostLikeEntity;
 import org.khasanof.post_service.entity.post_save.PostSaveEntity;
 import org.khasanof.post_service.entity.save.SaveEntity;
 import org.khasanof.post_service.enums.rating.RatingPointEnum;
+import org.khasanof.post_service.exceptions.exceptions.AlreadyCreatedException;
 import org.khasanof.post_service.mapper.post.PostMapper;
 import org.khasanof.post_service.mapper.post_save.PostSaveMapper;
 import org.khasanof.post_service.repository.post_save.PostSaveRepository;
@@ -46,7 +48,20 @@ public class PostSaveServiceImpl extends AbstractService<PostSaveRepository, Pos
     }
 
     @Override
-    public void create(PostSaveCreateDTO dto) {
+    public void create(PostEntity entity) {
+        PostSaveEntity save = mongoTemplate.findOne(
+                Query.query(new Criteria("postId")
+                .is(entity)), PostSaveEntity.class);
+        if (Objects.isNull(save)) {
+            var saveEntity = new PostSaveEntity(entity, new LinkedList<>());
+            repository.save(saveEntity);
+        } else {
+            throw new AlreadyCreatedException("Already created Post Save!");
+        }
+    }
+
+    @Override
+    public void addSave(PostSaveCreateDTO dto) {
         validator.validCreateDTO(dto);
         PostSaveEntity saveEntity = mongoTemplate.findOne(
                 Query.query(new Criteria("postId")

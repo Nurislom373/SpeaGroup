@@ -33,6 +33,7 @@ import org.khasanof.post_service.service.post_comment.PostCommentService;
 import org.khasanof.post_service.service.post_like.PostLikeService;
 import org.khasanof.post_service.service.post_rating.PostRatingService;
 import org.khasanof.post_service.service.post_save.PostSaveService;
+import org.khasanof.post_service.service.post_share.PostShareService;
 import org.khasanof.post_service.service.post_view.PostViewService;
 import org.khasanof.post_service.utils.BaseUtils;
 import org.khasanof.post_service.validator.post.PostValidator;
@@ -47,6 +48,7 @@ import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.List;
 
 @Service
@@ -55,6 +57,7 @@ public class PostServiceImpl extends AbstractService<PostRepository, PostMapper,
     private final PostViewService viewService;
     private final PostSaveService saveService;
     private final PostLikeService likeService;
+    private final PostShareService shareService;
     private final PostCommentService commentService;
     private final PostCategoryService postCategoryService;
     private final CategoryService categoryService;
@@ -63,11 +66,12 @@ public class PostServiceImpl extends AbstractService<PostRepository, PostMapper,
     private final MongoTemplate mongoTemplate;
 
 
-    public PostServiceImpl(PostRepository repository, PostMapper mapper, PostValidator validator, @Lazy PostViewService viewService, @Lazy PostSaveService saveService, @Lazy PostLikeService likeService, @Lazy PostCommentService commentService, @Lazy PostCategoryService postCategoryService, CategoryService categoryService, @Lazy PostRatingService postRatingService, PostRatingMapper postRatingMapper, MongoTemplate mongoTemplate) {
+    public PostServiceImpl(PostRepository repository, PostMapper mapper, PostValidator validator, @Lazy PostViewService viewService, @Lazy PostSaveService saveService, @Lazy PostLikeService likeService, @Lazy PostShareService shareService, @Lazy PostCommentService commentService, @Lazy PostCategoryService postCategoryService, CategoryService categoryService, @Lazy PostRatingService postRatingService, PostRatingMapper postRatingMapper, MongoTemplate mongoTemplate) {
         super(repository, mapper, validator);
         this.viewService = viewService;
         this.saveService = saveService;
         this.likeService = likeService;
+        this.shareService = shareService;
         this.commentService = commentService;
         this.postCategoryService = postCategoryService;
         this.categoryService = categoryService;
@@ -85,8 +89,11 @@ public class PostServiceImpl extends AbstractService<PostRepository, PostMapper,
         PostEntity entity = repository.save(postEntity);
         postCategoryService.addAllCategory(new PostCategoryAddAllDTO(entity.getId(), dto.getCategoriesIds()));
         postRatingService.create(new PostRatingCreateDTO(entity.getId()));
-        commentService.create(entity.getId());
-        viewService.create(entity.getId());
+        commentService.create(entity);
+        viewService.create(entity);
+        likeService.create(entity);
+        saveService.create(entity);
+        shareService.create(entity);
     }
 
 
@@ -98,6 +105,8 @@ public class PostServiceImpl extends AbstractService<PostRepository, PostMapper,
                     throw new NotFoundException("Post not found");
                 });
         BeanUtils.copyProperties(dto, post, "id");
+        post.setUpdatedAt(Instant.now());
+        post.setUpdatedBy(post.getCreatedBy());
         repository.save(post);
     }
 
@@ -198,7 +207,6 @@ public class PostServiceImpl extends AbstractService<PostRepository, PostMapper,
 
     @Override
     public List<PostGetDTO> listWithRating(PostRatingCriteria ratingCriteria) {
-        // TODO writing logic
         List<PostRatingEntity> list = mongoTemplate.find(
                 Query.query(new Criteria("ratingType")
                                 .is(ratingCriteria.getTypeEnum().getValue()))

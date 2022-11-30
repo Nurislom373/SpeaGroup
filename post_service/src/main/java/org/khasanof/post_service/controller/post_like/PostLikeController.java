@@ -23,7 +23,7 @@ public class PostLikeController extends AbstractController<PostLikeService> {
 
     @RequestMapping(value = "create", method = RequestMethod.POST)
     public ResponseEntity<Data<String>> create(@RequestBody PostLikeCreateDTO dto) {
-        service.create(dto);
+        service.addLike(dto);
         return new ResponseEntity<>(new Data<>("Successfully Created - Post Like"), HttpStatus.CREATED);
     }
 

@@ -43,9 +43,7 @@ public class PostViewServiceImpl extends AbstractService<PostViewRepository, Pos
     }
 
     @Override
-    public void create(String postId) {
-        validator.validKey(postId);
-        PostEntity entity = postService.getEntity(postId);
+    public void create(PostEntity entity) {
         PostViewEntity viewEntity = mongoTemplate.findOne(
                 Query.query(new Criteria("postId")
                         .is(entity)), PostViewEntity.class);
@@ -53,7 +51,7 @@ public class PostViewServiceImpl extends AbstractService<PostViewRepository, Pos
             PostViewEntity view = new PostViewEntity(entity, new LinkedList<>());
             repository.save(view);
         } else {
-            throw new RuntimeException("PostView already created!");
+            throw new RuntimeException("Already Created Post View!");
         }
     }
 

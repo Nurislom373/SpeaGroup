@@ -4,11 +4,13 @@ import org.khasanof.post_service.dto.post_like.PostLikeCreateDTO;
 import org.khasanof.post_service.dto.post_like.PostLikeDeleteDTO;
 import org.khasanof.post_service.dto.post_like.PostLikeGetDTO;
 import org.khasanof.post_service.dto.post_like.PostLikeTypeCount;
-import org.khasanof.post_service.enums.like.LikeTypeEnum;
+import org.khasanof.post_service.entity.post.PostEntity;
 
 public interface PostLikeCDCService {
 
-    void create(PostLikeCreateDTO dto);
+    void create(PostEntity entity);
+
+    void addLike(PostLikeCreateDTO dto);
 
     void delete(String id);
 
