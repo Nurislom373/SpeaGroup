@@ -8,6 +8,7 @@ import org.khasanof.post_service.exceptions.exceptions.InvalidValidationExceptio
 import org.khasanof.post_service.validator.AbstractValidator;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Objects;
 
 @Component
@@ -18,12 +19,21 @@ public class PostValidator extends AbstractValidator<PostCreateDTO, PostUpdateDT
         if (Objects.isNull(postCreateDTO)) {
             throw new InvalidValidationException("DTO is null");
         }
+        List<String> list = postCreateDTO.getCategoriesIds();
+        boolean anyMatch = list.stream()
+                .anyMatch(any -> !ObjectId.isValid(any));
+        if (anyMatch) {
+            throw new InvalidValidationException("Invalid Category Id!");
+        }
     }
 
     @Override
     public void validUpdateDTO(PostUpdateDTO postUpdateDTO) throws InvalidValidationException {
         if (Objects.isNull(postUpdateDTO)) {
             throw new InvalidValidationException("DTO is null");
+        }
+        if (!ObjectId.isValid(postUpdateDTO.getId())) {
+            throw new InvalidValidationException("Invalid Id!");
         }
     }
 

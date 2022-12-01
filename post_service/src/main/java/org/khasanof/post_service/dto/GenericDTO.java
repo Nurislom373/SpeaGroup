@@ -7,6 +7,8 @@ import lombok.Setter;
 
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class GenericDTO implements BaseDTO {
     private String id;
 }

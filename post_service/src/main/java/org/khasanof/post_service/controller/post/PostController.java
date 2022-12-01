@@ -25,13 +25,13 @@ public class PostController extends AbstractController<PostService> {
     }
 
     @RequestMapping(value = "create", method = RequestMethod.POST)
-    public ResponseEntity<Data<String>> create(@RequestBody PostCreateDTO dto) {
+    public ResponseEntity<Data<String>> create(@Valid @RequestBody PostCreateDTO dto) {
         service.create(dto);
         return new ResponseEntity<>(new Data<>("Successfully Created - Post"), HttpStatus.CREATED);
     }
 
     @RequestMapping(value = "update", method = RequestMethod.PUT)
-    public ResponseEntity<Data<String>> update(@RequestBody PostUpdateDTO dto) {
+    public ResponseEntity<Data<String>> update(@Valid @RequestBody PostUpdateDTO dto) {
         service.update(dto);
         return new ResponseEntity<>(new Data<>("Successfully Updated - Post"), HttpStatus.OK);
     }
