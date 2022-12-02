@@ -18,6 +18,7 @@
         <module>upload_service</module>
         <module>api_gateway</module>
         <module>post_service</module>
+        <module>question_service</module>
     </modules>
 
 </project>

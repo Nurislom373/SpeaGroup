@@ -36,7 +36,7 @@ public class BlockedForServiceTest {
     private BlockedForRepository repository;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         BlockedForMapper mapper = new BlockedForMapperImpl();
         BlockedForValidator validator = new BlockedForValidator();
         service = new BlockedForServiceImpl(repository, mapper, validator);
