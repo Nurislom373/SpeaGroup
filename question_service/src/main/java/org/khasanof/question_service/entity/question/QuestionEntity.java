@@ -5,6 +5,11 @@ import org.khasanof.question_service.entity.Auditable;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+/**
+ * @author Nurislom
+ * Date: 12/4/2022
+ * Time: 7:23 PM
+ */
 @Getter
 @Setter
 @AllArgsConstructor
