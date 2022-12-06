@@ -1,8 +1,9 @@
 package org.khasanof.question_service.mapper;
 
-import org.khasanof.post_service.dto.BaseDTO;
-import org.khasanof.post_service.dto.GenericDTO;
-import org.khasanof.post_service.entity.BaseEntity;
+
+import org.khasanof.question_service.dto.BaseDTO;
+import org.khasanof.question_service.dto.GenericDTO;
+import org.khasanof.question_service.entity.BaseEntity;
 
 import java.util.List;
 
@@ -12,6 +13,7 @@ public interface GenericMapper<
         GD extends GenericDTO,
         DD extends GenericDTO,
         E extends BaseEntity> extends BaseMapper {
+
     E toCreateDTO(CD DTO);
 
     CD fromCreateDTO(E entity);

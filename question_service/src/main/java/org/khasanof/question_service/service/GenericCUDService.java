@@ -1,7 +1,8 @@
 package org.khasanof.question_service.service;
 
-import org.khasanof.post_service.dto.BaseDTO;
-import org.khasanof.post_service.dto.GenericDTO;
+
+import org.khasanof.question_service.dto.BaseDTO;
+import org.khasanof.question_service.dto.GenericDTO;
 
 import java.io.Serializable;
 

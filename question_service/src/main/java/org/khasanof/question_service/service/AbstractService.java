@@ -1,9 +1,9 @@
 package org.khasanof.question_service.service;
 
 import lombok.RequiredArgsConstructor;
-import org.khasanof.post_service.mapper.BaseMapper;
-import org.khasanof.post_service.repository.BaseRepository;
-import org.khasanof.post_service.validator.BaseValidator;
+import org.khasanof.question_service.mapper.BaseMapper;
+import org.khasanof.question_service.repository.BaseRepository;
+import org.khasanof.question_service.validator.BaseValidator;
 
 @RequiredArgsConstructor
 public abstract class AbstractService<R extends BaseRepository, M extends BaseMapper, V extends BaseValidator> {

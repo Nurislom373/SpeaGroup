@@ -22,10 +22,6 @@ public class QuestionEntity extends Auditable {
     private String title;
     @Field(name = "image_path")
     private String imagePath;
-    @Field(name = "like_count")
-    private Integer likeCount;
-    @Field(name = "comment_count")
-    private Integer commentCount;
     @Field(name = "is_solving")
     private boolean isSolving;
 }

@@ -1,7 +1,7 @@
 package org.khasanof.question_service.service;
 
-import org.khasanof.post_service.criteria.BaseCriteria;
-import org.khasanof.post_service.dto.GenericDTO;
+import org.khasanof.question_service.criteria.BaseCriteria;
+import org.khasanof.question_service.dto.GenericDTO;
 
 import java.io.Serializable;
 import java.util.List;
