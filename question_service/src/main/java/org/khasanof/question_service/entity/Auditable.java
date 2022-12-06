@@ -15,11 +15,9 @@ public abstract class Auditable implements BaseEntity {
     @Id
     private String id;
 
-    @Field(name = "is_deleted")
     private boolean isDeleted;
 
     @CreatedDate
-    @Field(name = "created_at")
     private Instant createdAt = Instant.now();
 
     @CreatedBy

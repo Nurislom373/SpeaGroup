@@ -1,7 +1,7 @@
 package org.khasanof.question_service.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.khasanof.post_service.service.BaseService;
+import org.khasanof.question_service.service.BaseService;
 
 @RequiredArgsConstructor
 public abstract class AbstractController<S extends BaseService> {

@@ -1,8 +1,9 @@
 package org.khasanof.question_service.validator.question;
 
-import org.khasanof.post_service.exceptions.exceptions.InvalidValidationException;
+import org.bson.types.ObjectId;
 import org.khasanof.question_service.dto.question.QuestionCreateDTO;
-import org.khasanof.question_service.dto.question.QuestionGetDTO;
+import org.khasanof.question_service.dto.question.QuestionUpdateDTO;
+import org.khasanof.question_service.exception.exceptions.InvalidValidationException;
 import org.khasanof.question_service.validator.AbstractValidator;
 import org.springframework.stereotype.Component;
 
@@ -14,7 +15,7 @@ import java.util.Objects;
  * Time: 7:33 PM
  */
 @Component
-public class QuestionValidator extends AbstractValidator<QuestionCreateDTO, QuestionGetDTO, String> {
+public class QuestionValidator extends AbstractValidator<QuestionCreateDTO, QuestionUpdateDTO, String> {
 
     @Override
     public void validCreateDTO(QuestionCreateDTO questionCreateDTO) throws InvalidValidationException {
@@ -24,9 +25,12 @@ public class QuestionValidator extends AbstractValidator<QuestionCreateDTO, Ques
     }
 
     @Override
-    public void validUpdateDTO(QuestionGetDTO questionGetDTO) throws InvalidValidationException {
-        if (Objects.isNull(questionGetDTO)) {
+    public void validUpdateDTO(QuestionUpdateDTO dto) throws InvalidValidationException {
+        if (Objects.isNull(dto)) {
             throw new InvalidValidationException("DTO is null");
+        }
+        if (!ObjectId.isValid(dto.getId())) {
+            throw new InvalidValidationException("Invalid ID!");
         }
     }
 
@@ -34,6 +38,9 @@ public class QuestionValidator extends AbstractValidator<QuestionCreateDTO, Ques
     public void validKey(String s) throws InvalidValidationException {
         if (Objects.isNull(s)) {
             throw new InvalidValidationException("ID is null");
+        }
+        if (!ObjectId.isValid(s)) {
+            throw new InvalidValidationException("Invalid ID!");
         }
     }
 }

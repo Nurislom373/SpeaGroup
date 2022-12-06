@@ -3,8 +3,7 @@ package org.khasanof.question_service.annotation;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import org.bson.types.ObjectId;
-import org.khasanof.post_service.exceptions.exceptions.InvalidValidationException;
-
+import org.khasanof.question_service.exception.exceptions.InvalidValidationException;
 
 public class MongoIdConstraintValidator implements ConstraintValidator<MongoIdConstraint, String> {
 
