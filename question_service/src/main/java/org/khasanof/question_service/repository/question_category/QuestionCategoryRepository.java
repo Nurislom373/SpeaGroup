@@ -1,5 +1,6 @@
 package org.khasanof.question_service.repository.question_category;
 
+import org.khasanof.question_service.entity.question.QuestionEntity;
 import org.khasanof.question_service.entity.question_category.QuestionCategoryEntity;
 import org.khasanof.question_service.repository.BaseRepository;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -12,4 +13,7 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface QuestionCategoryRepository extends MongoRepository<QuestionCategoryEntity, String>, BaseRepository {
+
+    boolean existsByQuestionId(QuestionEntity questionId);
+
 }

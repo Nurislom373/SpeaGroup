@@ -1,6 +1,5 @@
 package org.khasanof.question_service.controller.question;
 
-import jakarta.validation.Valid;
 import org.khasanof.question_service.controller.AbstractController;
 import org.khasanof.question_service.criteria.question.QuestionCriteria;
 import org.khasanof.question_service.dto.question.QuestionCreateDTO;
@@ -14,12 +13,17 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 /**
- * @author Nurislom
+ * Author: Nurislom
+ * <br/>
  * Date: 12/6/2022
+ * <br/>
  * Time: 9:17 PM
+ * <br/>
+ * Package: org.khasanof.question_service.controller.question
  */
 @RestController
 @RequestMapping(value = BaseUtils.PATH + "/question/*")

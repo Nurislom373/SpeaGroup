@@ -9,9 +9,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 /**
- * @author Nurislom
+ * Author: Nurislom
+ * <br/>
  * Date: 12/6/2022
+ * <br/>
  * Time: 8:44 PM
+ * <br/>
+ * Package: org.khasanof.question_service.service.question
  */
 @FeignClient(name = "AuthUserFeignClient", url = "http://localhost:8800", path = BaseUtils.PATH + "/auth_user")
 public interface AuthUserFeignClient {

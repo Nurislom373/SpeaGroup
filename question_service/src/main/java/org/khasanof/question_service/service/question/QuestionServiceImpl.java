@@ -89,6 +89,19 @@ public class QuestionServiceImpl extends AbstractService<QuestionRepository, Que
                 .stream().map(this::returnGetDTO).toList();
     }
 
+    @Override
+    public boolean existById(String id) {
+        validator.validKey(id);
+        return repository.existsById(id);
+    }
+
+    @Override
+    public QuestionEntity findById(String id) {
+        validator.validKey(id);
+        return repository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Question not found"));
+    }
+
     private QuestionGetDTO returnGetDTO(QuestionEntity entity) {
         try {
             QuestionGetDTO dto = mapper.fromGetDTO(entity);

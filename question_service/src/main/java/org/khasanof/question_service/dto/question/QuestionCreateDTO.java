@@ -1,10 +1,11 @@
 package org.khasanof.question_service.dto.question;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.khasanof.question_service.annotation.MongoIdConstraint;
 import org.khasanof.question_service.dto.BaseDTO;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 
 /**
  * @author Nurislom

@@ -1,9 +1,10 @@
 package org.khasanof.question_service.dto.question;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.khasanof.question_service.dto.GenericDTO;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 
 /**
  * @author Nurislom
