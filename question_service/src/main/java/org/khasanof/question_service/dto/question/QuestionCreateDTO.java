@@ -24,5 +24,6 @@ public class QuestionCreateDTO implements BaseDTO {
     @Size(min = 20, max = 2500)
     private String title;
     @NotBlank
+    @Size(min = 5, max = 2500)
     private String imagePath;
 }

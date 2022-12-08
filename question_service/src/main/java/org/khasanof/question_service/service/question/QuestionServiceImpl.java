@@ -21,9 +21,13 @@ import java.time.Instant;
 import java.util.List;
 
 /**
- * @author Nurislom
+ * Author: Nurislom
+ * <br/>
  * Date: 12/6/2022
+ * <br/>
  * Time: 7:40 PM
+ * <br/>
+ * Package: org.khasanof.question_service.service.question
  */
 @Service
 public class QuestionServiceImpl extends AbstractService<QuestionRepository, QuestionMapper, QuestionValidator>
