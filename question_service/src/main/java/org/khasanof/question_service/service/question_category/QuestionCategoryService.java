@@ -10,9 +10,13 @@ import org.khasanof.question_service.service.GenericCUDService;
 import org.khasanof.question_service.service.GenericGDLService;
 
 /**
- * @author Nurislom
+ * Author: Nurislom
+ * <br/>
  * Date: 12/7/2022
+ * <br/>
  * Time: 10:12 PM
+ * <br/>
+ * Package: org.khasanof.question_service.service.question_category
  */
 public interface QuestionCategoryService extends GenericCUDService<QuestionCategoryCreateDTO, QuestionCategoryUpdateDTO, String>,
         GenericGDLService<QuestionCategoryGetDTO, QuestionCategoryDetailDTO, String, QuestionCategoryCriteria>,
