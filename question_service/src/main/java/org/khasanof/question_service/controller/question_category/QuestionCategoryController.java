@@ -2,10 +2,7 @@ package org.khasanof.question_service.controller.question_category;
 
 import org.khasanof.question_service.controller.AbstractController;
 import org.khasanof.question_service.criteria.question_category.QuestionCategoryCriteria;
-import org.khasanof.question_service.dto.question_category.QuestionCategoryCreateDTO;
-import org.khasanof.question_service.dto.question_category.QuestionCategoryDetailDTO;
-import org.khasanof.question_service.dto.question_category.QuestionCategoryGetDTO;
-import org.khasanof.question_service.dto.question_category.QuestionCategoryUpdateDTO;
+import org.khasanof.question_service.dto.question_category.*;
 import org.khasanof.question_service.response.Data;
 import org.khasanof.question_service.service.question_category.QuestionCategoryService;
 import org.khasanof.question_service.utils.BaseUtils;
@@ -39,10 +36,16 @@ public class QuestionCategoryController extends AbstractController<QuestionCateg
         return new ResponseEntity<>(new Data<>("Successfully Created - Question Category"), HttpStatus.CREATED);
     }
 
-    @RequestMapping(value = "update", method = RequestMethod.PUT)
-    public ResponseEntity<Data<String>> update(@RequestBody QuestionCategoryUpdateDTO dto) {
-        service.update(dto);
-        return new ResponseEntity<>(new Data<>("Successfully Updated - Question Category"), HttpStatus.OK);
+    @RequestMapping(value = "addCategory", method = RequestMethod.PUT)
+    public ResponseEntity<Data<String>> addCategory(@RequestBody QuestionCategoryAddDTO dto) {
+        service.addCategory(dto);
+        return new ResponseEntity<>(new Data<>("Successfully Added Category - Question Category"), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "deleteCategory", method = RequestMethod.PUT)
+    public ResponseEntity<Data<String>> deleteCategory(@RequestBody QuestionCategoryDeleteDTO dto) {
+        service.deleteCategory(dto);
+        return new ResponseEntity<>(new Data<>("Successfully Deleted Category - Question Category"), HttpStatus.OK);
     }
 
     @RequestMapping(value = "delete/{id}", method = RequestMethod.DELETE)

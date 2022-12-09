@@ -3,10 +3,7 @@ package org.khasanof.question_service.service.question_category;
 import org.khasanof.question_service.criteria.question_category.QuestionCategoryCriteria;
 import org.khasanof.question_service.dto.category.CategoryDetailDTO;
 import org.khasanof.question_service.dto.category.CategoryFindAllRequestDTO;
-import org.khasanof.question_service.dto.question_category.QuestionCategoryCreateDTO;
-import org.khasanof.question_service.dto.question_category.QuestionCategoryDetailDTO;
-import org.khasanof.question_service.dto.question_category.QuestionCategoryGetDTO;
-import org.khasanof.question_service.dto.question_category.QuestionCategoryUpdateDTO;
+import org.khasanof.question_service.dto.question_category.*;
 import org.khasanof.question_service.entity.question.QuestionEntity;
 import org.khasanof.question_service.entity.question_category.QuestionCategoryEntity;
 import org.khasanof.question_service.exception.exceptions.AlreadyCreatedException;
@@ -21,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -58,13 +56,10 @@ public class QuestionCategoryServiceImpl extends AbstractService<QuestionCategor
     }
 
     @Override
-    public void update(QuestionCategoryUpdateDTO dto) {
+    public void addCategory(QuestionCategoryAddDTO dto) {
         validator.validUpdateDTO(dto);
-        QuestionCategoryEntity entity = repository.findById(dto.getId())
-                .orElseThrow(() -> {
-                    throw new NotFoundException("Question not found");
-                });
-        List<String> categories = dto.getCategories();
+        QuestionCategoryEntity entity = findById(dto.getId());
+        List<String> categories = new ArrayList<>(new HashSet<>(dto.getCategories()));
         List<String> list = entity.getCategories();
         List<String> remove = new ArrayList<>();
         categories.forEach((obj) -> {
@@ -82,6 +77,26 @@ public class QuestionCategoryServiceImpl extends AbstractService<QuestionCategor
             entity.setUpdatedBy(entity.getQuestionId().getUserId());
             repository.save(entity);
         }
+    }
+
+    @Override
+    public void deleteCategory(QuestionCategoryDeleteDTO dto) {
+        validator.validDeleteDTO(dto);
+        QuestionCategoryEntity category = findById(dto.getId());
+        List<String> removeDuplicates = new ArrayList<>(new HashSet<>(dto.getCategories()));
+        List<String> categories = category.getCategories();
+        categories.removeAll(removeDuplicates);
+        category.setCategories(categories);
+        category.setUpdatedAt(Instant.now());
+        category.setUpdatedBy(category.getQuestionId().getUserId());
+        repository.save(category);
+    }
+
+    private QuestionCategoryEntity findById(String id) {
+        return repository.findById(id)
+                .orElseThrow(() -> {
+                    throw new NotFoundException("Question Category not found");
+                });
     }
 
     @Override
@@ -134,8 +149,7 @@ public class QuestionCategoryServiceImpl extends AbstractService<QuestionCategor
         QuestionCategoryDetailDTO dto = mapper.fromDetailDTO(entity);
         dto.setQuestion(entity.getQuestionId());
         List<CategoryDetailDTO> list = feignClient.findAllById(
-                new CategoryFindAllRequestDTO(entity.getCategories()))
-                .getData();
+                        new CategoryFindAllRequestDTO(entity.getCategories())).getData();
         dto.setCategoryNames(list);
         return dto;
     }

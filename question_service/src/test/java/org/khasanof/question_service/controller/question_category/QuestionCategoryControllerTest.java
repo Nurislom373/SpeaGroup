@@ -11,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -31,10 +32,36 @@ public class QuestionCategoryControllerTest {
     private AutoMockMvc autoMockMvc;
 
     @Test
-    public void createMethodIsBadRequestResponseTest() throws Exception {
-        var content = new QuestionCategoryCreateDTO("fugyhgsgdggfd", List.of("gdsgfgfd", "fdsfds"));
+    public void createMethodIsCreatedResponseTest() throws Exception {
+        var content = new QuestionCategoryCreateDTO("63922650e0e74f1c865f7e2b",
+                List.of("63932cc0f7a6db5bddc03ffe", "63932cd5f7a6db5bddc03fff"));
         autoMockMvc.obsessivePost("/api/v1/question_category/create", content,
-                Utils.matchers(Utils.StatusChoice.BAD_REQUEST), MockMvcResultHandlers.print());
+                Utils.matchers(Utils.StatusChoice.CREATED), MockMvcResultHandlers.print());
+    }
+
+    @Test
+    public void createMethodIsBadRequestTest() {
+        var list = List.of(
+                new QuestionCategoryCreateDTO("63922650e0e74f1c865f7e2b",
+                        new ArrayList<>()),
+
+                new QuestionCategoryCreateDTO("63922650e0e74f1c865f7e2",
+                        List.of("63932cc0f7a6db5bddc03ffe", "63932cd5f7a6db5bddc03fff")),
+
+                new QuestionCategoryCreateDTO("63922650e0e74f1c865f7e2b",
+                        List.of("63932cc0f7a6db5bddc03ff", "63932cd5f7a6db5bddc03fff")),
+
+                new QuestionCategoryCreateDTO("63922650e0e74f1c865f7e2b",
+                        List.of("63932cc0f7a6db5bddc03ffe", "63932cd5f7a6db5bddc03ff"))
+        );
+        list.forEach((var) -> {
+            try {
+                autoMockMvc.obsessivePost("/api/v1/question_category/create", var,
+                        Utils.matchers(Utils.StatusChoice.BAD_REQUEST), MockMvcResultHandlers.print());
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
 }

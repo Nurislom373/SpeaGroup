@@ -38,7 +38,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(ListIsNullException.class)
-    public ResponseEntity<ApplicationError> invalidExceptionHandler(ListIsNullException exception, WebRequest webRequest) {
+    public ResponseEntity<ApplicationError> listIsNullExceptionHandler(ListIsNullException exception, WebRequest webRequest) {
         ApplicationError applicationError = new ApplicationError();
         applicationError.setCode("ListIsNullException");
         applicationError.setMessage(exception.getMessage());
