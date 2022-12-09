@@ -31,27 +31,21 @@ public class QuestionCategoryController extends AbstractController<QuestionCateg
     }
 
     @RequestMapping(value = "create", method = RequestMethod.POST)
-    public ResponseEntity<Data<String>> create(@RequestBody QuestionCategoryCreateDTO dto) {
+    public ResponseEntity<Data<String>> create(@Valid @RequestBody QuestionCategoryCreateDTO dto) {
         service.create(dto);
         return new ResponseEntity<>(new Data<>("Successfully Created - Question Category"), HttpStatus.CREATED);
     }
 
     @RequestMapping(value = "addCategory", method = RequestMethod.PUT)
-    public ResponseEntity<Data<String>> addCategory(@RequestBody QuestionCategoryAddDTO dto) {
+    public ResponseEntity<Data<String>> addCategory(@Valid @RequestBody QuestionCategoryAddDTO dto) {
         service.addCategory(dto);
         return new ResponseEntity<>(new Data<>("Successfully Added Category - Question Category"), HttpStatus.OK);
     }
 
     @RequestMapping(value = "deleteCategory", method = RequestMethod.PUT)
-    public ResponseEntity<Data<String>> deleteCategory(@RequestBody QuestionCategoryDeleteDTO dto) {
+    public ResponseEntity<Data<String>> deleteCategory(@Valid @RequestBody QuestionCategoryDeleteDTO dto) {
         service.deleteCategory(dto);
         return new ResponseEntity<>(new Data<>("Successfully Deleted Category - Question Category"), HttpStatus.OK);
-    }
-
-    @RequestMapping(value = "delete/{id}", method = RequestMethod.DELETE)
-    public ResponseEntity<Data<String>> delete(@PathVariable String id) {
-        service.delete(id);
-        return new ResponseEntity<>(new Data<>("Successfully Deleted - Question Category"), HttpStatus.NO_CONTENT);
     }
 
     @RequestMapping(value = "get/{id}", method = RequestMethod.GET)

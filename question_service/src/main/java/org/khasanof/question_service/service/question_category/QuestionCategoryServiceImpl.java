@@ -150,7 +150,7 @@ public class QuestionCategoryServiceImpl extends AbstractService<QuestionCategor
         dto.setQuestion(entity.getQuestionId());
         List<CategoryDetailDTO> list = feignClient.findAllById(
                         new CategoryFindAllRequestDTO(entity.getCategories())).getData();
-        dto.setCategoryNames(list);
+        dto.setCategoriesDetails(list);
         return dto;
     }
 }

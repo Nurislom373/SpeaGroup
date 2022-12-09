@@ -20,7 +20,7 @@ import java.util.List;
 @ToString(callSuper = true)
 public class QuestionCategoryDetailDTO extends GenericDTO {
     private QuestionEntity question;
-    private List<CategoryDetailDTO> categoryNames;
+    private List<CategoryDetailDTO> categoriesDetails;
     private Instant createdAt;
     private Instant updatedAt;
 }
