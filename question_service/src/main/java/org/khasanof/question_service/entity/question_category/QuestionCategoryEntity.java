@@ -26,4 +26,10 @@ public class QuestionCategoryEntity extends Auditable {
     @Field(name = "question_id")
     private QuestionEntity questionId;
     private List<String> categories;
+
+    public QuestionCategoryEntity(String id, boolean isDeleted, Instant createdAt, String createdBy, Instant updatedAt, String updatedBy, QuestionEntity questionId, List<String> categories) {
+        super(id, isDeleted, createdAt, createdBy, updatedAt, updatedBy);
+        this.questionId = questionId;
+        this.categories = categories;
+    }
 }

@@ -13,24 +13,28 @@ import java.util.List;
 @Builder
 @ToString
 public class CloudinaryEntity extends Auditable {
-    private String signature;
-    private String format;
-    private String resource_type;
-    private String secure_url;
     private String asset_id;
-    private String version_id;
-    private String type;
-    private String version;
-    private String url;
     private String public_id;
+    private Integer version;
+    private String version_id;
+    private String api_key;
+    private String signature;
+    private Integer width;
+    private Integer height;
+    private String format;
+    private Boolean overwritten;
+    private String original_extension;
+    private String resource_type;
     private String tags;
     private String folder;
-    private String original_filename;
-    private String api_key;
-    private String bytes;
-    private Boolean overwritten;
-    private String width;
+    private Integer pages;
+    private Integer bytes;
+    private String type;
     private String etag;
-    private Boolean placeholder;
-    private String height;
+    private boolean placeholder;
+    private String url;
+    private String secure_url;
+    private String access_mode;
+    private String original_filename;
+//    private TransformationEntity[] eager;
 }

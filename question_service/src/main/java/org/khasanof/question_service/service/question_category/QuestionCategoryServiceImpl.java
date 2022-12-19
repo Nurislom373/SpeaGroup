@@ -121,15 +121,11 @@ public class QuestionCategoryServiceImpl extends AbstractService<QuestionCategor
     @Override
     public QuestionCategoryDetailDTO detail(String id) {
         validator.validKey(id);
-        try {
-            return returnDetailDTO(
-                    repository.findById(id)
-                            .orElseThrow(() -> {
-                                throw new NotFoundException("Question not found");
-                            }));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return returnDetailDTO(
+                repository.findById(id)
+                        .orElseThrow(() -> {
+                            throw new NotFoundException("Question not found");
+                        }));
     }
 
     @Override
@@ -145,11 +141,16 @@ public class QuestionCategoryServiceImpl extends AbstractService<QuestionCategor
         return dto;
     }
 
-    private QuestionCategoryDetailDTO returnDetailDTO(QuestionCategoryEntity entity) throws Exception {
+    private QuestionCategoryDetailDTO returnDetailDTO(QuestionCategoryEntity entity) {
         QuestionCategoryDetailDTO dto = mapper.fromDetailDTO(entity);
         dto.setQuestion(entity.getQuestionId());
-        List<CategoryDetailDTO> list = feignClient.findAllById(
-                        new CategoryFindAllRequestDTO(entity.getCategories())).getData();
+        List<CategoryDetailDTO> list = null;
+        try {
+            list = feignClient.findAllById(
+                    new CategoryFindAllRequestDTO(entity.getCategories())).getData();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         dto.setCategoriesDetails(list);
         return dto;
     }

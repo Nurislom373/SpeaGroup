@@ -26,7 +26,7 @@ public class CloudinaryDetailDTO extends GenericDTO {
     private String folder;
     private String original_filename;
     private String api_key;
-    private String bytes;
+    private Integer bytes;
     private Boolean overwritten;
     private String width;
     private String etag;

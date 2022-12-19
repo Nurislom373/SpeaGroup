@@ -16,5 +16,5 @@ public class CloudinaryGetDTO extends GenericDTO {
     private String resource_type;
     private String secure_url;
     private String url;
-    private String bytes;
+    private Integer bytes;
 }

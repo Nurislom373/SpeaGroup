@@ -20,7 +20,7 @@ public class LocalFileService {
 
     private ConcurrentHashMap<String, Boolean> concurrentFiles = new ConcurrentHashMap<>();
 
-    private final String PATH_DELL = "C:\\Nurislom\\Java\\SpeaGroup\\upload_service\\src\\main\\resources\\img\\";
+    private final String PATH_DELL = "D:\\Nurislom\\Projects\\SpeaGroup\\upload_service\\src\\main\\resources\\img\\";
 
     public String writeFile(MultipartFile file) {
         try {
