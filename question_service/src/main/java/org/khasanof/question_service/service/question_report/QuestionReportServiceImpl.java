@@ -14,14 +14,13 @@ import org.khasanof.question_service.repository.question_report.QuestionReportRe
 import org.khasanof.question_service.service.AbstractService;
 import org.khasanof.question_service.service.question.QuestionService;
 import org.khasanof.question_service.validator.question_report.QuestionReportValidator;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Consumer;
 
 /**
  * Author: Nurislom
@@ -46,7 +45,7 @@ public class QuestionReportServiceImpl extends AbstractService<QuestionReportRep
     @Override
     public void create(QuestionReportCreateDTO dto) {
         validator.validCreateDTO(dto);
-        QuestionEntity questionEntity = questionService.findById(dto.getQuestionId());
+        QuestionEntity questionEntity = questionService.findById(dto.getQuestionStrId());
         Optional<QuestionReportEntity> optional = repository.findByQuestionId(questionEntity);
         QuestionReportEntity questionReportEntity;
 
@@ -98,12 +97,20 @@ public class QuestionReportServiceImpl extends AbstractService<QuestionReportRep
 
     @Override
     public QuestionReportDetailDTO detail(String id) {
-        return null;
+        validator.validKey(id);
+        return returnDetailDTO(
+                repository.findById(id)
+                        .orElseThrow(() -> {
+                            throw new NotFoundException("Question Report not found");
+                        })
+        );
     }
 
     @Override
     public List<QuestionReportGetDTO> list(QuestionReportCriteria criteria) {
-        return null;
+        return repository.findAll(PageRequest.of(criteria.getPage(),
+                        criteria.getSize())).stream()
+                .map(this::returnGetDTO).toList();
     }
 
     private QuestionReportGetDTO returnGetDTO(QuestionReportEntity entity) {
@@ -116,6 +123,18 @@ public class QuestionReportServiceImpl extends AbstractService<QuestionReportRep
                         ReportsEnum.getReportPoint(o.getReportCode()
                                 .getValue())).sum();
         dto.setTotalPoint(totalPoint);
+        return dto;
+    }
+
+    private QuestionReportDetailDTO returnDetailDTO(QuestionReportEntity entity) {
+        QuestionReportDetailDTO dto = mapper.fromDetailDTO(entity);
+        dto.setQuestion(entity.getQuestionId());
+        dto.setCount(entity.getReports().size());
+        int totalPoint = entity.getReports()
+                .stream().mapToInt(o ->
+                        ReportsEnum.getReportPoint(o.getReportCode()
+                                .getValue())).sum();
+        dto.setTotalPointReports(totalPoint);
         return dto;
     }
 }

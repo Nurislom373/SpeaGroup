@@ -27,7 +27,7 @@ public class QuestionReportCreateDTO implements BaseDTO {
 
     @NotBlank
     @MongoIdConstraint
-    private String questionId;
+    private String questionStrId;
 
     @NotNull
     private ReportsEnum reportCode;

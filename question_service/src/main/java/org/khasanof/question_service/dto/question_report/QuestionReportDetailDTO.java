@@ -26,7 +26,7 @@ public class QuestionReportDetailDTO extends GenericDTO {
     private QuestionEntity question;
     private List<ReportEntity> reports;
     private Integer count;
-    private Long totalPointReports;
+    private Integer totalPointReports;
     private Instant updatedAt;
     private String updatedBy;
     private Instant createdAt;

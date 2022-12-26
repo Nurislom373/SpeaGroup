@@ -1,9 +1,9 @@
 package org.khasanof.question_service.service.question_report;
 
 import org.khasanof.question_service.criteria.question_report.QuestionReportCriteria;
-import org.khasanof.question_service.dto.question_report.QuestionReportCreateDTO;
 import org.khasanof.question_service.dto.question_report.QuestionReportDetailDTO;
 import org.khasanof.question_service.dto.question_report.QuestionReportGetDTO;
+import org.khasanof.question_service.service.BaseService;
 import org.khasanof.question_service.service.GenericGDLService;
 
 /**
@@ -16,6 +16,6 @@ import org.khasanof.question_service.service.GenericGDLService;
  * Package: org.khasanof.question_service.service.question_report
  */
 public interface QuestionReportService extends GenericGDLService<QuestionReportGetDTO,
-        QuestionReportDetailDTO, String, QuestionReportCriteria>, QuestionCDEService {
+        QuestionReportDetailDTO, String, QuestionReportCriteria>, QuestionCDEService, BaseService {
 
 }
