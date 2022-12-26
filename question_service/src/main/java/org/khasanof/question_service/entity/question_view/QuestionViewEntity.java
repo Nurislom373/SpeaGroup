@@ -11,9 +11,13 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import java.util.List;
 
 /**
- * @author Nurislom
+ * Author: Nurislom
+ * <br/>
  * Date: 12/4/2022
+ * <br/>
  * Time: 7:23 PM
+ * <br/>
+ * Package: org.khasanof.question_service.entity.question_view
  */
 @Getter
 @Setter
