@@ -25,5 +25,6 @@ public class QuestionViewEntity extends Auditable {
     @DocumentReference
     @Field(name = "question_id")
     private QuestionEntity questionId;
+
     private List<ViewEntity> views;
 }
