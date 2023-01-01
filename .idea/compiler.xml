@@ -10,6 +10,7 @@
         <module name="auth_service" />
         <module name="post_service" />
         <module name="Auth-Service" />
+        <module name="space_service" />
         <module name="upload_service" />
         <module name="question_service" />
         <module name="SpeaGroup" />
@@ -23,6 +24,7 @@
       <module name="Auth_Service" target="17" />
       <module name="post_service" target="17" />
       <module name="question_service" target="17" />
+      <module name="space_service" target="17" />
       <module name="SpeaGroup" target="17" />
       <module name="upload_service" target="17" />
     </bytecodeTargetLevel>
@@ -35,6 +37,7 @@
       <module name="auth_service" options="-parameters" />
       <module name="post_service" options="-parameters" />
       <module name="question_service" options="-parameters" />
+      <module name="space_service" options="-parameters" />
       <module name="upload_service" options="-parameters" />
     </option>
   </component>

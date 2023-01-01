@@ -19,6 +19,7 @@
         <module>api_gateway</module>
         <module>post_service</module>
         <module>question_service</module>
+        <module>space_service</module>
     </modules>
 
 </project>
