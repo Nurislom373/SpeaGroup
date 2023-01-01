@@ -1,5 +1,6 @@
 package org.khasanof.question_service.dto.question;
 
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.*;
 import org.khasanof.question_service.annotation.MongoIdConstraint;
 import org.khasanof.question_service.dto.BaseDTO;

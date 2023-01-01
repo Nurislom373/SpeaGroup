@@ -1,11 +1,14 @@
 package org.khasanof.question_service.controller.question_category;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.khasanof.question_service.controller.AbstractController;
 import org.khasanof.question_service.criteria.question_category.QuestionCategoryCriteria;
 import org.khasanof.question_service.dto.question_category.*;
+import org.khasanof.question_service.response.ApplicationError;
 import org.khasanof.question_service.response.Data;
 import org.khasanof.question_service.service.question_category.QuestionCategoryService;
 import org.khasanof.question_service.utils.BaseUtils;
@@ -41,15 +44,27 @@ public class QuestionCategoryController extends AbstractController<QuestionCateg
     @ApiResponses( value = {
             @ApiResponse(
                     responseCode = "200",
-                    description = "Successfully Added Category - Question Category"
+                    description = "Successfully Added Category - Question Category",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = Data.class))
+                    }
             ),
             @ApiResponse(
                     responseCode = "400",
-                    description = "Invalid Validation Exception"
+                    description = "Invalid Validation Exception",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ApplicationError.class))
+                    }
             ),
             @ApiResponse(
                     responseCode = "404",
-                    description = "Question Category Not Found"
+                    description = "Question Category Not Found",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ApplicationError.class))
+                    }
             )
     })
     @RequestMapping(value = "create", method = RequestMethod.POST)
@@ -65,15 +80,27 @@ public class QuestionCategoryController extends AbstractController<QuestionCateg
     @ApiResponses( value = {
             @ApiResponse(
                     responseCode = "200",
-                    description = "Successfully Added Category - Question Category"
+                    description = "Successfully Added Category - Question Category",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = Data.class))
+                    }
             ),
             @ApiResponse(
                     responseCode = "400",
-                    description = "Invalid Validation Exception"
+                    description = "Invalid Validation Exception",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ApplicationError.class))
+                    }
             ),
             @ApiResponse(
                     responseCode = "404",
-                    description = "Question Category Not Found"
+                    description = "Question Category Not Found",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ApplicationError.class))
+                    }
             )
     })
     @RequestMapping(value = "addCategory", method = RequestMethod.PUT)
@@ -89,15 +116,27 @@ public class QuestionCategoryController extends AbstractController<QuestionCateg
     @ApiResponses( value = {
             @ApiResponse(
                     responseCode = "200",
-                    description = "Successfully Deleted Category - Question Category"
+                    description = "Successfully Deleted Category - Question Category",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = Data.class))
+                    }
             ),
             @ApiResponse(
                     responseCode = "400",
-                    description = "Invalid Validation Exception"
+                    description = "Invalid Validation Exception",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ApplicationError.class))
+                    }
             ),
             @ApiResponse(
                     responseCode = "404",
-                    description = "Question Category Not Found"
+                    description = "Question Category Not Found",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ApplicationError.class))
+                    }
             )
     })
     @RequestMapping(value = "deleteCategory", method = RequestMethod.PUT)
@@ -113,15 +152,27 @@ public class QuestionCategoryController extends AbstractController<QuestionCateg
     @ApiResponses( value = {
             @ApiResponse(
                     responseCode = "200",
-                    description = "Successfully Received - Question Category"
+                    description = "Successfully Received - Question Category",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = Data.class))
+                    }
             ),
             @ApiResponse(
                     responseCode = "400",
-                    description = "Invalid Validation Exception"
+                    description = "Invalid Validation Exception",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ApplicationError.class))
+                    }
             ),
             @ApiResponse(
                     responseCode = "404",
-                    description = "Question Category Not Found"
+                    description = "Question Category Not Found",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ApplicationError.class))
+                    }
             )
     })
     @RequestMapping(value = "get/{id}", method = RequestMethod.GET)
@@ -136,15 +187,27 @@ public class QuestionCategoryController extends AbstractController<QuestionCateg
     @ApiResponses( value = {
             @ApiResponse(
                     responseCode = "200",
-                    description = "Successfully Received - Question Category"
+                    description = "Successfully Received - Question Category",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = Data.class))
+                    }
             ),
             @ApiResponse(
                     responseCode = "400",
-                    description = "Invalid Validation Exception"
+                    description = "Invalid Validation Exception",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ApplicationError.class))
+                    }
             ),
             @ApiResponse(
                     responseCode = "404",
-                    description = "Question Category Not Found"
+                    description = "Question Category Not Found",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ApplicationError.class))
+                    }
             )
     })
     @RequestMapping(value = "detail/{id}", method = RequestMethod.GET)
@@ -159,11 +222,19 @@ public class QuestionCategoryController extends AbstractController<QuestionCateg
     @ApiResponses( value = {
             @ApiResponse(
                     responseCode = "200",
-                    description = "Successfully Received - Question Category"
+                    description = "Successfully Received - Question Category",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = Data.class))
+                    }
             ),
             @ApiResponse(
                     responseCode = "400",
-                    description = "Invalid Validation Exception"
+                    description = "Invalid Validation Exception",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ApplicationError.class))
+                    }
             )
     })
     @RequestMapping(value = "list", method = RequestMethod.GET)
