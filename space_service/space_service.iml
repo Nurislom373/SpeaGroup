@@ -71,6 +71,9 @@
     <orderEntry type="library" name="Maven: org.springframework:spring-aop:5.3.24" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-configuration-processor:2.7.7" level="project" />
     <orderEntry type="library" name="Maven: org.projectlombok:lombok:1.18.24" level="project" />
+    <orderEntry type="library" name="Maven: org.springdoc:springdoc-openapi:1.6.11" level="project" />
+    <orderEntry type="library" name="Maven: org.mapstruct:mapstruct:1.5.2.Final" level="project" />
+    <orderEntry type="library" name="Maven: org.mapstruct:mapstruct-processor:1.5.2.Final" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.springframework.boot:spring-boot-starter-test:2.7.7" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.springframework.boot:spring-boot-test:2.7.7" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.springframework.boot:spring-boot-test-autoconfigure:2.7.7" level="project" />
