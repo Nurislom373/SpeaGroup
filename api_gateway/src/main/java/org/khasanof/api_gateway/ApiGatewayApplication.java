@@ -1,7 +1,9 @@
 package org.khasanof.api_gateway;
 
 import lombok.RequiredArgsConstructor;
+import org.khasanof.api_gateway.config.AdminAuthenticationFilter;
 import org.khasanof.api_gateway.config.AuthenticationFilter;
+import org.khasanof.api_gateway.config.BaseUtils;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
@@ -23,9 +25,16 @@ public class ApiGatewayApplication {
     @Bean
     public RouteLocator routeLocator(RouteLocatorBuilder builder) {
         return builder.routes()
-                .route(p -> p.path("/api/v1/auth_user/**")
+                .route(p -> p.path(BaseUtils.AUTH_SERVICE_PATHS)
                         .filters(f -> f.filter(authenticationFilter))
                         .uri("http://localhost:8800"))
+                .route(p -> p.path(BaseUtils.QUESTION_SERVICE_PATHS)
+                        .filters(f -> f.filter(authenticationFilter))
+                        .uri("http://localhost:8803"))
+                .route(p -> p.path(BaseUtils.POST_SERVICE_PATHS)
+                        .uri("http://localhost:8802"))
+                .route(p -> p.path(BaseUtils.UPLOAD_SERVICE_PATHS)
+                        .uri("http://localhost:8801"))
                 .build();
     }
 
